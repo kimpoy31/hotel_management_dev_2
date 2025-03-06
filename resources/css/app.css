@@ -18,6 +18,44 @@
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "dim";
+  default: true;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(30.857% 0.023 264.149);
+  --color-base-200: oklch(28.036% 0.019 264.182);
+  --color-base-300: oklch(26.346% 0.018 262.177);
+  --color-base-content: oklch(82.901% 0.031 222.959);
+  --color-primary: oklch(96% 0.007 247.896);
+  --color-primary-content: oklch(37% 0.01 67.558);
+  --color-secondary: oklch(55% 0.046 257.417);
+  --color-secondary-content: oklch(96% 0.007 247.896);
+  --color-accent: oklch(60% 0.25 292.717);
+  --color-accent-content: oklch(89% 0.057 293.283);
+  --color-neutral: oklch(24.731% 0.02 264.094);
+  --color-neutral-content: oklch(82.901% 0.031 222.959);
+  --color-info: oklch(70% 0.165 254.624);
+  --color-info-content: oklch(35% 0.144 278.697);
+  --color-success: oklch(86.171% 0.142 166.534);
+  --color-success-content: oklch(37% 0.077 168.94);
+  --color-warning: oklch(86.163% 0.142 94.818);
+  --color-warning-content: oklch(42% 0.095 57.708);
+  --color-error: oklch(80% 0.114 19.571);
+  --color-error-content: oklch(39% 0.141 25.723);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+
 @layer base {
   *,
   ::after,

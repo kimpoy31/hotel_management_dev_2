@@ -1,23 +1,31 @@
 import React, { ReactNode } from "react";
 import Navbar from "./components/Navbar";
 import { Menu } from "lucide-react";
+import SidebarContent from "./components/SidebarContent";
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
+    const triggerModalClick = () => {
+        const modalCheckbox = document.getElementById(
+            "modalId"
+        ) as HTMLInputElement;
+        if (modalCheckbox) {
+            modalCheckbox.click();
+        }
+    };
+
     return (
         <div className="flex w-full h-screen">
-            <div className="h-screen w-full max-w-56 bg-base-200 lg:block hidden"></div>
+            <div className="h-screen w-full max-w-56 bg-base-200 lg:block hidden">
+                <SidebarContent />
+            </div>
             <div className="drawer">
-                <input
-                    id="my-drawer-3"
-                    type="checkbox"
-                    className="drawer-toggle"
-                />
+                <input id="modalId" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content h-screen flex flex-col">
                     {/* Navbar */}
                     <div className="navbar bg-base-200 w-full flex lg:justify-end justify-between">
                         <div className="lg:hidden">
                             <label
-                                htmlFor="my-drawer-3"
+                                htmlFor="modalId"
                                 aria-label="open sidebar"
                                 className="btn btn-square btn-ghost"
                             >
@@ -28,24 +36,20 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
                             <button>Logout</button>
                         </div>
                     </div>
-                    <div className="h-[100vh-68px] overflow-y-auto">
+                    <div className="h-[100vh-68px] w-full overflow-y-auto">
                         {children}
                     </div>
                 </div>
                 <div className="drawer-side">
                     <label
-                        htmlFor="my-drawer-3"
+                        htmlFor="modalId"
                         aria-label="close sidebar"
                         className="drawer-overlay"
                     ></label>
-                    <ul className="menu bg-base-200 min-h-full w-xs p-4">
-                        {/* Sidebar content here */}
-                        <li>
-                            <a>Sidebar Item 1</a>
-                        </li>
-                        <li>
-                            <a>Sidebar Item 2</a>
-                        </li>
+                    <ul className="menu bg-base-200 min-h-full w-full max-w-56 p-0">
+                        <SidebarContent
+                            triggerModalClick={() => triggerModalClick()}
+                        />
                     </ul>
                 </div>
             </div>

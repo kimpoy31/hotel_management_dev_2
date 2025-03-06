@@ -45,15 +45,16 @@
   --color-warning-content: oklch(42% 0.095 57.708);
   --color-error: oklch(80% 0.114 19.571);
   --color-error-content: oklch(39% 0.141 25.723);
-  --radius-selector: 0.5rem;
+  --radius-selector: 0.25rem;
   --radius-field: 0.5rem;
-  --radius-box: 0.5rem;
+  --radius-box: 0.25rem;
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
   --depth: 1;
   --noise: 0;
 }
+
 
 
 @layer base {
@@ -64,4 +65,9 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+}
+
+
+html, body{
+  @apply bg-base-300 text-base-content
 }

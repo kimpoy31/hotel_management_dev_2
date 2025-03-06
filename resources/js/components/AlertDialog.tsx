@@ -46,8 +46,8 @@ const AlertDialog = ({
                 {buttonTitle}
             </button>
 
-            <dialog ref={dialogRef} className="modal ">
-                <div className="modal-box">
+            <dialog ref={dialogRef} className="modal">
+                <div className="modal-box max-w-sm">
                     {modalTitle && (
                         <h3 className="font-bold text-lg">{modalTitle}</h3>
                     )}

@@ -26,7 +26,7 @@ const Login = ({ error, success }: Props) => {
 
     return (
         <div className="flex justify-center h-screen py-36">
-            <div className="card w-full max-w-lg bg-base-100 card-md shadow-sm h-fit ">
+            <div className="card w-full max-w-sm bg-base-100 card-md shadow-sm h-fit ">
                 <form onSubmit={(e) => handleSubmit(e)} className="card-body">
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Username</legend>
@@ -68,7 +68,6 @@ const Login = ({ error, success }: Props) => {
                                 onChange={(e) =>
                                     setResetPassword(e.target.value)
                                 }
-                                required
                             />
                         </fieldset>
                     </AlertDialog>

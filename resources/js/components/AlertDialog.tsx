@@ -4,24 +4,28 @@ interface Props {
     modalTitle?: string;
     modalDescription?: string;
     buttonTitle: string;
+    buttonIcon?: ReactNode;
     buttonClassname?: string;
     children?: ReactNode;
     confirmAction?: () => void;
+    cancelAction?: () => void;
     confirmButtonClassname?: string;
     confirmButtonDisabled?: boolean;
-    closeModalOnConfirm?: boolean;
+    cancelButtonName?: string;
 }
 
 const AlertDialog = ({
     modalTitle,
     buttonTitle,
     buttonClassname,
+    buttonIcon,
     modalDescription,
     children,
     confirmAction,
     confirmButtonClassname,
-    closeModalOnConfirm,
     confirmButtonDisabled,
+    cancelButtonName,
+    cancelAction,
 }: Props) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [open, setOpen] = useState(false);
@@ -43,6 +47,7 @@ const AlertDialog = ({
                 onClick={() => setOpen(true)}
                 type="button"
             >
+                {buttonIcon}
                 {buttonTitle}
             </button>
 
@@ -55,19 +60,22 @@ const AlertDialog = ({
                         <p className="py-4">{modalDescription}</p>
                     )}
                     <div className="my-2">{children}</div>
-                    <div className="modal-action">
+                    <div className="modal-action gap-1 md:flex-row flex-col-reverse">
                         <button
                             className="btn"
-                            onClick={() => setOpen(false)}
+                            onClick={() => {
+                                cancelAction?.();
+                                setOpen(false);
+                            }}
                             type="button"
                         >
-                            Close
+                            {cancelButtonName ?? "Close"}
                         </button>
                         <button
-                            className={`btn ${confirmButtonClassname}`}
+                            className={`btn btn-accent ${confirmButtonClassname}`}
                             onClick={() => {
                                 confirmAction?.();
-                                closeModalOnConfirm && setOpen(false);
+                                setOpen(false);
                             }}
                             type="button"
                             disabled={confirmButtonDisabled}

@@ -54,7 +54,6 @@ const Login = ({ error, success }: Props) => {
                         modalTitle="Reset admin password"
                         confirmButtonClassname="btn-accent"
                         confirmAction={() => handleResetAdminPassword()}
-                        closeModalOnConfirm
                         confirmButtonDisabled={resetPassword.length < 3}
                     >
                         <fieldset className="fieldset">

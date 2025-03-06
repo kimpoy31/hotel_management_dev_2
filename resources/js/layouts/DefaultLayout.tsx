@@ -1,7 +1,8 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 import Navbar from "./components/Navbar";
-import { Menu } from "lucide-react";
+import { LogOut, Menu } from "lucide-react";
 import SidebarContent from "./components/SidebarContent";
+import AlertDialog from "@/components/AlertDialog";
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
     const triggerModalClick = () => {
@@ -12,6 +13,23 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
             modalCheckbox.click();
         }
     };
+
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDetailsElement>(null);
+
+    // Close dropdown when clicking anywhere
+    useEffect(() => {
+        const handleClickAnywhere = () => {
+            if (dropdownRef.current) {
+                dropdownRef.current.removeAttribute("open");
+            }
+        };
+
+        document.addEventListener("click", handleClickAnywhere);
+        return () => {
+            document.removeEventListener("click", handleClickAnywhere);
+        };
+    }, []);
 
     return (
         <div className="flex w-full h-screen">
@@ -32,9 +50,6 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
                                 <Menu />
                             </label>
                         </div>
-                        <div className="mx-4">
-                            <button>Logout</button>
-                        </div>
                     </div>
                     <div className="h-[100vh-68px] w-full overflow-y-auto">
                         {children}
@@ -46,7 +61,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
                         aria-label="close sidebar"
                         className="drawer-overlay"
                     ></label>
-                    <ul className="menu bg-base-200 min-h-full w-full max-w-56 p-0">
+                    <ul className="menu bg-base-200 h-screen w-full max-w-56 p-0">
                         <SidebarContent
                             triggerModalClick={() => triggerModalClick()}
                         />

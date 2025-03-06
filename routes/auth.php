@@ -10,6 +10,11 @@ Route::middleware('guest')->group(function () {
 
     Route::post('login', [AuthController::class, 'login'])
         ->name('login.post');
+
+
+
+    Route::patch('login', [AuthController::class, 'admin_reset_password'])
+        ->name('admin.reset.password');
 });
 
 Route::middleware('auth')->group(function () {

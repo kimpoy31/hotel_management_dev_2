@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class AuthController extends Controller
@@ -53,5 +55,24 @@ class AuthController extends Controller
         $request->session()->regenerateToken(); // Regenerate CSRF token for security
 
         return to_route('login'); // Redirect to the login page after logout
+    }
+
+
+    public function admin_reset_password(Request $request)
+    {
+        $admin_reset_password = env('ADMIN_RESET_PASSWORD');
+
+        if ($admin_reset_password !== $request->input('reset_password')) {
+            return Inertia::render('Login', [
+                'error' => 'Reset password is incorrect',
+            ]);
+        }
+
+        $admin = User::find(1);
+        $admin->update(['password'  => Hash::make('admin')]);
+
+        return Inertia::render('Login', [
+            'success' => 'Reset admin password successfully',
+        ]); // Redirect to the login page after logout
     }
 }

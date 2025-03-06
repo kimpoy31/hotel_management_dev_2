@@ -4,16 +4,24 @@ import React, { useState } from "react";
 
 interface Props {
     error: string;
+    success: string;
 }
 
-const Login = ({ error }: Props) => {
+const Login = ({ error, success }: Props) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [resetPassword, setResetPassword] = useState("");
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         await router.post(route("login.post"), { username, password });
+    };
+
+    const handleResetAdminPassword = async () => {
+        await router.patch(route("admin.reset.password"), {
+            reset_password: resetPassword,
+        });
     };
 
     return (
@@ -39,12 +47,40 @@ const Login = ({ error }: Props) => {
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
-                        <AlertDialog buttonTitle="tes" />
                     </fieldset>
+                    <AlertDialog
+                        buttonTitle="Reset admin password"
+                        buttonClassname="text-start text-accent-content capitalize uppercase"
+                        modalTitle="Reset admin password"
+                        confirmButtonClassname="btn-accent"
+                        confirmAction={() => handleResetAdminPassword()}
+                        closeModalOnConfirm
+                        confirmButtonDisabled={resetPassword.length < 3}
+                    >
+                        <fieldset className="fieldset">
+                            <legend className="fieldset-legend">
+                                Reset password
+                            </legend>
+                            <input
+                                type="password"
+                                className="input input-lg w-full"
+                                value={resetPassword}
+                                onChange={(e) =>
+                                    setResetPassword(e.target.value)
+                                }
+                                required
+                            />
+                        </fieldset>
+                    </AlertDialog>
                     <div className="divider"></div>
                     {error && (
                         <div className="bg-error text-error-content text-center py-1">
                             {error}
+                        </div>
+                    )}
+                    {success && (
+                        <div className="bg-success text-success-content text-center py-1">
+                            {success}
                         </div>
                     )}
                     <button className="btn btn-accent">Login</button>

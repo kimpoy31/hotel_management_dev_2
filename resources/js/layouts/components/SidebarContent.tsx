@@ -1,7 +1,6 @@
 import AlertDialog from "@/components/AlertDialog";
 import { Link, router, usePage } from "@inertiajs/react";
-import { LogOut, LucideHome } from "lucide-react";
-import React from "react";
+import { LogOut, LucideHome, ShieldUser } from "lucide-react";
 
 const SidebarContent = ({
     triggerModalClick,
@@ -9,6 +8,7 @@ const SidebarContent = ({
     triggerModalClick?: () => void;
 }) => {
     const { url } = usePage();
+    const roles = usePage().props.auth.user.roles;
 
     return (
         <div className="w-full h-full ">
@@ -23,14 +23,26 @@ const SidebarContent = ({
                     }`}
                     onClick={() => triggerModalClick?.()}
                 >
-                    <LucideHome size={16} /> Dashboard
+                    <LucideHome size={20} /> Dashboard
                 </Link>
+                {roles.includes("administrator") && (
+                    <Link
+                        href={route("admin")}
+                        className={`btn rounded-none btn-ghost w-full justify-start hover:bg-secondary  ${
+                            url.includes("admin") &&
+                            "text-secondary-content bg-secondary"
+                        }`}
+                        onClick={() => triggerModalClick?.()}
+                    >
+                        <ShieldUser size={20} /> Admin
+                    </Link>
+                )}
 
                 <div className="divider my-2"></div>
                 <AlertDialog
                     buttonTitle="Logout"
-                    buttonClassname="btn bg-base-100 w-full gap-2 justify-start rounded-none"
-                    buttonIcon={<LogOut size={16} />}
+                    buttonClassname="btn bg-base-100 w-full gap-1 justify-start rounded-none"
+                    buttonIcon={<LogOut size={20} />}
                     modalTitle="Confirm logout"
                     modalDescription="Are you sure you want to logout?. This will end current session"
                     confirmAction={async () => {

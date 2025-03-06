@@ -51,7 +51,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
                             </label>
                         </div>
                     </div>
-                    <div className="h-[100vh-68px] w-full overflow-y-auto">
+                    <div className="h-[100vh-68px] w-full p-2 overflow-y-auto">
                         {children}
                     </div>
                 </div>

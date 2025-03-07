@@ -2,7 +2,7 @@ import React from "react";
 
 const Card = () => {
     return (
-        <div className="card w-full max-w-6xl bg-base-100 card-md shadow-sm">
+        <div className="card flex-none w-full max-w-7xl bg-base-100 card-md shadow-sm">
             <div className="card-body">
                 <h2 className="card-title">Medium Card</h2>
                 <p>

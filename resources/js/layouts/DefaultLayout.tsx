@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react";
-import Navbar from "./components/Navbar";
 import { LogOut, Menu } from "lucide-react";
-import SidebarContent from "./components/SidebarContent";
+import SidebarContent from "@/Layouts/components/SidebarContent";
 import AlertDialog from "@/components/AlertDialog";
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
@@ -14,7 +13,6 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDetailsElement>(null);
 
     // Close dropdown when clicking anywhere
@@ -33,14 +31,14 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
 
     return (
         <div className="flex w-full h-screen">
-            <div className="h-screen w-full max-w-56 bg-base-200 lg:block hidden">
+            <div className="h-screen w-full max-w-72 bg-base-100 lg:block hidden">
                 <SidebarContent />
             </div>
             <div className="drawer">
                 <input id="modalId" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content h-screen flex flex-col">
                     {/* Navbar */}
-                    <div className="navbar bg-base-200 w-full flex lg:justify-end justify-between">
+                    <div className="navbar bg-base-100 w-full flex lg:justify-end justify-between">
                         <div className="lg:hidden">
                             <label
                                 htmlFor="modalId"
@@ -51,7 +49,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
                             </label>
                         </div>
                     </div>
-                    <div className="h-[100vh-68px] w-full p-2 overflow-y-auto">
+                    <div className="h-[100vh-68px] w-full lg:p-2 py-2 overflow-y-auto">
                         {children}
                     </div>
                 </div>
@@ -61,7 +59,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
                         aria-label="close sidebar"
                         className="drawer-overlay"
                     ></label>
-                    <ul className="menu bg-base-200 h-screen w-full max-w-56 p-0">
+                    <ul className="menu bg-base-100 h-screen w-full max-w-56 p-0">
                         <SidebarContent
                             triggerModalClick={() => triggerModalClick()}
                         />

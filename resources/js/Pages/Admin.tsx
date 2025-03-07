@@ -5,7 +5,7 @@ interface Props {}
 
 const Admin = ({}: Props) => {
     return (
-        <div>
+        <div className="w-full flex items-center flex-col">
             <Card></Card>
         </div>
     );

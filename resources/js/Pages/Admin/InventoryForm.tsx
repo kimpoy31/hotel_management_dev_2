@@ -1,8 +1,14 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
-import React from "react";
+import { ItemType } from "@/types";
+import React, { useState } from "react";
 
 const InventoryForm = () => {
+    const [itemName, setItemName] = useState("");
+    const [itemType, setItemType] = useState<ItemType | "">("");
+    const [itemQuantity, setItemQuantity] = useState(0);
+    const [itemPrice, setItemPrice] = useState(0);
+
     return (
         <div className="flex flex-col gap-2">
             <BackButton routeName="admin" />
@@ -12,18 +18,24 @@ const InventoryForm = () => {
                     <input
                         type="text"
                         className="input input-lg"
-                        // value={fullname}
-                        // onChange={(e) => setFullname(e.target.value)}
+                        value={itemName}
+                        onChange={(e) => setItemName(e.target.value)}
                     />
                 </fieldset>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Item type</legend>
-                    <select className="select select-lg">
-                        <option disabled selected>
-                            Select item type
+                    <select
+                        className="select select-lg"
+                        value={itemType}
+                        onChange={(e) =>
+                            setItemType(e.target.value as ItemType)
+                        }
+                    >
+                        <option disabled value={""}>
+                            Please select item type
                         </option>
-                        <option>Room amenity</option>
-                        <option>Consumable</option>
+                        <option value="room amenity">Room amenity</option>
+                        <option value="consumable">Consumable</option>
                     </select>
                 </fieldset>
                 <fieldset className="fieldset">
@@ -31,8 +43,10 @@ const InventoryForm = () => {
                     <input
                         type="number"
                         className="input input-lg"
-                        // value={fullname}
-                        // onChange={(e) => setFullname(e.target.value)}
+                        value={itemQuantity}
+                        onChange={(e) =>
+                            setItemQuantity(parseInt(e.target.value))
+                        }
                     />
                 </fieldset>
                 <fieldset className="fieldset">
@@ -42,12 +56,26 @@ const InventoryForm = () => {
                     <input
                         type="number"
                         className="input input-lg"
-                        // value={fullname}
-                        // onChange={(e) => setFullname(e.target.value)}
+                        value={itemPrice}
+                        onChange={(e) =>
+                            setItemPrice(parseFloat(e.target.value))
+                        }
                     />
                 </fieldset>
                 <div className="divider"></div>
-                <button className="btn btn-accent">Add Item</button>
+                <button
+                    className="btn btn-accent"
+                    disabled={
+                        !itemName ||
+                        !itemType ||
+                        itemQuantity < 1 ||
+                        itemPrice < 1 ||
+                        isNaN(itemQuantity) ||
+                        isNaN(itemPrice)
+                    }
+                >
+                    Add Item
+                </button>
             </Card>
         </div>
     );

@@ -15,4 +15,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('admin/inventory/{id?}', [InventoryController::class, 'inventory_form'])
     ->name('inventory.form');
+
+    Route::post('admin/inventory/{id?}', [InventoryController::class, 'inventory_form_submit'])
+    ->name('inventory.form.submit');
+
+    
 });

@@ -1,5 +1,5 @@
 import Card from "@/components/Card";
-import { User } from "@/types";
+import { InventoryItem, User } from "@/types";
 import { Link } from "@inertiajs/react";
 import React from "react";
 import EmployeeTable from "./Admin/EmployeeTable";
@@ -7,9 +7,10 @@ import InventoryTable from "./Admin/InventoryTable";
 
 interface Props {
     employees: User[];
+    inventory_items: InventoryItem[];
 }
 
-const Admin = ({ employees }: Props) => {
+const Admin = ({ employees, inventory_items }: Props) => {
     return (
         <div className="w-full flex items-center flex-col gap-4 lg:py-2">
             <Card>
@@ -34,7 +35,7 @@ const Admin = ({ employees }: Props) => {
                         Add Item
                     </Link>
                 </div>
-                <InventoryTable />
+                <InventoryTable inventoryItems={inventory_items ?? []} />
             </Card>
         </div>
     );

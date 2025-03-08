@@ -1,5 +1,6 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
+import ErrorMessage from "@/components/ErrorMessage";
 import { User, UserRoles } from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
@@ -59,9 +60,9 @@ const EmployeeForm = ({ errors, employee }: Props) => {
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     {errors.username && (
-                        <div className="text-error">
+                        <ErrorMessage>
                             {errors.username.map((error) => error)}
-                        </div>
+                        </ErrorMessage>
                     )}
                 </fieldset>
                 <fieldset className="fieldset">

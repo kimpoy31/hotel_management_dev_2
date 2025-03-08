@@ -91,7 +91,7 @@ const EmployeeForm = ({ errors, employee }: Props) => {
                     className="btn btn-accent"
                     disabled={!fullname || !username || roles.length < 1}
                 >
-                    {employee ? "Update employee" : "Create employee"}
+                    {employee ? "Update employee" : "Add employee"}
                 </button>
             </Card>
         </div>

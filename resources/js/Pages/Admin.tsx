@@ -2,6 +2,8 @@ import Card from "@/components/Card";
 import { User } from "@/types";
 import { Link } from "@inertiajs/react";
 import React from "react";
+import EmployeeTable from "./Admin/EmployeeTable";
+import InventoryTable from "./Admin/InventoryTable";
 
 interface Props {
     employees: User[];
@@ -9,7 +11,7 @@ interface Props {
 
 const Admin = ({ employees }: Props) => {
     return (
-        <div className="w-full flex items-center flex-col">
+        <div className="w-full flex items-center flex-col gap-4 lg:py-2">
             <Card>
                 <div className="flex justify-between">
                     <h2 className="card-title">Employee manager</h2>
@@ -20,40 +22,19 @@ const Admin = ({ employees }: Props) => {
                         Add employee
                     </Link>
                 </div>
-                <div className="overflow-x-auto overflow-y-auto max-h-64 ">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th>Fullname</th>
-                                <th>Username</th>
-                                <th>Roles</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {employees.map((employee, index) => (
-                                <tr key={index}>
-                                    <th className="capitalize">
-                                        {employee.fullname}
-                                    </th>
-                                    <td>{employee.username}</td>
-                                    <td>{employee.roles.join(", ")}</td>
-                                    <td>
-                                        <Link
-                                            href={route(
-                                                "employee.form",
-                                                employee.id
-                                            )}
-                                            className="btn btn-xs btn-primary"
-                                        >
-                                            Edit
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <EmployeeTable employees={employees} />
+            </Card>
+            <Card>
+                <div className="flex justify-between">
+                    <h2 className="card-title">Inventory manager</h2>
+                    <Link
+                        href={route("inventory.form")}
+                        className="btn btn-sm btn-accent"
+                    >
+                        Add Item
+                    </Link>
                 </div>
+                <InventoryTable />
             </Card>
         </div>
     );

@@ -30,7 +30,7 @@ const EmployeeForm = ({ errors, employee }: Props) => {
     }, [frontdesk, housekeeper]);
 
     const handleSubmit = async () => {
-        await router.post(route("employee.form.post"), {
+        await router.post(route("employee.form.submit", employee?.id), {
             fullname,
             username,
             roles,

@@ -18,6 +18,12 @@ export interface InventoryItem {
     price: number;
     status: Status;
 }
+export interface Rate {
+    id: number;
+    duration: number;
+    rate: number;
+    status: Status;
+}
 
 export type Status = "active" | "in-active";
 export type UserRoles = "administrator" | "frontdesk" | "housekeeper";

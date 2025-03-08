@@ -10,7 +10,10 @@ const Admin = ({}: Props) => {
             <Card>
                 <div className="flex justify-between">
                     <h2 className="card-title">Employee manager</h2>
-                    <Link href="" className="btn btn-sm btn-accent">
+                    <Link
+                        href={route("employee.form")}
+                        className="btn btn-sm btn-accent"
+                    >
                         Add employee
                     </Link>
                 </div>

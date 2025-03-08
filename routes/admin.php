@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\GeneralSettingController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\RateController;
 use Illuminate\Support\Facades\Route;
@@ -27,4 +28,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('admin/rate/{id?}', [RateController::class, 'rate_form_submit'])
     ->name('rate.form.submit');
+
+    // RATE MANAGER
+    Route::patch('admin/overtime_charge', [GeneralSettingController::class, 'overtime_charge_patch'])
+    ->name('overtime_charge.patch');
+
+   
 });

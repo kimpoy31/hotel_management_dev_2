@@ -69,3 +69,7 @@ html,
 body {
     @apply bg-base-300 text-base-content;
 }
+
+.fieldset-legend {
+    @apply text-sm;
+}

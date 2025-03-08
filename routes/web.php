@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,7 +13,12 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('admin', function () {
-        return Inertia::render('Admin');
+        $employees = User::where('status','active')->where('username','!=','admin')->get();
+
+        return Inertia::render('Admin',[
+            'employees'=>$employees
+        ]);
+        
     })->name('admin');
 
 

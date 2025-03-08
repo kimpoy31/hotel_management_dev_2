@@ -10,7 +10,15 @@ use Inertia\Inertia;
 
 class EmployeeController extends Controller
 {
-    public function employee_form(){
+    public function employee_form($id = null){
+
+        if ($id) {
+            $employee = User::find($id);
+            return Inertia::render('Admin/EmployeeForm', [
+                'employee' => $employee
+            ]);
+        }
+
         return Inertia::render('Admin/EmployeeForm'); 
     }
 
@@ -28,13 +36,13 @@ class EmployeeController extends Controller
             ]);
         }
 
-        User::create([
+        $employee = User::create([
             'fullname' => $request->input('fullname'),
             'username' => $request->input('username'),
             'roles' => $request->input('roles'),
             'password' => Hash::make('1234'),
         ]);
 
-        return Inertia::render('Admin/EmployeeForm'); 
+        return to_route('admin'); 
     }
 }

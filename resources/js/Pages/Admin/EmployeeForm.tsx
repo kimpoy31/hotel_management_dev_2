@@ -1,18 +1,23 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
-import { UserRoles } from "@/types";
+import { User, UserRoles } from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
 interface Props {
     errors: Record<string, string[]>;
+    employee?: User;
 }
 
-const EmployeeForm = ({ errors }: Props) => {
-    const [fullname, setFullname] = useState("");
-    const [username, setUsername] = useState("");
-    const [frontdesk, setFrontdesk] = useState(false);
-    const [housekeeper, setHousekeeper] = useState(false);
+const EmployeeForm = ({ errors, employee }: Props) => {
+    const [fullname, setFullname] = useState(employee?.fullname ?? "");
+    const [username, setUsername] = useState(employee?.username ?? "");
+    const [frontdesk, setFrontdesk] = useState(
+        employee?.roles.includes("frontdesk") ?? false
+    );
+    const [housekeeper, setHousekeeper] = useState(
+        employee?.roles.includes("housekeeper") ?? false
+    );
     const [roles, setRoles] = useState<UserRoles[]>([]);
 
     useEffect(() => {
@@ -86,7 +91,7 @@ const EmployeeForm = ({ errors }: Props) => {
                     className="btn btn-accent"
                     disabled={!fullname || !username || roles.length < 1}
                 >
-                    Create employee
+                    {employee ? "Update employee" : "Create employee"}
                 </button>
             </Card>
         </div>

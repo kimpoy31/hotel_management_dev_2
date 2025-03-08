@@ -17,6 +17,7 @@ return new class extends Migration
             $table->json('roles');
             $table->string('username')->unique();
             $table->string('password');
+            $table->enum('status',['active','in-active'])->default('active');
             $table->timestamps();
         });
 

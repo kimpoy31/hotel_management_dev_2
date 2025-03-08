@@ -22,6 +22,7 @@ class User extends Authenticatable
         'username',
         'roles',
         'password',
+        'status'
     ];
 
     /**
@@ -42,6 +43,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'roles' => 'array',  // Add this line to cast 'roles' as array
         ];
     }
 }

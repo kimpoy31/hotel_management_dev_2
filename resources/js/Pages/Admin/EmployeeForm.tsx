@@ -1,9 +1,14 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import { UserRoles } from "@/types";
+import { router } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
-const EmployeeForm = () => {
+interface Props {
+    errors: Record<string, string[]>;
+}
+
+const EmployeeForm = ({ errors }: Props) => {
     const [fullname, setFullname] = useState("");
     const [username, setUsername] = useState("");
     const [frontdesk, setFrontdesk] = useState(false);
@@ -18,6 +23,14 @@ const EmployeeForm = () => {
 
         setRoles([...newRoles]);
     }, [frontdesk, housekeeper]);
+
+    const handleSubmit = async () => {
+        await router.post(route("employee.form.post"), {
+            fullname,
+            username,
+            roles,
+        });
+    };
 
     return (
         <div className="flex flex-col gap-2">
@@ -40,6 +53,11 @@ const EmployeeForm = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
+                    {errors.username && (
+                        <div className="text-error">
+                            {errors.username.map((error) => error)}
+                        </div>
+                    )}
                 </fieldset>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Roles</legend>
@@ -64,6 +82,7 @@ const EmployeeForm = () => {
                 </fieldset>
                 <div className="divider"></div>
                 <button
+                    onClick={() => handleSubmit()}
                     className="btn btn-accent"
                     disabled={!fullname || !username || roles.length < 1}
                 >

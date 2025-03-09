@@ -49,6 +49,18 @@ const Admin = ({
             </Card>
             <Card>
                 <div className="flex justify-between">
+                    <h2 className="card-title">Room manager</h2>
+                    <Link
+                        href={route("room.form")}
+                        className="btn btn-sm btn-accent"
+                    >
+                        Add room
+                    </Link>
+                </div>
+                <EmployeeTable employees={employees} />
+            </Card>
+            <Card>
+                <div className="flex justify-between">
                     <h2 className="card-title">Inventory</h2>
                     <Link
                         href={route("inventory.form")}
@@ -75,7 +87,9 @@ const Admin = ({
                 <div className="flex justify-between ">
                     <h2 className="card-title">General settings</h2>
                     <button
-                        className="btn btn-sm btn-accent"
+                        className={`btn btn-sm ${
+                            isEditing ? "btn-success" : "btn-accent"
+                        } `}
                         onClick={async () => {
                             await handleGeneralSettingSubmit();
                             setIsEditing(!isEditing);

@@ -4,6 +4,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\GeneralSettingController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\RateController;
+use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -14,6 +15,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('admin/employee/{id?}', [EmployeeController::class, 'employee_form_submit'])
         ->name('employee.form.submit');
+
+    // ROOM MANAGER
+    Route::get('admin/room/{id?}', [RoomController::class, 'room_form'])
+    ->name('room.form');
+
 
     // INVENTORY MANAGER
     Route::get('admin/inventory/{id?}', [InventoryController::class, 'inventory_form'])
@@ -29,7 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/rate/{id?}', [RateController::class, 'rate_form_submit'])
     ->name('rate.form.submit');
 
-    // RATE MANAGER
+    // GENERAL SETTINGS
     Route::patch('admin/overtime_charge', [GeneralSettingController::class, 'overtime_charge_patch'])
     ->name('overtime_charge.patch');
 

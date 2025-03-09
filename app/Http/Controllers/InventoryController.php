@@ -3,12 +3,41 @@
 namespace App\Http\Controllers;
 
 use App\Models\InventoryItem;
+use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class InventoryController extends Controller
 {
+    public function item_delete($id = null){
+        $inventory_item = InventoryItem::find($id);
+        $rooms = Room::where('status', 'active')->get();
+
+        // Check if $id exists in room_inclusions for any active room
+        foreach ($rooms as $room) {
+            // Use array_column to extract item_ids from room_inclusions
+            $itemIds = array_column($room->room_inclusions ?? [], 'item_id');
+        
+            if (in_array($id, $itemIds)) {  // Check if $id is in the extracted item_ids
+                // Return error if $id is found
+                return Inertia::render('Admin/InventoryForm', [
+                    'inventory_item' => InventoryItem::find($id),
+                    'errors' => [
+                        'delete_error' => ['Cannot delete. Deselect / remove from room manager first']
+                    ]
+                ]);
+            }
+        }
+        
+        $inventory_item->update([
+            'status' => 'in-active'
+        ]);
+
+        return to_route('admin'); 
+    }
+
+
     public function inventory_form($id = null){
 
         if ($id) {

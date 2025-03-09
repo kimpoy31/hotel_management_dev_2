@@ -33,6 +33,9 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/inventory/{id?}', [InventoryController::class, 'inventory_form_submit'])
     ->name('inventory.form.submit');
 
+    Route::patch('admin/inventory/{id}', [InventoryController::class, 'item_delete'])
+    ->name('item.delete');
+
     // RATE MANAGER
     Route::get('admin/rate/{id?}', [RateController::class, 'rate_form'])
     ->name('rate.form');

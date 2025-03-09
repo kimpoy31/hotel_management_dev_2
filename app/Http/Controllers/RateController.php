@@ -19,7 +19,7 @@ class RateController extends Controller
             if (in_array($id, $room->room_rate_ids ?? [])) {  // Use null coalescing to avoid errors if room_rates is null
                 // Return error if $id is found
                 return Inertia::render('Admin/RateForm', [
-                    'rate' => Rate::find($id),
+                    'rate' => $rate,
                     'errors' => [
                         'delete_error' => ['Cannot delete. Deselect / remove from room manager first']
                     ]

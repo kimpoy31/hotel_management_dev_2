@@ -1,3 +1,4 @@
+import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -19,6 +20,10 @@ const InventoryForm = ({ errors, inventory_item }: Props) => {
         inventory_item?.available ?? 0
     );
     const [itemPrice, setItemPrice] = useState(inventory_item?.price ?? 0);
+
+    const deleteItem = async () => {
+        await router.patch(route("item.delete", inventory_item?.id));
+    };
 
     const handleSubmit = async () => {
         await router.post(route("inventory.form.submit", inventory_item?.id), {
@@ -102,6 +107,25 @@ const InventoryForm = ({ errors, inventory_item }: Props) => {
                         </ErrorMessage>
                     )}
                 </fieldset>
+                {inventory_item && (
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend text-error">
+                            Delete item
+                        </legend>
+                        <AlertDialog
+                            confirmAction={() => deleteItem()}
+                            buttonTitle="Delete"
+                            buttonClassname="btn btn-error w-fit"
+                            modalTitle={`Delete item`}
+                            modalDescription={`Are you sure you want to delete item -> ${inventory_item.item_name}?`}
+                        />
+                    </fieldset>
+                )}
+                {errors.delete_error && (
+                    <ErrorMessage>
+                        {errors.delete_error.map((error) => error)}
+                    </ErrorMessage>
+                )}
                 <div className="divider"></div>
                 <button
                     className="btn btn-accent"

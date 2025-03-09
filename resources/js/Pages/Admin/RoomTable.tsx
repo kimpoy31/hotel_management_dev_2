@@ -18,12 +18,15 @@ const RoomTable = ({ rooms }: { rooms: Room[] }) => {
                         <tr key={index}>
                             <th className="capitalize">{room.room_number}</th>
                             <td>
-                                {room.room_rates.map(
-                                    (rate) =>
-                                        rate.duration +
-                                        " Hour(s) - ₱" +
-                                        rate.rate
-                                )}
+                                <div className="flex flex-col">
+                                    {room.room_rates.map((rate, index) => (
+                                        <span key={index}>
+                                            {rate.duration +
+                                                " Hour(s) - ₱" +
+                                                rate.rate}
+                                        </span>
+                                    ))}
+                                </div>
                             </td>
                             <td>
                                 {room.room_inclusion_items.length > 0 ? (

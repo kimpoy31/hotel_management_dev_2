@@ -1,3 +1,4 @@
+import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -18,6 +19,10 @@ const RateForm = ({ rate: rateToEdit, errors }: Props) => {
             duration,
             rate,
         });
+    };
+
+    const deleteRate = async () => {
+        await router.patch(route("rate.delete", rateToEdit?.id));
     };
 
     return (
@@ -54,6 +59,29 @@ const RateForm = ({ rate: rateToEdit, errors }: Props) => {
                         </ErrorMessage>
                     )}
                 </fieldset>
+                {rateToEdit && (
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend text-error">
+                            Delete rate
+                        </legend>
+                        <AlertDialog
+                            confirmAction={() => deleteRate()}
+                            buttonTitle="Delete"
+                            buttonClassname="btn btn-error w-fit"
+                            modalTitle={`Delete rate`}
+                            modalDescription={`Are you sure you want to delete rate ${
+                                rateToEdit.duration +
+                                " Hour(s) - ₱" +
+                                rateToEdit.rate
+                            }`}
+                        />
+                    </fieldset>
+                )}
+                {errors.delete_error && (
+                    <ErrorMessage>
+                        {errors.delete_error.map((error) => error)}
+                    </ErrorMessage>
+                )}
                 <div className="divider"></div>
                 <button
                     className="btn btn-accent"

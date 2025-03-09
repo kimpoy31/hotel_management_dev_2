@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/rate/{id?}', [RateController::class, 'rate_form_submit'])
     ->name('rate.form.submit');
 
+    Route::patch('admin/rate/{id}', [RateController::class, 'rate_delete'])
+    ->name('rate.delete');
+
     // GENERAL SETTINGS
     Route::patch('admin/overtime_charge', [GeneralSettingController::class, 'overtime_charge_patch'])
     ->name('overtime_charge.patch');

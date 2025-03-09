@@ -1,15 +1,17 @@
 import Card from "@/components/Card";
-import { InventoryItem, Rate, User } from "@/types";
+import { InventoryItem, Rate, Room, User } from "@/types";
 import { Link, router } from "@inertiajs/react";
 import React, { useState } from "react";
 import EmployeeTable from "./Admin/EmployeeTable";
 import InventoryTable from "./Admin/InventoryTable";
 import RateTable from "./Admin/RateTable";
+import RoomTable from "./Admin/RoomTable";
 
 interface Props {
     employees: User[];
     inventory_items: InventoryItem[];
     rates: Rate[];
+    rooms: Room[];
     overtime_charge: number;
 }
 
@@ -18,6 +20,7 @@ const Admin = ({
     inventory_items,
     rates,
     overtime_charge,
+    rooms,
 }: Props) => {
     const [isEditing, setIsEditing] = useState(false);
     const [overtimeCharge, setOvertimeCharge] = useState(overtime_charge ?? 0);
@@ -57,7 +60,7 @@ const Admin = ({
                         Add room
                     </Link>
                 </div>
-                <EmployeeTable employees={employees} />
+                <RoomTable rooms={rooms} />
             </Card>
             <Card>
                 <div className="flex justify-between">

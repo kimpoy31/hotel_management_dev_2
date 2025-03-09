@@ -4,6 +4,7 @@ use App\Models\GeneralSetting;
 use App\Models\InventoryItem;
 use App\Models\OvertimeCharge;
 use App\Models\Rate;
+use App\Models\Room;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +27,7 @@ Route::middleware('auth')->group(function () {
             'employees'=>$employees,
             'inventory_items'=>$inventory_items,
             'rates'=>$rates,
+            'rooms'=> Room::where('status','active')->get(),
             'overtime_charge'=>$settings->overtime_charge,
         ]);
         

@@ -37,7 +37,8 @@ export interface Room {
     room_type: string;
     room_rate_ids: number[]; // Assuming room rates is a key-value pair of rates
     room_rates: Rate[];
-    room_inclusions?: string[]; // Nullable array of strings for inclusions
+    room_inclusions?: InclusionItem[]; // Nullable array of strings for inclusions
+    room_inclusion_items: InventoryItem[]; // Nullable array of strings for inclusions
     room_status:
         | "available"
         | "occupied"

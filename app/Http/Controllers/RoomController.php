@@ -14,12 +14,14 @@ class RoomController extends Controller
 {
     public function room_form($id = null){
 
-        // if ($id) {
-        //     $rate = Rate::find($id);
-        //     return Inertia::render('Admin/RateForm', [
-        //         'rate' => $rate
-        //     ]);
-        // }
+        if ($id) {
+            $room = Room::find($id);
+            return Inertia::render('Admin/RoomForm', [
+                'room' => $room,
+                'rates' => Rate::where('status','active')->get(),
+                'inventory_items' => InventoryItem::where('status','active')->get(),
+            ]);
+        }
 
         return Inertia::render('Admin/RoomForm', [
             'rates' => Rate::where('status','active')->get(),
@@ -31,6 +33,7 @@ class RoomController extends Controller
     public function room_form_submit(Request $request, $id = null){
         // Determine if we're updating or creating
         $isUpdating = $id !== null;
+        $room = Room::find($id);
 
         // Validation rules
         $validator = Validator::make($request->all(), [
@@ -49,7 +52,8 @@ class RoomController extends Controller
             return Inertia::render('Admin/RoomForm', [
                 'rates' => Rate::where('status','active')->get(),
                 'inventory_items' => InventoryItem::where('status','active')->get(),
-                'errors' => $validator->errors()->toArray()
+                'errors' => $validator->errors()->toArray(),
+                'room' => $room,
             ]);
         }
 

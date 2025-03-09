@@ -1,6 +1,7 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
-import { InclusionItem, InventoryItem, ItemType, Rate } from "@/types";
+import ErrorMessage from "@/components/ErrorMessage";
+import { InclusionItem, InventoryItem, ItemType, Rate, Room } from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useState } from "react";
 
@@ -8,13 +9,18 @@ interface Props {
     errors: Record<string, string[]>;
     rates: Rate[];
     inventory_items: InventoryItem[];
+    room?: Room;
 }
 
-const RoomForm = ({ rates, inventory_items }: Props) => {
-    const [roomNumber, setRoomNumber] = useState("");
-    const [roomType, setRoomType] = useState("");
-    const [roomRates, setRoomRates] = useState<number[]>([]);
-    const [roomInclusions, setRoomInclusions] = useState<InclusionItem[]>([]);
+const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
+    const [roomNumber, setRoomNumber] = useState(room?.room_number ?? "");
+    const [roomType, setRoomType] = useState(room?.room_type ?? "");
+    const [roomRates, setRoomRates] = useState<number[]>(
+        room?.room_rate_ids ?? []
+    );
+    const [roomInclusions, setRoomInclusions] = useState<InclusionItem[]>(
+        room?.room_inclusions ?? []
+    );
 
     const handleRatesOffered = (rateId: number) => {
         let newRoomRates = roomRates;
@@ -64,7 +70,7 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
     };
 
     const handleRoomSubmit = async () => {
-        await router.post(route("room.form.submit"), {
+        await router.post(route("room.form.submit", room?.id), {
             room_number: roomNumber,
             room_type: roomType,
             room_rate_ids: roomRates,
@@ -84,9 +90,11 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
                         value={roomNumber}
                         onChange={(e) => setRoomNumber(e.target.value)}
                     />
-                    {/* {errors.rate && (
-                        <ErrorMessage>{errors.rate.map((error) => error)}</ErrorMessage>
-                    )} */}
+                    {errors.room_number && (
+                        <ErrorMessage>
+                            {errors.room_number.map((error) => error)}
+                        </ErrorMessage>
+                    )}
                 </fieldset>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Room type</legend>
@@ -96,9 +104,11 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
                         value={roomType}
                         onChange={(e) => setRoomType(e.target.value)}
                     />
-                    {/* {errors.rate && (
-                        <ErrorMessage>{errors.rate.map((error) => error)}</ErrorMessage>
-                    )} */}
+                    {errors.room_type && (
+                        <ErrorMessage>
+                            {errors.room_type.map((error) => error)}
+                        </ErrorMessage>
+                    )}
                 </fieldset>
                 <div className="divider"></div>
                 <fieldset className="fieldset">
@@ -142,9 +152,11 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
                         </table>
                     </div>
 
-                    {/* {errors.rate && (
-                        <ErrorMessage>{errors.rate.map((error) => error)}</ErrorMessage>
-                    )} */}
+                    {errors.room_rate_ids && (
+                        <ErrorMessage>
+                            {errors.room_rate_ids.map((error) => error)}
+                        </ErrorMessage>
+                    )}
                 </fieldset>
                 <div className="divider"></div>
                 <fieldset className="fieldset">
@@ -231,10 +243,6 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
                             </tbody>
                         </table>
                     </div>
-
-                    {/* {errors.rate && (
-                        <ErrorMessage>{errors.rate.map((error) => error)}</ErrorMessage>
-                    )} */}
                 </fieldset>
                 <div className="divider"></div>
                 <button
@@ -242,7 +250,7 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
                     disabled={!roomNumber || roomRates.length <= 0 || !roomType}
                     onClick={() => handleRoomSubmit()}
                 >
-                    Add room
+                    {room ? "Update room" : "Add room"}
                 </button>
             </Card>
         </div>

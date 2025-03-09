@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InventoryItem;
 use App\Models\Rate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,10 +18,9 @@ class RoomController extends Controller
         //     ]);
         // }
 
-        $rates = Rate::where('status','active')->get();
-
         return Inertia::render('Admin/RoomForm', [
-            'rates' => $rates,
+            'rates' => Rate::where('status','active')->get(),
+            'inventory_items' => InventoryItem::where('status','active')->get(),
         ]); 
     }
 }

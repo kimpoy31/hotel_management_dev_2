@@ -25,6 +25,12 @@ export interface Rate {
     status: Status;
 }
 
+export interface InclusionItem {
+    item_id: number;
+    quantity: number;
+    type: ItemType;
+}
+
 export type Status = "active" | "in-active";
 export type UserRoles = "administrator" | "frontdesk" | "housekeeper";
 export type ItemType = "room amenity" | "consumable";

@@ -1,3 +1,4 @@
+import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -67,6 +68,10 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
 
             return updatedInclusions;
         });
+    };
+
+    const deleteRoom = async () => {
+        await router.patch(route("room.delete", room?.id));
     };
 
     const handleRoomSubmit = async () => {
@@ -244,6 +249,25 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
                         </table>
                     </div>
                 </fieldset>
+                {room && (
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend text-error">
+                            Delete Room
+                        </legend>
+                        <AlertDialog
+                            confirmAction={() => deleteRoom()}
+                            buttonTitle="Delete"
+                            buttonClassname="btn btn-error w-fit"
+                            modalTitle={`Delete item`}
+                            modalDescription={`Are you sure you want to delete room number -> ${room.room_number}?`}
+                        />
+                    </fieldset>
+                )}
+                {errors.delete_error && (
+                    <ErrorMessage>
+                        {errors.delete_error.map((error) => error)}
+                    </ErrorMessage>
+                )}
                 <div className="divider"></div>
                 <button
                     className="btn btn-accent"

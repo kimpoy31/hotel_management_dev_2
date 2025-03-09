@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class InventoryController extends Controller
 {
-    public function item_delete($id = null){
+    public function item_delete($id){
         $inventory_item = InventoryItem::find($id);
         $rooms = Room::where('status', 'active')->get();
 

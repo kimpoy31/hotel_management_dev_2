@@ -12,6 +12,28 @@ use Inertia\Inertia;
 
 class RoomController extends Controller
 {
+    public function room_delete($id){
+        $room = Room::find($id);
+
+        if ($room->room_status != 'available') {
+            return Inertia::render('Admin/RoomForm', [
+                'room' => $room,
+                'rates' => Rate::where('status','active')->get(),
+                'inventory_items' => InventoryItem::where('status','active')->get(),
+                'errors' => [
+                    'delete_error' => ['Cannot delete. Room status should be "available" before it can be deleted']
+                ]
+            ]);
+        }
+
+        $room->update([
+            'status' => 'in-active'
+        ]);
+
+        return to_route('admin');
+    }
+
+
     public function room_form($id = null){
 
         if ($id) {

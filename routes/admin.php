@@ -26,6 +26,9 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/room/{id?}', [RoomController::class, 'room_form_submit'])
         ->name('room.form.submit');
 
+    Route::patch('admin/room/{id}', [RoomController::class, 'room_delete'])
+    ->name('room.delete');
+
     // INVENTORY MANAGER
     Route::get('admin/inventory/{id?}', [InventoryController::class, 'inventory_form'])
     ->name('inventory.form');

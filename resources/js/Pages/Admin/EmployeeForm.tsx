@@ -1,3 +1,4 @@
+import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -29,6 +30,10 @@ const EmployeeForm = ({ errors, employee }: Props) => {
 
         setRoles([...newRoles]);
     }, [frontdesk, housekeeper]);
+
+    const deleteEmployee = async () => {
+        await router.patch(route("employee.delete", employee?.id));
+    };
 
     const handleSubmit = async () => {
         await router.post(route("employee.form.submit", employee?.id), {
@@ -86,6 +91,20 @@ const EmployeeForm = ({ errors, employee }: Props) => {
                         <span className="text-lg">Housekeeper</span>
                     </label>
                 </fieldset>
+                {employee && (
+                    <fieldset className="fieldset">
+                        <legend className="fieldset-legend text-error">
+                            Delete employee
+                        </legend>
+                        <AlertDialog
+                            confirmAction={() => deleteEmployee()}
+                            buttonTitle="Delete"
+                            buttonClassname="btn btn-error w-fit"
+                            modalTitle={`Delete employee`}
+                            modalDescription={`Are you sure you want to delete employee with usename ${employee.username} ?`}
+                        />
+                    </fieldset>
+                )}
                 <div className="divider"></div>
                 <button
                     onClick={() => handleSubmit()}

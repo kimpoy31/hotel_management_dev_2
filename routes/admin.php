@@ -16,6 +16,9 @@ Route::middleware('auth')->group(function () {
     Route::post('admin/employee/{id?}', [EmployeeController::class, 'employee_form_submit'])
         ->name('employee.form.submit');
 
+    Route::patch('admin/employee/{id}', [EmployeeController::class, 'employee_delete'])
+        ->name('employee.delete');
+
     // ROOM MANAGER
     Route::get('admin/room/{id?}', [RoomController::class, 'room_form'])
     ->name('room.form');

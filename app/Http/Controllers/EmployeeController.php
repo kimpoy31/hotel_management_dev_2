@@ -11,6 +11,16 @@ use Inertia\Inertia;
 
 class EmployeeController extends Controller
 {
+    public function employee_delete($id){
+        $employee = User::find($id);
+
+        $employee->update([
+            'status' => 'in-active'
+        ]);
+      
+        return to_route('admin');
+    }
+
     public function employee_form($id = null){
 
         if ($id) {

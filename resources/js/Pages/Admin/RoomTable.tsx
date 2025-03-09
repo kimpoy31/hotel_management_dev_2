@@ -1,6 +1,5 @@
 import { Room } from "@/types";
 import { Link } from "@inertiajs/react";
-import React from "react";
 
 const RoomTable = ({ rooms }: { rooms: Room[] }) => {
     return (

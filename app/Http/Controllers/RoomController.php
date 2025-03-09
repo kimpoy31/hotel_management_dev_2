@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -16,6 +17,10 @@ class RoomController extends Controller
         //     ]);
         // }
 
-        return Inertia::render('Admin/RoomForm'); 
+        $rates = Rate::where('status','active')->get();
+
+        return Inertia::render('Admin/RoomForm', [
+            'rates' => $rates,
+        ]); 
     }
 }

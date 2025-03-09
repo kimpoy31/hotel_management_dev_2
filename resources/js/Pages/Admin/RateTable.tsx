@@ -16,7 +16,9 @@ const RateTable = ({ rates }: { rates: Rate[] }) => {
                 <tbody>
                     {rates.map((rate, index) => (
                         <tr key={index}>
-                            <th className="capitalize">{rate.duration}</th>
+                            <th className="capitalize">
+                                {rate.duration} Hour(s)
+                            </th>
                             <td>₱{rate.rate}</td>
 
                             <td>

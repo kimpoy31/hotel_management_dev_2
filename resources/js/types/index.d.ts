@@ -31,6 +31,28 @@ export interface InclusionItem {
     type: ItemType;
 }
 
+export interface Room {
+    id: number;
+    room_number: string;
+    room_type: string;
+    room_rate_ids: number[]; // Assuming room rates is a key-value pair of rates
+    room_rates: Rate[];
+    room_inclusions?: string[]; // Nullable array of strings for inclusions
+    room_status:
+        | "available"
+        | "occupied"
+        | "pending_inspection"
+        | "pending_settlement"
+        | "cleaning"
+        | "reserved"
+        | "out_of_service"
+        | "under_maintenance"
+        | "no_show"
+        | "blocked";
+    active_transaction?: number | null; // Nullable number for active transaction
+    status: "active" | "in-active";
+}
+
 export type Status = "active" | "in-active";
 export type UserRoles = "administrator" | "frontdesk" | "housekeeper";
 export type ItemType = "room amenity" | "consumable";

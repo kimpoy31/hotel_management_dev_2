@@ -64,7 +64,12 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
     };
 
     const handleRoomSubmit = async () => {
-        await router.post(route(""));
+        await router.post(route("room.form.submit"), {
+            room_number: roomNumber,
+            room_type: roomType,
+            room_rate_ids: roomRates,
+            room_inclusions: JSON.stringify(roomInclusions),
+        });
     };
 
     return (
@@ -235,6 +240,7 @@ const RoomForm = ({ rates, inventory_items }: Props) => {
                 <button
                     className="btn btn-accent"
                     disabled={!roomNumber || roomRates.length <= 0 || !roomType}
+                    onClick={() => handleRoomSubmit()}
                 >
                     Add room
                 </button>

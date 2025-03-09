@@ -20,6 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::get('admin/room/{id?}', [RoomController::class, 'room_form'])
     ->name('room.form');
 
+    Route::post('admin/room/{id?}', [RoomController::class, 'room_form_submit'])
+        ->name('room.form.submit');
 
     // INVENTORY MANAGER
     Route::get('admin/inventory/{id?}', [InventoryController::class, 'inventory_form'])

@@ -33,6 +33,15 @@ Route::middleware('auth')->group(function () {
             ]);
         })->name('admin');
     });
+
+    Route::get('frontdesk', function () {
+        // $employees = User::where('status', 'active')->where('username', '!=', 'admin')->get();
+        // $inventory_items = InventoryItem::where('status', 'active')->get();
+        // $rates = Rate::where('status', 'active')->get();
+        // $settings = GeneralSetting::find(1);
+
+        return Inertia::render('Frontdesk');
+    })->name('frontdesk');
 });
 
 require __DIR__ . '/auth.php';

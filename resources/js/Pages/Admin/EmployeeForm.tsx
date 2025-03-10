@@ -2,6 +2,7 @@ import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
+import FormHeader from "@/components/FormHeader";
 import { User, UserRoles } from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
@@ -47,6 +48,9 @@ const EmployeeForm = ({ errors, employee }: Props) => {
         <div className="flex flex-col gap-2">
             <BackButton routeName="admin" />
             <Card>
+                <FormHeader>
+                    {employee ? "Edit employee" : "Add employee"}
+                </FormHeader>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Fullname</legend>
                     <input

@@ -2,6 +2,7 @@ import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
+import FormHeader from "@/components/FormHeader";
 import { Rate } from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useState } from "react";
@@ -29,6 +30,7 @@ const RateForm = ({ rate: rateToEdit, errors }: Props) => {
         <div className="flex flex-col gap-2">
             <BackButton routeName="admin" />
             <Card>
+                <FormHeader>{rateToEdit ? "Edit rate" : "Add rate"}</FormHeader>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">
                         Duration / Hour(s)

@@ -2,6 +2,7 @@ import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
+import FormHeader from "@/components/FormHeader";
 import { InclusionItem, InventoryItem, ItemType, Rate, Room } from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useState } from "react";
@@ -87,6 +88,7 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
         <div className="flex flex-col gap-2">
             <BackButton routeName="admin" />
             <Card>
+                <FormHeader>{room ? "Edit room" : "Add room"}</FormHeader>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Room number</legend>
                     <input

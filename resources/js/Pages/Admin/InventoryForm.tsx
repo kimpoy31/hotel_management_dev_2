@@ -2,6 +2,7 @@ import AlertDialog from "@/components/AlertDialog";
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import ErrorMessage from "@/components/ErrorMessage";
+import FormHeader from "@/components/FormHeader";
 import { InventoryItem, ItemType } from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
@@ -38,6 +39,9 @@ const InventoryForm = ({ errors, inventory_item }: Props) => {
         <div className="flex flex-col gap-2">
             <BackButton routeName="admin" />
             <Card>
+                <FormHeader>
+                    {inventory_item ? "Edit item" : "Add item"}
+                </FormHeader>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Item name</legend>
                     <input

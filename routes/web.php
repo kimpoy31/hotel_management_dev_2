@@ -40,7 +40,9 @@ Route::middleware('auth')->group(function () {
         // $rates = Rate::where('status', 'active')->get();
         // $settings = GeneralSetting::find(1);
 
-        return Inertia::render('Frontdesk');
+        return Inertia::render('Frontdesk',[
+            'rooms' => Room::where('status', 'active')->get(),
+        ]);
     })->name('frontdesk');
 });
 

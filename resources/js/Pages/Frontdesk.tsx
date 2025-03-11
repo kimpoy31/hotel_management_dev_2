@@ -11,7 +11,7 @@ const Frontdesk = ({ rooms }: Props) => {
         <div>
             <div className="flex gap-2 justify-center flex-wrap items-center sm:flex-row flex-col">
                 {rooms.map((room, index) => (
-                    <RoomCard room={room} key={index} />
+                    <RoomCard navigateOnClick={true} room={room} key={index} />
                 ))}
             </div>
         </div>

@@ -15,6 +15,7 @@ interface Props {
 }
 
 const Room = ({ room, rates }: Props) => {
+    // Customer information
     const [customerName, setCustomerName] = useState("");
     const [customerAddress, setCustomerAddress] = useState("");
     const [customerContactNumber, setCustomerContactNumber] = useState("");

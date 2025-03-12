@@ -9,7 +9,6 @@ const CameraCapture = ({ customerIDPicture, setCustomerIDpicture }: Props) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    const [capturedImage, setCapturedImage] = useState<File | null>(null);
     const [displayImageBox, setDisplayImageBox] = useState(false);
     const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
@@ -79,6 +78,10 @@ const CameraCapture = ({ customerIDPicture, setCustomerIDpicture }: Props) => {
                             ref={videoRef}
                             className="w-full max-w-sm rounded-lg bg-base-200"
                             autoPlay
+                            style={{
+                                transform: "scaleX(-1)", // 🔥 Flip horizontally
+                                WebkitTransform: "scaleX(-1)", // ✅ Ensure compatibility with older browsers
+                            }}
                         />
                     )}
                     <div className="flex gap-1">

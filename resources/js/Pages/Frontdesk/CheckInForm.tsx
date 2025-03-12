@@ -28,7 +28,7 @@ const CheckInForm = ({
     return (
         <div>
             <FormHeader className="text-start">Room Information</FormHeader>
-            <div className="flex gap-2">
+            <div className="flex lg:flex-row flex-col gap-2">
                 <fieldset className="fieldset w-full max-w-xs">
                     <legend className="fieldset-legend">
                         Room rate / duration

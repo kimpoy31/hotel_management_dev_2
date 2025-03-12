@@ -9,7 +9,7 @@ const FormHeader = ({
 }) => {
     return (
         <div
-            className={`text-center px-4 bg-base-200 py-2 shadow uppercase font-bold ${className}`}
+            className={`text-center my-2 px-4 bg-base-200 py-2 shadow uppercase font-bold ${className}`}
         >
             {children}
         </div>

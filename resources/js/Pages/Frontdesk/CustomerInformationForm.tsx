@@ -1,6 +1,7 @@
 import FormHeader from "@/components/FormHeader";
 import React from "react";
 import CameraCapture from "./CameraCapture";
+import { X } from "lucide-react";
 
 interface Props {
     customerName: string;
@@ -9,6 +10,8 @@ interface Props {
     setCustomerAddress: (value: string) => void;
     customerContactNumber: string;
     setCustomerContactNumber: (value: string) => void;
+    customerIDPicture: File | null;
+    setCustomerIDpicture: (value: File | null) => void;
 }
 
 const CustomerInformationForm = ({
@@ -18,6 +21,8 @@ const CustomerInformationForm = ({
     setCustomerAddress,
     customerContactNumber,
     setCustomerContactNumber,
+    customerIDPicture,
+    setCustomerIDpicture,
 }: Props) => {
     return (
         <div>
@@ -75,7 +80,32 @@ const CustomerInformationForm = ({
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">ID picture</legend>
                     </fieldset>
-                    {/* <CameraCapture /> */}
+                    {customerIDPicture ? (
+                        <div className="flex gap-1">
+                            <button
+                                className="btn btn-square btn-sm btn-error"
+                                onClick={() => setCustomerIDpicture(null)}
+                            >
+                                <X />
+                            </button>
+                            {customerIDPicture && (
+                                <div>
+                                    <img
+                                        src={URL.createObjectURL(
+                                            customerIDPicture
+                                        )}
+                                        alt="Uploaded file"
+                                        className="w-full max-w-sm rounded-lg shadow-md"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <CameraCapture
+                            customerIDPicture={customerIDPicture}
+                            setCustomerIDpicture={setCustomerIDpicture}
+                        />
+                    )}
                 </div>
             </div>
         </div>

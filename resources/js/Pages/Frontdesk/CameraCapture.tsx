@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
 
-const CameraCapture: React.FC = () => {
+interface Props {
+    customerIDPicture: File | null;
+    setCustomerIDpicture: (value: File | null) => void;
+}
+
+const CameraCapture = ({ customerIDPicture, setCustomerIDpicture }: Props) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -57,7 +62,7 @@ const CameraCapture: React.FC = () => {
                         const file = new File([blob], "captured-image.png", {
                             type: "image/png",
                         });
-                        setCapturedImage(file);
+                        setCustomerIDpicture(file);
                     }
                 }, "image/png");
             }
@@ -67,7 +72,7 @@ const CameraCapture: React.FC = () => {
 
     return (
         <div className="flex flex-col gap-4">
-            {!capturedImage && (
+            {!customerIDPicture && (
                 <>
                     {displayImageBox && (
                         <video

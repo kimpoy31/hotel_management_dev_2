@@ -7,7 +7,7 @@ interface Props {
     roomRateId: number;
     setRoomRateId: (value: number) => void;
     numberOfDays: number | undefined;
-    setNumberOfDays: (value: number | undefined) => void;
+    setNumberOfDays: (value: number) => void;
 }
 
 const CheckInForm = ({

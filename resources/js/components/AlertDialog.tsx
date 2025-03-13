@@ -3,6 +3,8 @@ import React, { ReactNode, useEffect, useRef, useState } from "react";
 interface Props {
     modalTitle?: string;
     modalDescription?: string;
+    modalClassName?: string;
+    modalButtonDisabled?: boolean;
     buttonTitle: string;
     buttonIcon?: ReactNode;
     buttonClassname?: string;
@@ -16,6 +18,7 @@ interface Props {
 
 const AlertDialog = ({
     modalTitle,
+    modalClassName,
     buttonTitle,
     buttonClassname,
     buttonIcon,
@@ -26,6 +29,7 @@ const AlertDialog = ({
     confirmButtonDisabled,
     cancelButtonName,
     cancelAction,
+    modalButtonDisabled,
 }: Props) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [open, setOpen] = useState(false);
@@ -46,20 +50,23 @@ const AlertDialog = ({
                 className={`cursor-pointer ${buttonClassname}`}
                 onClick={() => setOpen(true)}
                 type="button"
+                disabled={modalButtonDisabled}
             >
                 {buttonIcon}
                 {buttonTitle}
             </button>
 
             <dialog ref={dialogRef} className="modal">
-                <div className="modal-box max-w-sm">
+                <div className={`modal-box max-w-sm w-full ${modalClassName}`}>
                     {modalTitle && (
                         <h3 className="font-bold text-lg">{modalTitle}</h3>
                     )}
                     {modalDescription && (
                         <p className="py-4 text-lg">{modalDescription}</p>
                     )}
-                    <div className="my-2">{children}</div>
+                    <div className="my-2 overflow-y-auto max-h-96">
+                        {children}
+                    </div>
                     <div className="modal-action gap-1 md:flex-row flex-col-reverse">
                         <button
                             className="btn"

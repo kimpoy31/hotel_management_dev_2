@@ -9,6 +9,7 @@ import { useState } from "react";
 import CustomerInformationForm from "./CustomerInformationForm";
 import CheckInForm from "./CheckInForm";
 import SetRoomAdditions from "./SetRoomAdditions";
+import AlertDialog from "@/components/AlertDialog";
 
 interface Props {
     room: RoomProp;
@@ -61,6 +62,37 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                 roomAdditions={roomAdditions}
                 setRoomAdditions={setRoomAdditions}
             />
+            <div className="divider"></div>
+            <AlertDialog
+                buttonTitle="Check-in"
+                buttonClassname="btn btn-accent"
+                modalTitle="Please collect total amount"
+                modalClassName="max-w-lg"
+                modalButtonDisabled={
+                    !customerName ||
+                    !customerAddress ||
+                    !customerContactNumber ||
+                    roomRateId < 1
+                }
+            >
+                <div className="flex gap-2">
+                    <h1> Customer name: </h1>
+                    <span className="capitalize font-bold">{customerName}</span>
+                </div>
+                <div className="flex gap-2">
+                    <h1> Customer address: </h1>
+                    <span className="capitalize font-bold">
+                        {customerAddress}
+                    </span>
+                </div>
+                <div className="flex gap-2">
+                    <h1> Customer contact number: </h1>
+                    <span className="capitalize font-bold">
+                        {customerContactNumber}
+                    </span>
+                </div>
+                <div className="divider m-0"></div>
+            </AlertDialog>
         </Card>
     );
 };

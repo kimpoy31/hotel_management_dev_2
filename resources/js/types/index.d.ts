@@ -30,6 +30,13 @@ export interface InclusionItem {
     quantity: number;
     type: ItemType;
 }
+export interface AdditionItem {
+    item_id: number;
+    quantity: number;
+    type: ItemType;
+    price: number;
+    name: string;
+}
 
 export interface Room {
     id: number;

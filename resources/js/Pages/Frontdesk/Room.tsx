@@ -1,20 +1,22 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import RoomCard from "@/components/RoomCard";
-import { Rate, Room as RoomProp } from "@/types";
+import { AdditionItem, InventoryItem, Rate, Room as RoomProp } from "@/types";
 import RoomHeader from "./RoomHeader";
 import DisplayRoomInclusions from "@/components/DisplayRoomInclusions";
 import FormHeader from "@/components/FormHeader";
 import { useState } from "react";
 import CustomerInformationForm from "./CustomerInformationForm";
 import CheckInForm from "./CheckInForm";
+import SetRoomAdditions from "./SetRoomAdditions";
 
 interface Props {
     room: RoomProp;
     rates: Rate[];
+    inventory_items: InventoryItem[];
 }
 
-const Room = ({ room, rates }: Props) => {
+const Room = ({ room, rates, inventory_items }: Props) => {
     // Customer information
     const [customerName, setCustomerName] = useState("");
     const [customerAddress, setCustomerAddress] = useState("");
@@ -25,6 +27,7 @@ const Room = ({ room, rates }: Props) => {
     // Room variable
     const [roomRateId, setRoomRateId] = useState(0);
     const [numberOfDays, setNumberOfDays] = useState<number>();
+    const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>([]);
 
     return (
         <Card className="lg:card-md card-xs">
@@ -52,6 +55,11 @@ const Room = ({ room, rates }: Props) => {
                 setRoomRateId={setRoomRateId}
                 numberOfDays={numberOfDays}
                 setNumberOfDays={setNumberOfDays}
+            />
+            <SetRoomAdditions
+                inventoryItems={inventory_items}
+                roomAdditions={roomAdditions}
+                setRoomAdditions={setRoomAdditions}
             />
         </Card>
     );

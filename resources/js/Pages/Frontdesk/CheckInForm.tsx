@@ -1,6 +1,6 @@
 import FormHeader from "@/components/FormHeader";
 import { Rate } from "@/types";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
     rates: Rate[];

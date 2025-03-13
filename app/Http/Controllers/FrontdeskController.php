@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InventoryItem;
 use App\Models\Rate;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class FrontdeskController extends Controller
             'rates' => Rate::where('status', 'active')
                 ->whereIn('id', $room->room_rate_ids ?? []) // ✅ Ensure it's an array or default to an empty array
                 ->get(), // ✅ Add get() to execute the query
+            'inventory_items' =>InventoryItem::where('status', 'active')->get()->toArray()
         ]);
     }
 }

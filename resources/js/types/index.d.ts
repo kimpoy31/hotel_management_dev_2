@@ -38,6 +38,29 @@ export interface AdditionItem {
     name: string;
 }
 
+export interface Transaction {
+    id: number;
+    transaction_officer: string;
+    check_in: string; // ISO date format (e.g., "2025-03-15T14:30:00Z")
+    check_out?: string;
+    expected_check_out: string;
+    number_of_hours: number;
+    number_of_days: number;
+    stay_extension?: any[]; // Adjust type based on expected structure
+    rate: number;
+    room_number: string;
+    customer_name: string;
+    customer_address: string;
+    customer_contact_number?: string;
+    id_picture_path?: string;
+    room_additions?: AdditionItem[]; // Adjust type based on expected structure
+    total_payment: number;
+    missing_items?: any[]; // Adjust type based on expected structure
+    damaged_items?: string;
+    settlement_payment?: number;
+    overtime_charge: number;
+}
+
 export interface Room {
     id: number;
     room_number: string;

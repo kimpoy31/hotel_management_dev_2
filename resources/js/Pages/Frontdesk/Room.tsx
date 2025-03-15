@@ -27,7 +27,7 @@ const Room = ({ room, rates, inventory_items }: Props) => {
     );
     // Room variable
     const [roomRateId, setRoomRateId] = useState(0);
-    const [numberOfDays, setNumberOfDays] = useState<number>();
+    const [numberOfDays, setNumberOfDays] = useState<number>(1);
     const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>([]);
     // LOCAL VARS
     let roomRate = rates.find((rate) => rate.id === roomRateId) ?? null;

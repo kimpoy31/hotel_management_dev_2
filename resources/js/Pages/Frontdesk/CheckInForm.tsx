@@ -43,7 +43,9 @@ const CheckInForm = ({
                         </option>
                         {rates.map((rate, index) => (
                             <option key={index} value={rate.id}>
-                                {rate.duration} Hours - ₱{rate.rate}
+                                {rate.duration >= 24
+                                    ? "Daily rate - ₱" + rate.rate
+                                    : rate.duration + "Hours - ₱" + rate.rate}
                             </option>
                         ))}
                     </select>

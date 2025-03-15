@@ -57,10 +57,6 @@ const SetRoomAdditions = ({
         });
     };
 
-    useEffect(() => {
-        console.log("additons", roomAdditions);
-    }, [roomAdditions]);
-
     return (
         <fieldset className="fieldset">
             <legend className="fieldset-legend">Room additions</legend>

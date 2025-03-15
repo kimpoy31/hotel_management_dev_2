@@ -10,6 +10,7 @@ import CustomerInformationForm from "./CustomerInformationForm";
 import CheckInForm from "./CheckInForm";
 import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
+import { router } from "@inertiajs/react";
 
 interface Props {
     room: RoomProp;
@@ -36,6 +37,7 @@ const Room = ({ room, rates, inventory_items }: Props) => {
         parseFloat(roomRate?.rate.toString() ?? "0") *
             (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
     );
+    const [checkInTime, setCheckInTime] = useState(new Date());
 
     function getCheckoutDateTime(
         checkInDateTime: string | Date,
@@ -55,6 +57,35 @@ const Room = ({ room, rates, inventory_items }: Props) => {
 
         return checkInDate;
     }
+
+    const checkIn = async () => {
+        let numberOfHours =
+            roomRate!.duration < 24
+                ? roomRate!.duration
+                : 24 *
+                  (!isNaN(numberOfDays) && numberOfDays > 0 ? numberOfDays : 1);
+        let expected_check_out = getCheckoutDateTime(
+            checkInTime,
+            numberOfHours
+        );
+
+        await router.post(route("frontdesk.check_in"), {
+            check_in: checkInTime,
+            expected_check_out,
+            number_of_hours: numberOfHours,
+            number_of_days:
+                roomRate?.duration && roomRate?.duration >= 24
+                    ? numberOfDays
+                    : 0,
+            rate: roomRate?.rate,
+            room_number: room.room_number,
+            customer_name: customerName,
+            customer_address: customerAddress,
+            customer_contact_number: customerContactNumber,
+            id_picture: customerIDPicture,
+            total_payment: TotalAmountToPay,
+        });
+    };
 
     return (
         <Card className="lg:card-md card-xs">
@@ -89,7 +120,7 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                 setRoomAdditions={setRoomAdditions}
             />
             <div className="divider"></div>
-
+            numberOfDays{numberOfDays}
             {/* Check in button */}
             <AlertDialog
                 buttonTitle="Check-in"
@@ -102,7 +133,9 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                     !customerContactNumber ||
                     roomRateId < 1
                 }
+                modalButtonOnClick={() => setCheckInTime(new Date())}
                 cancelButtonName="Cancel"
+                confirmAction={() => checkIn()}
             >
                 <div className="divider m-0"></div>
                 <div className="flex gap-2">

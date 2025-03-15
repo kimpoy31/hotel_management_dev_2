@@ -5,6 +5,7 @@ interface Props {
     modalDescription?: string;
     modalClassName?: string;
     modalButtonDisabled?: boolean;
+    modalButtonOnClick?: () => void;
     buttonTitle: string;
     buttonIcon?: ReactNode;
     buttonClassname?: string;
@@ -19,6 +20,7 @@ interface Props {
 const AlertDialog = ({
     modalTitle,
     modalClassName,
+    modalButtonOnClick,
     buttonTitle,
     buttonClassname,
     buttonIcon,
@@ -48,7 +50,10 @@ const AlertDialog = ({
         <>
             <button
                 className={`cursor-pointer ${buttonClassname}`}
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                    setOpen(true);
+                    modalButtonOnClick?.();
+                }}
                 type="button"
                 disabled={modalButtonDisabled}
             >

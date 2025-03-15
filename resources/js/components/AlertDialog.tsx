@@ -64,7 +64,7 @@ const AlertDialog = ({
                     {modalDescription && (
                         <p className="py-4 text-lg">{modalDescription}</p>
                     )}
-                    <div className="my-2 overflow-y-auto max-h-96">
+                    <div className="my-2 overflow-y-auto max-h-96 text-sm">
                         {children}
                     </div>
                     <div className="modal-action gap-1 md:flex-row flex-col-reverse">

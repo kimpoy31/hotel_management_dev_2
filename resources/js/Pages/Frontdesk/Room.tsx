@@ -29,6 +29,32 @@ const Room = ({ room, rates, inventory_items }: Props) => {
     const [roomRateId, setRoomRateId] = useState(0);
     const [numberOfDays, setNumberOfDays] = useState<number>();
     const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>([]);
+    // LOCAL VARS
+    let roomRate = rates.find((rate) => rate.id === roomRateId) ?? null;
+    let TotalAmountToPay = roomAdditions.reduce(
+        (total, item) => total + item.price * item.quantity,
+        parseFloat(roomRate?.rate.toString() ?? "0") *
+            (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
+    );
+
+    function getCheckoutDateTime(
+        checkInDateTime: string | Date,
+        numberOfHours: number
+    ): Date {
+        if (!checkInDateTime || typeof numberOfHours !== "number") {
+            throw new Error("Invalid input");
+        }
+
+        const checkInDate = new Date(checkInDateTime);
+        if (isNaN(checkInDate.getTime())) {
+            throw new Error("Invalid date");
+        }
+
+        // Add hours
+        checkInDate.setHours(checkInDate.getHours() + numberOfHours);
+
+        return checkInDate;
+    }
 
     return (
         <Card className="lg:card-md card-xs">
@@ -63,10 +89,12 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                 setRoomAdditions={setRoomAdditions}
             />
             <div className="divider"></div>
+
+            {/* Check in button */}
             <AlertDialog
                 buttonTitle="Check-in"
                 buttonClassname="btn btn-accent"
-                modalTitle="Please collect total amount"
+                modalTitle="Collect total amount"
                 modalClassName="max-w-lg"
                 modalButtonDisabled={
                     !customerName ||
@@ -74,24 +102,62 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                     !customerContactNumber ||
                     roomRateId < 1
                 }
+                cancelButtonName="Cancel"
             >
+                <div className="divider m-0"></div>
                 <div className="flex gap-2">
                     <h1> Customer name: </h1>
                     <span className="capitalize font-bold">{customerName}</span>
                 </div>
-                <div className="flex gap-2">
-                    <h1> Customer address: </h1>
-                    <span className="capitalize font-bold">
-                        {customerAddress}
-                    </span>
-                </div>
-                <div className="flex gap-2">
-                    <h1> Customer contact number: </h1>
-                    <span className="capitalize font-bold">
-                        {customerContactNumber}
-                    </span>
-                </div>
                 <div className="divider m-0"></div>
+                <div className="flex justify-between text-lg">
+                    <h1>
+                        Room rate -{" "}
+                        {numberOfDays ? (
+                            <span>{numberOfDays} Day(s)</span>
+                        ) : (
+                            <span>{roomRate?.duration} Hours</span>
+                        )}
+                    </h1>
+                    <div className="flex flex-col items-center">
+                        <span className="capitalize font-bold">
+                            ₱
+                            {roomRate &&
+                                roomRate?.rate *
+                                    (numberOfDays && numberOfDays > 0
+                                        ? numberOfDays
+                                        : 1)}
+                        </span>
+                    </div>
+                </div>
+                {roomAdditions.length > 0 &&
+                    roomAdditions.map((additionItem, index) => (
+                        <div
+                            className="flex justify-between text-lg"
+                            key={index}
+                        >
+                            <h1>
+                                {additionItem.name} - {additionItem.quantity}{" "}
+                                pc(s)
+                            </h1>
+                            <span className="capitalize font-bold">
+                                ₱{additionItem.price * additionItem.quantity}
+                            </span>
+                        </div>
+                    ))}
+                <div className="divider m-0"></div>
+                <div className="flex justify-between text-lg mb-4">
+                    <h1>Total amount</h1>
+                    <div className="flex flex-col items-center">
+                        <span className="capitalize font-bold text-2xl">
+                            ₱{TotalAmountToPay}
+                        </span>
+                    </div>
+                </div>
+                <div className="text-center bg-base-200 p-1 px-4 rounded">
+                    Please collect the total indicated amount, then click
+                    "Confirm."
+                </div>
             </AlertDialog>
         </Card>
     );

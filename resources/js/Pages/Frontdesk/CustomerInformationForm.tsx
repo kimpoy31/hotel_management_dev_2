@@ -3,6 +3,8 @@ import React from "react";
 import CameraCapture from "./CameraCapture";
 import { X } from "lucide-react";
 import ErrorMessage from "@/components/ErrorMessage";
+import { Transaction } from "@/types";
+import DisplayEmpty from "@/components/DisplayEmpty";
 
 interface Props {
     customerName: string;
@@ -14,6 +16,7 @@ interface Props {
     customerIDPicture: File | null;
     setCustomerIDpicture: (value: File | null) => void;
     errors?: Record<string, string | string[]>;
+    room_transaction: Transaction | null;
 }
 
 const CustomerInformationForm = ({
@@ -25,6 +28,7 @@ const CustomerInformationForm = ({
     setCustomerContactNumber,
     customerIDPicture,
     setCustomerIDpicture,
+    room_transaction,
     errors,
 }: Props) => {
     return (
@@ -36,9 +40,10 @@ const CustomerInformationForm = ({
                         <legend className="fieldset-legend">Fullname</legend>
                         <input
                             type="text"
-                            className="input input-lg w-full"
+                            className="input input-lg w-full capitalize"
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
+                            disabled={!!room_transaction}
                         />
                         {errors?.customer_name && (
                             <ErrorMessage>{errors.customer_name}</ErrorMessage>
@@ -51,6 +56,7 @@ const CustomerInformationForm = ({
                             className="input input-lg w-full"
                             value={customerAddress}
                             onChange={(e) => setCustomerAddress(e.target.value)}
+                            disabled={!!room_transaction}
                         />
                         {errors?.customer_address && (
                             <ErrorMessage>
@@ -69,6 +75,7 @@ const CustomerInformationForm = ({
                             onChange={(e) =>
                                 setCustomerContactNumber(e.target.value)
                             }
+                            disabled={!!room_transaction}
                         />
                         {errors?.customer_contact_number && (
                             <ErrorMessage>
@@ -81,7 +88,13 @@ const CustomerInformationForm = ({
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">ID picture</legend>
                     </fieldset>
-                    {customerIDPicture ? (
+                    {room_transaction?.id_picture_path ? (
+                        <img
+                            src={`/storage/${room_transaction?.id_picture_path}`}
+                            alt="Landscape"
+                            className="w-full max-w-sm rounded-lg shadow-md"
+                        />
+                    ) : customerIDPicture ? (
                         <div className="flex gap-1">
                             <button
                                 className="btn btn-square btn-sm btn-error"
@@ -101,6 +114,8 @@ const CustomerInformationForm = ({
                                 </div>
                             )}
                         </div>
+                    ) : room_transaction ? (
+                        <DisplayEmpty />
                     ) : (
                         <CameraCapture
                             customerIDPicture={customerIDPicture}

@@ -8,6 +8,7 @@ const RoomTable = ({ rooms }: { rooms: Room[] }) => {
                 <thead>
                     <tr>
                         <th>Room number</th>
+                        <th>Room status</th>
                         <th>Room rates</th>
                         <th>Room inclusions</th>
                         <th>Action</th>
@@ -17,6 +18,7 @@ const RoomTable = ({ rooms }: { rooms: Room[] }) => {
                     {rooms.map((room, index) => (
                         <tr key={index}>
                             <th className="capitalize">{room.room_number}</th>
+                            <td className="capitalize">{room.room_status}</td>
                             <td>
                                 <div className="flex flex-col">
                                     {room.room_rates.map((rate, index) => (

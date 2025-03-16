@@ -1,7 +1,13 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import RoomCard from "@/components/RoomCard";
-import { AdditionItem, InventoryItem, Rate, Room as RoomProp } from "@/types";
+import {
+    AdditionItem,
+    InventoryItem,
+    Rate,
+    Room as RoomProp,
+    Transaction,
+} from "@/types";
 import RoomHeader from "./RoomHeader";
 import DisplayRoomInclusions from "@/components/DisplayRoomInclusions";
 import FormHeader from "@/components/FormHeader";
@@ -17,20 +23,35 @@ interface Props {
     rates: Rate[];
     inventory_items: InventoryItem[];
     errors: Record<string, string | string[]>;
+    active_transaction: Transaction | null;
 }
 
-const Room = ({ room, rates, inventory_items, errors }: Props) => {
+const Room = ({
+    room,
+    rates,
+    inventory_items,
+    errors,
+    active_transaction,
+}: Props) => {
     // Customer information
-    const [customerName, setCustomerName] = useState("");
-    const [customerAddress, setCustomerAddress] = useState("");
-    const [customerContactNumber, setCustomerContactNumber] = useState("");
+    const [customerName, setCustomerName] = useState(
+        active_transaction?.customer_name ?? ""
+    );
+    const [customerAddress, setCustomerAddress] = useState(
+        active_transaction?.customer_address ?? ""
+    );
+    const [customerContactNumber, setCustomerContactNumber] = useState(
+        active_transaction?.customer_contact_number ?? ""
+    );
     const [customerIDPicture, setCustomerIDpicture] = useState<File | null>(
         null
     );
     // Room variable
     const [roomRateId, setRoomRateId] = useState(0);
     const [numberOfDays, setNumberOfDays] = useState<number>(1);
-    const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>([]);
+    const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>(
+        active_transaction?.room_additions ?? []
+    );
     // LOCAL VARS
     let roomRate = rates.find((rate) => rate.id === roomRateId) ?? null;
     let TotalAmountToPay = roomAdditions.reduce(
@@ -76,10 +97,6 @@ const Room = ({ room, rates, inventory_items, errors }: Props) => {
             check_in: checkInTime,
             expected_check_out,
             number_of_hours: numberOfHours,
-            number_of_days:
-                roomRate?.duration && roomRate?.duration >= 24
-                    ? numberOfDays
-                    : 0,
             rate: roomRate?.rate,
             room_number: room.room_number,
             customer_name: customerName,
@@ -110,6 +127,7 @@ const Room = ({ room, rates, inventory_items, errors }: Props) => {
                 customerIDPicture={customerIDPicture}
                 setCustomerIDpicture={setCustomerIDpicture}
                 errors={errors}
+                room_transaction={active_transaction}
             />
             <CheckInForm
                 roomRateId={roomRateId}
@@ -117,6 +135,7 @@ const Room = ({ room, rates, inventory_items, errors }: Props) => {
                 setRoomRateId={setRoomRateId}
                 numberOfDays={numberOfDays}
                 setNumberOfDays={setNumberOfDays}
+                active_transaction={active_transaction}
             />
             <SetRoomAdditions
                 inventoryItems={inventory_items}

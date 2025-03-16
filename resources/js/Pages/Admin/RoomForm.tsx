@@ -206,7 +206,10 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
                                                             )
                                                         }
                                                         disabled={
-                                                            itemQuantity === 0
+                                                            itemQuantity ===
+                                                                0 ||
+                                                            room?.room_status !=
+                                                                "available"
                                                         }
                                                     >
                                                         -
@@ -225,7 +228,9 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
                                                         }
                                                         disabled={
                                                             item.available ===
-                                                            itemQuantity
+                                                                itemQuantity ||
+                                                            room?.room_status !=
+                                                                "available"
                                                         }
                                                     >
                                                         +

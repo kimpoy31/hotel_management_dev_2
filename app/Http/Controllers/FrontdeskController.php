@@ -23,7 +23,8 @@ class FrontdeskController extends Controller
             'rates' => Rate::where('status', 'active')
                 ->whereIn('id', $room->room_rate_ids ?? []) // ✅ Ensure it's an array or default to an empty array
                 ->get(), // ✅ Add get() to execute the query
-            'inventory_items' =>InventoryItem::where('status', 'active')->get()->toArray()
+            'inventory_items' =>InventoryItem::where('status', 'active')->get()->toArray(),
+            'active_transaction' => Transaction::find($room->active_transaction) ?? null,
         ]);
     }
 
@@ -34,7 +35,6 @@ class FrontdeskController extends Controller
             'check_in' => ['required', 'date'],
             'expected_check_out' => ['required', 'date'],
             'number_of_hours' => ['required', 'integer'],
-            'number_of_days' => ['required', 'integer'],
             'rate' => ['required', 'numeric', 'min:0.01'],
             'room_number' => ['required', 'string'],
             'customer_name' => ['required', 'string'],
@@ -78,7 +78,6 @@ class FrontdeskController extends Controller
             'check_in' => $request->input('check_in'),
             'expected_check_out' => $request->input('expected_check_out'),
             'number_of_hours' => $request->input('number_of_hours'),
-            'number_of_days' => $request->input('number_of_days'),
             'rate' => $request->input('rate'),
             'room_number' => $request->input('room_number'),
             'customer_name' => $request->input('customer_name'),

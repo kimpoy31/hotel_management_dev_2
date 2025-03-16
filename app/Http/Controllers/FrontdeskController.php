@@ -27,6 +27,7 @@ class FrontdeskController extends Controller
     public function check_in (Request $request){
         // Validation rules
         $validator = Validator::make($request->all(), [
+            'room_id' => ['required', 'integer'],
             'check_in' => ['required', 'date'],
             'expected_check_out' => ['required', 'date'],
             'number_of_hours' => ['required', 'integer'],
@@ -38,5 +39,30 @@ class FrontdeskController extends Controller
             'id_picture' => ['nullable', 'file', 'max:2048', 'mimes:jpg,jpeg,png'], // 2048 KB = 2 MB
             'total_payment' => ['required', 'numeric', 'min:0.01'],
         ]);
+
+
+        // If validation fails, return a 422 error with validation errors
+        if ($validator->fails()) {
+            return to_route('frontdesk.room.form', $request->room_id)->withErrors($validator);
+        }
+
+        
+        $room = Room::find($request->input('room_id'));
+        $room_inclusions = $room->room_inclusions;
+        $room_additions = json_decode($request->input('room_additions'), true) ?? [];
+    
+        // Merge both arrays
+        $all_items = array_merge($room_inclusions, $room_additions);
+
+        foreach($all_items as $item){
+            $inventoryItem = InventoryItem::find($item['item_id']);
+            $quantity_to_update = $item['quantity'];
+            
+            $inventoryItem->update([
+                'available' => $inventoryItem->available -= $quantity_to_update,
+                'in_use' => $inventoryItem->in_use += $quantity_to_update,
+            ]);
+        }
+        
     }
 }

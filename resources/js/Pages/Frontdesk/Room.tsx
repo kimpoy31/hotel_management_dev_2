@@ -16,9 +16,10 @@ interface Props {
     room: RoomProp;
     rates: Rate[];
     inventory_items: InventoryItem[];
+    errors: Record<string, string | string[]>;
 }
 
-const Room = ({ room, rates, inventory_items }: Props) => {
+const Room = ({ room, rates, inventory_items, errors }: Props) => {
     // Customer information
     const [customerName, setCustomerName] = useState("");
     const [customerAddress, setCustomerAddress] = useState("");
@@ -70,6 +71,8 @@ const Room = ({ room, rates, inventory_items }: Props) => {
         );
 
         await router.post(route("frontdesk.check_in"), {
+            room_id: room.id,
+            room_additions: JSON.stringify(roomAdditions),
             check_in: checkInTime,
             expected_check_out,
             number_of_hours: numberOfHours,
@@ -106,6 +109,7 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                 setCustomerContactNumber={setCustomerContactNumber}
                 customerIDPicture={customerIDPicture}
                 setCustomerIDpicture={setCustomerIDpicture}
+                errors={errors}
             />
             <CheckInForm
                 roomRateId={roomRateId}
@@ -119,8 +123,7 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                 roomAdditions={roomAdditions}
                 setRoomAdditions={setRoomAdditions}
             />
-            <div className="divider"></div>
-            numberOfDays{numberOfDays}
+
             {/* Check in button */}
             <AlertDialog
                 buttonTitle="Check-in"
@@ -147,7 +150,9 @@ const Room = ({ room, rates, inventory_items }: Props) => {
                     <h1>
                         Room rate -{" "}
                         {numberOfDays ? (
-                            <span>{numberOfDays} Day(s)</span>
+                            <span>
+                                {numberOfDays < 1 ? 1 : numberOfDays} Day(s)
+                            </span>
                         ) : (
                             <span>{roomRate?.duration} Hours</span>
                         )}

@@ -2,6 +2,7 @@ import FormHeader from "@/components/FormHeader";
 import React from "react";
 import CameraCapture from "./CameraCapture";
 import { X } from "lucide-react";
+import ErrorMessage from "@/components/ErrorMessage";
 
 interface Props {
     customerName: string;
@@ -12,6 +13,7 @@ interface Props {
     setCustomerContactNumber: (value: string) => void;
     customerIDPicture: File | null;
     setCustomerIDpicture: (value: File | null) => void;
+    errors?: Record<string, string | string[]>;
 }
 
 const CustomerInformationForm = ({
@@ -23,6 +25,7 @@ const CustomerInformationForm = ({
     setCustomerContactNumber,
     customerIDPicture,
     setCustomerIDpicture,
+    errors,
 }: Props) => {
     return (
         <div>
@@ -37,11 +40,9 @@ const CustomerInformationForm = ({
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
                         />
-                        {/* {errors.item_name && (
-                            <ErrorMessage>
-                                {errors.item_name.map((error) => error)}
-                            </ErrorMessage>
-                        )} */}
+                        {errors?.customer_name && (
+                            <ErrorMessage>{errors.customer_name}</ErrorMessage>
+                        )}
                     </fieldset>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Address</legend>
@@ -51,11 +52,11 @@ const CustomerInformationForm = ({
                             value={customerAddress}
                             onChange={(e) => setCustomerAddress(e.target.value)}
                         />
-                        {/* {errors.item_name && (
+                        {errors?.customer_address && (
                             <ErrorMessage>
-                                {errors.item_name.map((error) => error)}
+                                {errors.customer_address}
                             </ErrorMessage>
-                        )} */}
+                        )}
                     </fieldset>
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">
@@ -69,11 +70,11 @@ const CustomerInformationForm = ({
                                 setCustomerContactNumber(e.target.value)
                             }
                         />
-                        {/* {errors.item_name && (
+                        {errors?.customer_contact_number && (
                             <ErrorMessage>
-                                {errors.item_name.map((error) => error)}
+                                {errors.customer_contact_number}
                             </ErrorMessage>
-                        )} */}
+                        )}
                     </fieldset>
                 </div>
                 <div className="w-full">
@@ -105,6 +106,9 @@ const CustomerInformationForm = ({
                             customerIDPicture={customerIDPicture}
                             setCustomerIDpicture={setCustomerIDpicture}
                         />
+                    )}
+                    {errors?.id_picture && (
+                        <ErrorMessage>{errors.id_picture}</ErrorMessage>
                     )}
                 </div>
             </div>

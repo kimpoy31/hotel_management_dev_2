@@ -36,17 +36,20 @@ class Room extends Model
     {
         return Attribute::make(
             get: function () {
-                 // Fetch room inclusions from JSON as array
-            $inclusions = $this->room_inclusions ?? [];
-
-            // Extract item_ids from inclusions
-            $itemIds = array_column($inclusions, 'item_id');
-
-            // Fetch items from InventoryItem model based on item_ids
-            $items = InventoryItem::whereIn('id', $itemIds)->get();
-
-            return $items;
+                // Fetch room inclusions from JSON as array if it's a string
+                $inclusions = is_string($this->room_inclusions) 
+                    ? json_decode($this->room_inclusions, true) 
+                    : $this->room_inclusions;
+    
+                // Extract item_ids from inclusions
+                $itemIds = array_column($inclusions ?? [], 'item_id');
+    
+                // Fetch items from InventoryItem model based on item_ids
+                $items = InventoryItem::whereIn('id', $itemIds)->get();
+    
+                return $items;
             }
         );
     }
+    
 }

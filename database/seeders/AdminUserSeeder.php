@@ -18,7 +18,7 @@ class AdminUserSeeder extends Seeder
             ['username' => 'admin'], // Condition to check if the user exists
             [
                 'fullname' => 'user admin',
-                'roles' => json_encode(['administrator']),
+                'roles' => ['administrator'],
                 'password' => Hash::make('admin'),
             ]
         );

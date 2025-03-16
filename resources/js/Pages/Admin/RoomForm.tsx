@@ -176,18 +176,21 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
                                 <tr>
                                     <th>Action</th>
                                     <th>Item</th>
-                                    <th>Stock</th>
+                                    <th>Available Stock</th>
                                     <th>Item type</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {inventory_items.map((item, index) => {
-                                    let itemQuantity =
-                                        roomInclusions.find(
-                                            (inclusionItem) =>
-                                                inclusionItem.item_id ===
-                                                item.id
-                                        )?.quantity ?? 0;
+                                    let itemQuantity = Array.isArray(
+                                        roomInclusions
+                                    ) // ✅ Ensure it's an array
+                                        ? roomInclusions.find(
+                                              (inclusionItem) =>
+                                                  inclusionItem.item_id ===
+                                                  item.id
+                                          )?.quantity ?? 0
+                                        : 0;
 
                                     return (
                                         <tr key={index}>
@@ -221,11 +224,7 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
                                                             )
                                                         }
                                                         disabled={
-                                                            item.available +
-                                                                (item.in_use ??
-                                                                    0) +
-                                                                (item.in_process ??
-                                                                    0) ===
+                                                            item.available ===
                                                             itemQuantity
                                                         }
                                                     >
@@ -237,9 +236,7 @@ const RoomForm = ({ rates, inventory_items, errors, room }: Props) => {
                                                 {item.item_name}
                                             </td>
                                             <td className="capitalize">
-                                                {item.available +
-                                                    (item.in_process ?? 0) +
-                                                    (item.in_use ?? 0)}
+                                                {item.available}
                                             </td>
                                             <td className="capitalize">
                                                 {item.item_type}

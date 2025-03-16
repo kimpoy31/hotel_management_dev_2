@@ -62,12 +62,20 @@ class RoomController extends Controller
             'room_number' => [
                 'required', 'string',
                 $isUpdating 
-                    ? Rule::unique('rooms', 'room_number')->ignore($id) 
-                    : 'unique:rooms,room_number'
+                    ? Rule::unique('rooms', 'room_number')
+                        ->ignore($id)
+                        ->where(function ($query) {
+                            $query->where('status', '!=', 'in-active');
+                        })
+                    : Rule::unique('rooms', 'room_number')
+                        ->where(function ($query) {
+                            $query->where('status', '!=', 'in-active');
+                        })
             ],
             'room_type' => ['required', 'string'],
-            'room_rate_ids' => ['required', 'array','min:1'],
+            'room_rate_ids' => ['required', 'array', 'min:1'],
         ]);
+
 
         // If validation fails, return a 422 error with validation errors
         if ($validator->fails()) {
@@ -81,19 +89,76 @@ class RoomController extends Controller
 
         if ($isUpdating) {
             $room = Room::find($id);
+        
+            $prevRoomInclusions = $room->room_inclusions ?? [];
+            $newRoomInclusions = json_decode($request->input('room_inclusions'), true) ?? [];
+        
+            // Step 1: Find removed items (items that exist in previous inclusions but not in the new ones)
+            $removedInclusions = collect($prevRoomInclusions)
+                ->filter(function ($prevInclusion) use ($newRoomInclusions) {
+                    return !collect($newRoomInclusions)->contains('item_id', $prevInclusion['item_id']);
+                });
+        
+            // Restore stock only for removed items
+            foreach ($removedInclusions as $removedInclusion) {
+                $inventoryItem = InventoryItem::find($removedInclusion['item_id']);
+                if ($inventoryItem) {
+                    $inventoryItem->update([
+                        'available' => $inventoryItem->available + $removedInclusion['quantity'],
+                        'in_use' => $inventoryItem->in_use - $removedInclusion['quantity'],
+                    ]);
+                }
+            }
+        
+            // Step 2: Adjust stock for existing and newly added items
+            foreach ($newRoomInclusions as $newInclusion) {
+                $inventoryItem = InventoryItem::find($newInclusion['item_id']);
+                if ($inventoryItem) {
+                    $prevInclusion = collect($prevRoomInclusions)->firstWhere('item_id', $newInclusion['item_id']);
+                    if ($prevInclusion) {
+                        // Existing item — adjust stock based on quantity difference
+                        $quantityDifference = $newInclusion['quantity'] - $prevInclusion['quantity'];
+                        if ($quantityDifference !== 0) {
+                            $inventoryItem->update([
+                                'available' => $inventoryItem->available - $quantityDifference,
+                                'in_use' => $inventoryItem->in_use + $quantityDifference,
+                            ]);
+                        }
+                    } else {
+                        // New item — subtract from available and add to in-use
+                        $inventoryItem->update([
+                            'available' => $inventoryItem->available - $newInclusion['quantity'],
+                            'in_use' => $inventoryItem->in_use + $newInclusion['quantity'],
+                        ]);
+                    }
+                }
+            }
+        
+            // Step 3: Update room details
             $room->update([
                 'room_number' => $request->input('room_number'),
                 'room_type' => $request->input('room_type'),
                 'room_rate_ids' => $request->input('room_rate_ids'),
-                'room_inclusions' => json_decode($request->input('room_inclusions')),
+                'room_inclusions' => json_decode($request->input('room_inclusions'),true),
             ]);
         } else {
-        $room = Room::create([
-            'room_number' => $request->input('room_number'),
-            'room_type' => $request->input('room_type'),
-            'room_rate_ids' => $request->input('room_rate_ids'),
-            'room_inclusions' => json_decode($request->input('room_inclusions')),
-        ]);
+            $room = Room::create([
+                'room_number' => $request->input('room_number'),
+                'room_type' => $request->input('room_type'),
+                'room_rate_ids' => $request->input('room_rate_ids'),
+                'room_inclusions' => json_decode($request->input('room_inclusions'),true),
+            ]);
+
+             // Subtract from inventory on creation
+            foreach (json_decode($request->input('room_inclusions'), true) as $inclusionItem) {
+                $inventoryItem = InventoryItem::find($inclusionItem['item_id']);
+                if ($inventoryItem) {
+                    $inventoryItem->update([
+                        'available' => $inventoryItem->available - $inclusionItem['quantity'],
+                        'in_use' => $inventoryItem->in_use + $inclusionItem['quantity'],
+                    ]);
+                }
+            }
         }
 
         return to_route('admin');

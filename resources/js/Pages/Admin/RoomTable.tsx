@@ -31,17 +31,22 @@ const RoomTable = ({ rooms }: { rooms: Room[] }) => {
                             <td>
                                 {room.room_inclusion_items.length > 0 ? (
                                     room.room_inclusion_items
-                                        .map(
-                                            (item) =>
-                                                item.item_name +
-                                                " " +
-                                                room.room_inclusions?.find(
-                                                    (inclusion) =>
-                                                        inclusion.item_id ===
-                                                        item.id
-                                                )?.quantity +
-                                                "pc(s)"
-                                        )
+                                        .map((item) => {
+                                            const inclusions = Array.isArray(
+                                                room.room_inclusions
+                                            )
+                                                ? room.room_inclusions
+                                                : [];
+                                            const quantity = inclusions.find(
+                                                (inclusion) =>
+                                                    inclusion.item_id ===
+                                                    item.id
+                                            )?.quantity;
+
+                                            return `${item.item_name} ${
+                                                quantity || 0
+                                            } pc(s)`;
+                                        })
                                         .join(", ")
                                 ) : (
                                     <span className="text-xs text-secondary italic">

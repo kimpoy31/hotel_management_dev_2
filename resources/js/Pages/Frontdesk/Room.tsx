@@ -26,6 +26,25 @@ interface Props {
     active_transaction: Transaction | null;
 }
 
+export const getCheckoutDateTime = (
+    checkInDateTime: string | Date,
+    numberOfHours: number
+): Date => {
+    if (!checkInDateTime || typeof numberOfHours !== "number") {
+        throw new Error("Invalid input");
+    }
+
+    const checkInDate = new Date(checkInDateTime);
+    if (isNaN(checkInDate.getTime())) {
+        throw new Error("Invalid date");
+    }
+
+    // Add hours
+    checkInDate.setHours(checkInDate.getHours() + numberOfHours);
+
+    return checkInDate;
+};
+
 const Room = ({
     room,
     rates,
@@ -46,6 +65,9 @@ const Room = ({
     const [customerIDPicture, setCustomerIDpicture] = useState<File | null>(
         null
     );
+    // OCCUPIED ROOM VARIABLES
+    const [stayExtension, setStayExtension] = useState(0);
+
     // Room variable
     const [roomRateId, setRoomRateId] = useState(0);
     const [numberOfDays, setNumberOfDays] = useState<number>(1);
@@ -60,25 +82,6 @@ const Room = ({
             (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
     );
     const [checkInTime, setCheckInTime] = useState(new Date());
-
-    function getCheckoutDateTime(
-        checkInDateTime: string | Date,
-        numberOfHours: number
-    ): Date {
-        if (!checkInDateTime || typeof numberOfHours !== "number") {
-            throw new Error("Invalid input");
-        }
-
-        const checkInDate = new Date(checkInDateTime);
-        if (isNaN(checkInDate.getTime())) {
-            throw new Error("Invalid date");
-        }
-
-        // Add hours
-        checkInDate.setHours(checkInDate.getHours() + numberOfHours);
-
-        return checkInDate;
-    }
 
     const checkIn = async () => {
         let numberOfHours =
@@ -136,6 +139,8 @@ const Room = ({
                 numberOfDays={numberOfDays}
                 setNumberOfDays={setNumberOfDays}
                 active_transaction={active_transaction}
+                setStayExtension={setStayExtension}
+                stayExtension={stayExtension}
             />
             <SetRoomAdditions
                 inventoryItems={inventory_items}

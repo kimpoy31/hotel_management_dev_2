@@ -108,7 +108,7 @@ const Room = ({
     };
 
     return (
-        <Card className="lg:card-md card-xs">
+        <Card className="lg:card-md card-xs ">
             <BackButton routeName="frontdesk" />
             <RoomHeader room={room} />
             <div className="divider m-0"></div>

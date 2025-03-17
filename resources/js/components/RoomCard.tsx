@@ -13,6 +13,8 @@ export const getBgColor = (room: Room) => {
 
     if (room.room_status === "available") {
         bgColor = "bg-emerald-800";
+    } else if (room.room_status === "occupied") {
+        bgColor = "bg-secondary";
     }
 
     return bgColor;
@@ -23,6 +25,8 @@ export const getTextColor = (room: Room) => {
 
     if (room.room_status === "available") {
         textColor = "text-emerald-100";
+    } else if (room.room_status === "occupied") {
+        textColor = "text-secondary-content";
     }
 
     return textColor;

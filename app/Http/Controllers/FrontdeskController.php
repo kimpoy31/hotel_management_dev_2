@@ -99,4 +99,54 @@ class FrontdeskController extends Controller
             'room_status' => 'occupied'
         ]);
     }
+
+    public function update_room_additions (Request $request, $id){
+        // * HANDLE ROOM ADDITIONS -> subtract additions from inventory -> available
+        $room = Room::find($id);
+        $transaction = Transaction::find($room->active_transaction);
+
+        // Transaction item additions
+        if ($transaction) {
+            $roomAdditions = $transaction->room_additions;
+            $new_room_additions = json_decode($request->input('new_room_additions'), true) ?? [];
+
+            foreach ($new_room_additions as $newItem) {
+                $existingItemIndex = array_search($newItem['item_id'], array_column($roomAdditions, 'item_id'));
+        
+                if ($existingItemIndex !== false) {
+                    // If item exists, increment the quantity
+                    $roomAdditions[$existingItemIndex]['quantity'] += $newItem['quantity'];
+                } else {
+                    // If item doesn't exist, add it to the array
+                    $roomAdditions[] = $newItem;
+                }
+            }
+        
+            // Save updated room_additions back to the transaction
+            $transaction->update([
+                'room_additions' => $roomAdditions,
+                'total_payment' =>  $transaction->total_payment += $request->input('total_payment'),
+            ]);
+        }
+
+        // UPDATE INVENTORY ITEMS
+        foreach($new_room_additions as $new_item){
+            $inventoryItem = InventoryItem::find($new_item['item_id']);
+            $quantity_to_update = $new_item['quantity'];
+            
+            if($inventoryItem->item_type == 'room amenity' ){
+                $inventoryItem->update([
+                    'available' => $inventoryItem->available -= $quantity_to_update,
+                    'in_use' => $inventoryItem->in_use += $quantity_to_update,
+                ]);
+            } else if ($inventoryItem->item_type == 'consumable'){
+                $inventoryItem->update([
+                    'available' => $inventoryItem->available -= $quantity_to_update,
+                    'sold' => $inventoryItem->sold += $quantity_to_update,
+                ]);
+            }
+        }
+
+        return to_route('frontdesk.room.form', $id);
+    }
 }

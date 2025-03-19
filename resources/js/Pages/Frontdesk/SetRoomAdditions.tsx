@@ -1,18 +1,72 @@
-import { AdditionItem, InventoryItem, ItemType } from "@/types";
-import React, { useEffect } from "react";
+import AlertDialog from "@/components/AlertDialog";
+import { AdditionItem, InventoryItem, ItemType, Transaction } from "@/types";
+import { router } from "@inertiajs/react";
+import React, { useEffect, useState } from "react";
 
 interface Props {
     inventoryItems: InventoryItem[];
     roomAdditions: AdditionItem[];
+    newRoomAdditions: AdditionItem[];
     setRoomAdditions: React.Dispatch<React.SetStateAction<AdditionItem[]>>;
+    setNewRoomAdditions: React.Dispatch<React.SetStateAction<AdditionItem[]>>;
+    active_transaction: Transaction | null;
+    room_id: number;
 }
 
 const SetRoomAdditions = ({
     inventoryItems,
     roomAdditions,
     setRoomAdditions,
+    newRoomAdditions,
+    setNewRoomAdditions,
+    active_transaction,
+    room_id,
 }: Props) => {
-    // Handle adding of room inclusions
+    const [isEditing, setIsEditing] = useState(false);
+
+    // Function that updates table quantity
+    const updateAdditions = (
+        prevAdditions: AdditionItem[],
+        item_id: number,
+        action: "increment" | "decrement",
+        type: ItemType,
+        price: number,
+        name: string
+    ): AdditionItem[] => {
+        let updatedAdditions = prevAdditions.map((item) =>
+            item.item_id === item_id
+                ? {
+                      ...item,
+                      quantity:
+                          action === "increment"
+                              ? item.quantity + 1
+                              : item.quantity - 1,
+                  }
+                : item
+        ) as AdditionItem[];
+
+        // Filter out items with quantity 0
+        updatedAdditions = updatedAdditions.filter((item) => item.quantity > 0);
+
+        // Check if the item was not in the previous state and add it
+        const itemExists = prevAdditions.some(
+            (item) => item.item_id === item_id
+        );
+
+        if (!itemExists && action === "increment") {
+            updatedAdditions.push({
+                item_id,
+                quantity: 1,
+                type,
+                price,
+                name,
+            });
+        }
+
+        return updatedAdditions;
+    };
+
+    // Handle adding of room additions
     const handleRoomInclusionChange = (
         item_id: number,
         action: "increment" | "decrement",
@@ -20,46 +74,119 @@ const SetRoomAdditions = ({
         price: number,
         name: string
     ) => {
-        setRoomAdditions((prevRoomAdditions: AdditionItem[]) => {
-            let updatedAdditions = prevRoomAdditions.map((item) =>
-                item.item_id === item_id
-                    ? {
-                          ...item,
-                          quantity:
-                              action === "increment"
-                                  ? item.quantity + 1
-                                  : item.quantity - 1,
-                      }
-                    : item
-            ) as AdditionItem[];
+        active_transaction
+            ? setNewRoomAdditions((prev) =>
+                  updateAdditions(prev, item_id, action, type, price, name)
+              )
+            : setRoomAdditions((prev) =>
+                  updateAdditions(prev, item_id, action, type, price, name)
+              );
+    };
 
-            // Filter out items with quantity 0
-            updatedAdditions = updatedAdditions.filter(
-                (item) => item.quantity > 0
-            );
-
-            // Check if the item was not in the previous state and add it
-            const itemExists = prevRoomAdditions.some(
-                (item) => item.item_id === item_id
-            );
-
-            if (!itemExists && action === "increment") {
-                updatedAdditions.push({
-                    item_id,
-                    quantity: 1,
-                    type,
-                    price,
-                    name,
-                });
-            }
-
-            return updatedAdditions; // Returns updated array of AdditionItem[]
+    const updateRoomAdditions = async () => {
+        await router.patch(route("update.room.additions", room_id), {
+            new_room_additions: JSON.stringify(newRoomAdditions),
+            total_payment: newRoomAdditions.reduce(
+                (total, item) => total + item.price * item.quantity,
+                0
+            ),
         });
+
+        // Merge newRoomAdditions into roomAdditions
+        const mergedRoomAdditions = [...roomAdditions];
+
+        newRoomAdditions.forEach((newItem) => {
+            const existingItemIndex = mergedRoomAdditions.findIndex(
+                (item) => item.item_id === newItem.item_id
+            );
+
+            if (existingItemIndex !== -1) {
+                // If item exists, increase the quantity
+                mergedRoomAdditions[existingItemIndex].quantity +=
+                    newItem.quantity;
+            } else {
+                // If item does not exist, add as new item
+                mergedRoomAdditions.push(newItem);
+            }
+        });
+
+        setRoomAdditions(mergedRoomAdditions);
     };
 
     return (
         <fieldset className="fieldset">
-            <legend className="fieldset-legend">Room additions</legend>
+            <div className="flex flex-col gap-2">
+                <legend className="fieldset-legend">Room additions</legend>
+                {active_transaction && (
+                    <div className="flex gap-1">
+                        <button
+                            className={`btn btn-accent btn-xs ${
+                                isEditing && "btn-error"
+                            }`}
+                            onClick={() => {
+                                setIsEditing(!isEditing);
+                                setNewRoomAdditions([]);
+                            }}
+                        >
+                            {isEditing ? "Cancel" : "Edit"}
+                        </button>
+                        {isEditing && newRoomAdditions.length > 0 && (
+                            <AlertDialog
+                                confirmAction={async () => {
+                                    await updateRoomAdditions();
+                                    setNewRoomAdditions([]);
+                                    setIsEditing(false);
+                                }}
+                                buttonTitle="Save"
+                                buttonClassname="btn btn-success btn-xs"
+                                cancelButtonName="Edit"
+                                modalTitle="Room additions"
+                                modalDescription="Please collect the total amount. NOTE: No refund policy applies after payment."
+                            >
+                                <div className="overflow-x-auto overflow-y-auto max-h-64">
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {newRoomAdditions.map(
+                                                (item, index) => (
+                                                    <tr key={index}>
+                                                        <td>{item.name}</td>
+                                                        <td>{item.quantity}</td>
+                                                        <td>
+                                                            ₱
+                                                            {item.price *
+                                                                item.quantity}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="divider m-0"></div>
+                                <div className="flex justify-between mb-4 px-2">
+                                    <div>Total Amount</div>
+                                    <div className="font-bold text-lg">
+                                        ₱
+                                        {newRoomAdditions.reduce(
+                                            (total, item) =>
+                                                total +
+                                                item.price * item.quantity,
+                                            0
+                                        )}
+                                    </div>
+                                </div>
+                            </AlertDialog>
+                        )}
+                    </div>
+                )}
+            </div>
             <div className="overflow-x-auto overflow-y-auto max-h-64">
                 <table className="table">
                     <thead>
@@ -73,11 +200,16 @@ const SetRoomAdditions = ({
                     <tbody>
                         {inventoryItems.map((inventoryItem, index) => {
                             let itemQuantity =
-                                roomAdditions.find(
+                                (roomAdditions.find(
                                     (roomAddition) =>
                                         roomAddition.item_id ===
                                         inventoryItem.id
-                                )?.quantity ?? 0;
+                                )?.quantity ?? 0) +
+                                (newRoomAdditions.find(
+                                    (roomAddition) =>
+                                        roomAddition.item_id ===
+                                        inventoryItem.id
+                                )?.quantity ?? 0);
 
                             return (
                                 <tr key={index}>
@@ -94,7 +226,21 @@ const SetRoomAdditions = ({
                                                         inventoryItem.item_name
                                                     )
                                                 }
-                                                disabled={itemQuantity === 0}
+                                                disabled={
+                                                    itemQuantity === 0 ||
+                                                    (active_transaction
+                                                        ? roomAdditions.find(
+                                                              (roomAddition) =>
+                                                                  roomAddition.item_id ===
+                                                                  inventoryItem.id
+                                                          )?.quantity ===
+                                                          itemQuantity
+                                                        : false) ||
+                                                    (active_transaction &&
+                                                    !isEditing
+                                                        ? true
+                                                        : false)
+                                                }
                                             >
                                                 -
                                             </button>
@@ -114,7 +260,11 @@ const SetRoomAdditions = ({
                                                 }
                                                 disabled={
                                                     inventoryItem.available ===
-                                                    itemQuantity
+                                                        itemQuantity ||
+                                                    (active_transaction &&
+                                                    !isEditing
+                                                        ? true
+                                                        : false)
                                                 }
                                             >
                                                 +

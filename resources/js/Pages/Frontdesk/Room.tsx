@@ -74,6 +74,10 @@ const Room = ({
     const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>(
         active_transaction?.room_additions ?? []
     );
+    const [newRoomAdditions, setNewRoomAdditions] = useState<AdditionItem[]>(
+        []
+    );
+
     // LOCAL VARS
     let roomRate = rates.find((rate) => rate.id === roomRateId) ?? null;
     let TotalAmountToPay = roomAdditions.reduce(
@@ -146,6 +150,10 @@ const Room = ({
                 inventoryItems={inventory_items}
                 roomAdditions={roomAdditions}
                 setRoomAdditions={setRoomAdditions}
+                newRoomAdditions={newRoomAdditions}
+                setNewRoomAdditions={setNewRoomAdditions}
+                active_transaction={active_transaction}
+                room_id={room.id}
             />
 
             {/* Check in button */}

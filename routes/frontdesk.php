@@ -8,6 +8,8 @@ Route::middleware('auth')->group(function () {
     Route::get('frontdesk/room/{id}', [FrontdeskController::class, 'room_form'])
         ->name('frontdesk.room.form');
 
+    Route::patch('frontdesk/room-additions/{id}', [FrontdeskController::class, 'update_room_additions'])
+    ->name('update.room.additions');
 
     Route::post('frontdesk/room/check-in', [FrontdeskController::class, 'check_in'])
         ->name('frontdesk.check_in');

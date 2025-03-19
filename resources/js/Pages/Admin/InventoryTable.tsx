@@ -28,7 +28,8 @@ const InventoryTable = ({
                             <td>
                                 {item.available +
                                     (item.in_process ?? 0) +
-                                    (item.in_use ?? 0)}
+                                    (item.in_use ?? 0) +
+                                    (item.sold ?? 0)}
                             </td>
                             <td>{item.available}</td>
                             <td> ₱{item.price}</td>

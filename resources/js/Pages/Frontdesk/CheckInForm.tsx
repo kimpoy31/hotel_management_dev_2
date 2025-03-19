@@ -56,6 +56,8 @@ const CheckInForm = ({
     };
 
     useEffect(() => {
+        setNumberOfDays(1);
+
         setSelectedRate(
             active_transaction
                 ? rates.find((rate) => rate.id === stayExtension) ?? null

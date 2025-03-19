@@ -173,7 +173,9 @@ const Room = ({
                 <div className="flex justify-between text-lg">
                     <h1>
                         Room rate -{" "}
-                        {numberOfDays ? (
+                        {numberOfDays &&
+                        roomRate?.duration &&
+                        roomRate?.duration > 23 ? (
                             <span>
                                 {numberOfDays < 1 ? 1 : numberOfDays} Day(s)
                             </span>

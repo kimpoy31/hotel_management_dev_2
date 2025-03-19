@@ -48,9 +48,7 @@ class FrontdeskController extends Controller
             return to_route('frontdesk.room.form', $request->room_id)->withErrors($validator);
         }
 
-        
         $room = Room::find($request->input('room_id'));
-
 
         // * HANDLE ROOM ADDITIONS -> subtract additions from inventory -> available
         $room_additions = json_decode($request->input('room_additions'), true) ?? [];
@@ -59,10 +57,17 @@ class FrontdeskController extends Controller
             $inventoryItem = InventoryItem::find($item['item_id']);
             $quantity_to_update = $item['quantity'];
             
-            $inventoryItem->update([
-                'available' => $inventoryItem->available -= $quantity_to_update,
-                'in_use' => $inventoryItem->in_use += $quantity_to_update,
-            ]);
+            if($inventoryItem->item_type == 'room amenity' ){
+                $inventoryItem->update([
+                    'available' => $inventoryItem->available -= $quantity_to_update,
+                    'in_use' => $inventoryItem->in_use += $quantity_to_update,
+                ]);
+            } else if ($inventoryItem->item_type == 'consumable'){
+                $inventoryItem->update([
+                    'available' => $inventoryItem->available -= $quantity_to_update,
+                    'sold' => $inventoryItem->sold += $quantity_to_update,
+                ]);
+            }
         }
 
         // * SAVE IF ID PICTURE IS PROVIDED

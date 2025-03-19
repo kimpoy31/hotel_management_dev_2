@@ -103,10 +103,22 @@ class RoomController extends Controller
             foreach ($removedInclusions as $removedInclusion) {
                 $inventoryItem = InventoryItem::find($removedInclusion['item_id']);
                 if ($inventoryItem) {
-                    $inventoryItem->update([
-                        'available' => $inventoryItem->available + $removedInclusion['quantity'],
-                        'in_use' => $inventoryItem->in_use - $removedInclusion['quantity'],
-                    ]);
+                    // $inventoryItem->update([
+                    //     'available' => $inventoryItem->available + $removedInclusion['quantity'],
+                    //     'in_use' => $inventoryItem->in_use - $removedInclusion['quantity'],
+                    // ]);
+
+                    if($inventoryItem->item_type == 'room amenity' ){
+                        $inventoryItem->update([
+                           'available' => $inventoryItem->available + $removedInclusion['quantity'],
+                            'in_use' => $inventoryItem->in_use - $removedInclusion['quantity'],
+                        ]);
+                    } else if ($inventoryItem->item_type == 'consumable'){
+                        $inventoryItem->update([
+                            'available' => $inventoryItem->available + $removedInclusion['quantity'],
+                            'sold' => $inventoryItem->sold - $removedInclusion['quantity'],
+                        ]);
+                    }
                 }
             }
         
@@ -119,17 +131,41 @@ class RoomController extends Controller
                         // Existing item — adjust stock based on quantity difference
                         $quantityDifference = $newInclusion['quantity'] - $prevInclusion['quantity'];
                         if ($quantityDifference !== 0) {
-                            $inventoryItem->update([
-                                'available' => $inventoryItem->available - $quantityDifference,
-                                'in_use' => $inventoryItem->in_use + $quantityDifference,
-                            ]);
+                            // $inventoryItem->update([
+                            //     'available' => $inventoryItem->available - $quantityDifference,
+                            //     'in_use' => $inventoryItem->in_use + $quantityDifference,
+                            // ]);
+
+                            if($inventoryItem->item_type == 'room amenity' ){
+                                $inventoryItem->update([
+                                   'available' => $inventoryItem->available - $quantityDifference,
+                                    'in_use' => $inventoryItem->in_use + $quantityDifference,
+                                ]);
+                            } else if ($inventoryItem->item_type == 'consumable'){
+                                $inventoryItem->update([
+                                    'available' => $inventoryItem->available - $quantityDifference,
+                                    'sold' => $inventoryItem->sold + $quantityDifference,
+                                ]);
+                            }
                         }
                     } else {
                         // New item — subtract from available and add to in-use
-                        $inventoryItem->update([
-                            'available' => $inventoryItem->available - $newInclusion['quantity'],
-                            'in_use' => $inventoryItem->in_use + $newInclusion['quantity'],
-                        ]);
+                        // $inventoryItem->update([
+                        //     'available' => $inventoryItem->available - $newInclusion['quantity'],
+                        //     'in_use' => $inventoryItem->in_use + $newInclusion['quantity'],
+                        // ]);
+
+                        if($inventoryItem->item_type == 'room amenity' ){
+                            $inventoryItem->update([
+                               'available' => $inventoryItem->available - $newInclusion['quantity'],
+                                'in_use' => $inventoryItem->in_use + $newInclusion['quantity'],
+                            ]);
+                        } else if ($inventoryItem->item_type == 'consumable'){
+                            $inventoryItem->update([
+                                'available' => $inventoryItem->available - $newInclusion['quantity'],
+                                'sold' => $inventoryItem->sold + $newInclusion['quantity'],
+                            ]);
+                        }
                     }
                 }
             }
@@ -152,10 +188,16 @@ class RoomController extends Controller
              // Subtract from inventory on creation
             foreach (json_decode($request->input('room_inclusions'), true) as $inclusionItem) {
                 $inventoryItem = InventoryItem::find($inclusionItem['item_id']);
-                if ($inventoryItem) {
+
+                if($inventoryItem->item_type == 'room amenity' ){
                     $inventoryItem->update([
                         'available' => $inventoryItem->available - $inclusionItem['quantity'],
                         'in_use' => $inventoryItem->in_use + $inclusionItem['quantity'],
+                    ]);
+                } else if ($inventoryItem->item_type == 'consumable'){
+                    $inventoryItem->update([
+                        'available' => $inventoryItem->available - $inclusionItem['quantity'],
+                        'sold' => $inventoryItem->sold + $inclusionItem['quantity'],
                     ]);
                 }
             }

@@ -39,7 +39,13 @@ const RateForm = ({ rate: rateToEdit, errors }: Props) => {
                         type="number"
                         className="input input-lg"
                         value={duration > 0 ? duration : ""}
-                        onChange={(e) => setDuration(parseInt(e.target.value))}
+                        onChange={(e) =>
+                            setDuration(
+                                parseInt(e.target.value) > 24
+                                    ? 24
+                                    : parseInt(e.target.value)
+                            )
+                        }
                     />
                     {errors.duration && (
                         <ErrorMessage>

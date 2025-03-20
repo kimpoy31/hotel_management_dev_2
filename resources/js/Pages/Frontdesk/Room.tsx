@@ -177,6 +177,20 @@ const Room = ({
                     <h1> Customer name: </h1>
                     <span className="capitalize font-bold">{customerName}</span>
                 </div>
+                <div className="flex gap-2">
+                    <h1> Check-in: </h1>
+                    <span className="capitalize font-bold">
+                        {checkInTime.toDateString()}{" "}
+                        {checkInTime.toLocaleTimeString()}
+                    </span>
+                </div>
+                <div className="flex gap-2">
+                    <h1> Expected checkout: </h1>
+                    <span className="capitalize font-bold">
+                        {checkInTime.toDateString()}{" "}
+                        {checkInTime.toLocaleTimeString()}
+                    </span>
+                </div>
                 <div className="divider m-0"></div>
                 <div className="flex justify-between text-lg">
                     <h1>
@@ -236,3 +250,18 @@ const Room = ({
 };
 
 export default Room;
+
+// let roomRate = active_transaction
+// ? rates.find((rate) => rate.id === stayExtension) ?? null
+// : rates.find((rate) => rate.id === roomRateId) ?? null;
+
+// const isBeforeTwoPM = () => {
+// const now = new Date();
+// const twoPM = new Date();
+// twoPM.setHours(14, 0, 0, 0); // Set to 2:00 PM today
+
+// return now < twoPM;
+// };
+
+// (((roomRate?.duration ?? 0) > 23 && isBeforeTwoPM()) ??
+//                 false)

@@ -26,23 +26,30 @@ interface Props {
     active_transaction: Transaction | null;
 }
 
-export const getCheckoutDateTime = (
-    checkInDateTime: string | Date,
-    numberOfHours: number
+export const getExpectedCheckoutDatetime = (
+    checkInTime: Date | string,
+    durationInHours: number
 ): Date => {
-    if (!checkInDateTime || typeof numberOfHours !== "number") {
-        throw new Error("Invalid input");
+    let checkInDate: Date;
+
+    if (typeof checkInTime === "string") {
+        checkInDate = new Date(checkInTime);
+    } else {
+        checkInDate = checkInTime;
     }
 
-    const checkInDate = new Date(checkInDateTime);
     if (isNaN(checkInDate.getTime())) {
-        throw new Error("Invalid date");
+        throw new Error("Invalid check-in time");
     }
 
-    // Add hours
-    checkInDate.setHours(checkInDate.getHours() + numberOfHours);
+    const checkoutDate = new Date(checkInDate.getTime());
+    checkoutDate.setHours(checkoutDate.getHours() + durationInHours);
 
-    return checkInDate;
+    if (durationInHours > 23) {
+        checkoutDate.setHours(12, 0, 0, 0); // Set time to 12:00 noon
+    }
+
+    return checkoutDate;
 };
 
 const Room = ({
@@ -93,7 +100,7 @@ const Room = ({
                 ? roomRate!.duration
                 : 24 *
                   (!isNaN(numberOfDays) && numberOfDays > 0 ? numberOfDays : 1);
-        let expected_check_out = getCheckoutDateTime(
+        let expected_check_out = getExpectedCheckoutDatetime(
             checkInTime,
             numberOfHours
         );
@@ -112,6 +119,9 @@ const Room = ({
             id_picture: customerIDPicture,
             total_payment: TotalAmountToPay,
         });
+
+        setNumberOfDays(1);
+        setRoomRateId(0);
     };
 
     return (
@@ -187,8 +197,16 @@ const Room = ({
                 <div className="flex gap-2">
                     <h1> Expected checkout: </h1>
                     <span className="capitalize font-bold">
-                        {checkInTime.toDateString()}{" "}
-                        {checkInTime.toLocaleTimeString()}
+                        {getExpectedCheckoutDatetime(
+                            checkInTime,
+                            (roomRate?.duration ?? 0) *
+                                (numberOfDays > 0 ? numberOfDays : 1)
+                        ).toDateString()}{" "}
+                        {getExpectedCheckoutDatetime(
+                            checkInTime,
+                            (roomRate?.duration ?? 0) *
+                                (numberOfDays > 0 ? numberOfDays : 1)
+                        ).toLocaleTimeString()}
                     </span>
                 </div>
                 <div className="divider m-0"></div>

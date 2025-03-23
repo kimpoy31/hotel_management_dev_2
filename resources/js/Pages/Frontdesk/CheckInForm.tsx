@@ -3,7 +3,7 @@ import FormHeader from "@/components/FormHeader";
 import { Rate, Transaction } from "@/types";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getCheckoutDateTime } from "./Room";
+import { getExpectedCheckoutDatetime } from "./Room";
 
 interface Props {
     rates: Rate[];
@@ -240,13 +240,13 @@ const CheckInForm = ({
                                                     </div>
 
                                                     <div className="font-bold text-accent-content text-nowrap">
-                                                        {getCheckoutDateTime(
+                                                        {getExpectedCheckoutDatetime(
                                                             active_transaction.check_in,
                                                             active_transaction.number_of_hours +
                                                                 (selectedRate?.duration ??
                                                                     0)
                                                         ).toDateString()}{" "}
-                                                        {getCheckoutDateTime(
+                                                        {getExpectedCheckoutDatetime(
                                                             active_transaction.check_in,
                                                             active_transaction.number_of_hours +
                                                                 (selectedRate?.duration ??

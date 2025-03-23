@@ -210,7 +210,7 @@ const CheckInForm = ({
                                     <thead>
                                         <tr>
                                             <th className="uppercase">
-                                                Updated Details {numberOfDays}
+                                                Updated Details
                                             </th>
                                         </tr>
                                     </thead>
@@ -218,13 +218,15 @@ const CheckInForm = ({
                                         <tr>
                                             <td className="w-fit">
                                                 <div className="flex flex-col gap-2 text-nowrap">
-                                                    <div>Check-in:</div>
+                                                    <div>
+                                                        Expected checkout:
+                                                    </div>
                                                     <div className="font-bold text-accent-content text-nowrap">
                                                         {new Date(
-                                                            active_transaction!.check_in
+                                                            active_transaction!.expected_check_out
                                                         ).toDateString()}{" "}
                                                         {new Date(
-                                                            active_transaction!.check_in
+                                                            active_transaction!.expected_check_out
                                                         ).toLocaleTimeString()}
                                                     </div>
                                                 </div>
@@ -241,16 +243,22 @@ const CheckInForm = ({
 
                                                     <div className="font-bold text-accent-content text-nowrap">
                                                         {getExpectedCheckoutDatetime(
-                                                            active_transaction.check_in,
-                                                            active_transaction.number_of_hours +
-                                                                (selectedRate?.duration ??
-                                                                    0)
+                                                            active_transaction.expected_check_out,
+                                                            (selectedRate?.duration ??
+                                                                0) *
+                                                                (numberOfDays &&
+                                                                numberOfDays > 0
+                                                                    ? numberOfDays
+                                                                    : 1)
                                                         ).toDateString()}{" "}
                                                         {getExpectedCheckoutDatetime(
-                                                            active_transaction.check_in,
-                                                            active_transaction.number_of_hours +
-                                                                (selectedRate?.duration ??
-                                                                    0)
+                                                            active_transaction.expected_check_out,
+                                                            (selectedRate?.duration ??
+                                                                0) *
+                                                                (numberOfDays &&
+                                                                numberOfDays > 0
+                                                                    ? numberOfDays
+                                                                    : 1)
                                                         ).toLocaleTimeString()}
                                                     </div>
                                                 </div>

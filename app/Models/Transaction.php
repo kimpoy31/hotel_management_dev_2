@@ -24,6 +24,7 @@ class Transaction extends Model
         'damaged_items',
         'settlement_payment',
         'overtime_charge',
+        'stay_extensions'
     ];
 
     protected $casts = [
@@ -31,6 +32,7 @@ class Transaction extends Model
         'check_out' => 'datetime',
         'expected_check_out' => 'datetime',
         'room_additions' => 'array',
+        'stay_extensions' => 'array',
         'missing_items' => 'array',
         'rate' => 'decimal:2',
         'total_payment' => 'decimal:2',

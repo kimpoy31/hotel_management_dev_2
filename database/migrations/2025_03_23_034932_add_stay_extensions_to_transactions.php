@@ -8,14 +8,14 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->json('stay_extensions')->nullable()->after('expected_check_out');
+            $table->json('latest_rate_availed')->after('expected_check_out');
         });
     }
 
     public function down(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->dropColumn('stay_extensions');
+            $table->dropColumn('latest_rate_availed');
         });
     }
 };

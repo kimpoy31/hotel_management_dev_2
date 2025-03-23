@@ -55,6 +55,8 @@ const CheckInForm = ({
         return "";
     };
 
+    const handleStayExtention = () => {};
+
     useEffect(() => {
         setNumberOfDays(1);
 

@@ -31,6 +31,7 @@ class FrontdeskController extends Controller
     public function check_in (Request $request){
         // Validation rules
         $validator = Validator::make($request->all(), [
+            'rate_id' => ['required', 'integer'],
             'room_id' => ['required', 'integer'],
             'check_in' => ['required', 'date'],
             'expected_check_out' => ['required', 'date'],
@@ -83,6 +84,7 @@ class FrontdeskController extends Controller
             'check_in' => $request->input('check_in'),
             'expected_check_out' => $request->input('expected_check_out'),
             'number_of_hours' => $request->input('number_of_hours'),
+            'latest_rate_availed' => Rate::find($request->input('rate_id')),
             'rate' => $request->input('rate'),
             'room_number' => $request->input('room_number'),
             'customer_name' => $request->input('customer_name'),
@@ -149,4 +151,33 @@ class FrontdeskController extends Controller
 
         return to_route('frontdesk.room.form', $id);
     }
+
+
+    public function handleStayExtension(Request $request) {
+        $rate = Rate::find($request->input('rate_id'));
+        $transaction = Transaction::find($request->input('transaction_id'));
+    
+        if (!$rate || !$transaction) {
+            return response()->json(['error' => 'Rate or Transaction not found'], 404);
+        }
+    
+        // Decode existing stay_extensions or initialize as an empty array
+        $stayExtensions = $transaction->stay_extensions ?: [];
+    
+        // Append the full $rate object directly
+        $stayExtensions[] = $rate;
+    
+        // Update the transaction with the new stay_extensions array
+        $transaction->update([
+            'stay_extensions' => $stayExtensions,
+        ]);
+    
+        // Update the transaction with the new stay_extensions array
+        $transaction->update([
+            'stay_extensions' => $stayExtensions,
+        ]);
+    
+        return response()->json(['message' => 'Stay extension added successfully', 'stay_extensions' => $stayExtensions]);
+    }
+    
 }

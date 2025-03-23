@@ -106,6 +106,7 @@ const Room = ({
         );
 
         await router.post(route("frontdesk.check_in"), {
+            rate_id: roomRateId,
             room_id: room.id,
             room_additions: JSON.stringify(roomAdditions),
             check_in: checkInTime,

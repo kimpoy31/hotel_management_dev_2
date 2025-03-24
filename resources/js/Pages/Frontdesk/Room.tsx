@@ -164,6 +164,7 @@ const Room = ({
                 stayExtension={stayExtension}
                 roomRateUpgradeId={roomRateUpgradeId}
                 setRoomRateUpgradeId={setRoomRateUpgradeId}
+                roomDetails={room}
             />
             <SetRoomAdditions
                 inventoryItems={inventory_items}

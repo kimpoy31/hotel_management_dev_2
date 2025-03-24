@@ -1,6 +1,6 @@
 import AlertDialog from "@/components/AlertDialog";
 import FormHeader from "@/components/FormHeader";
-import { Rate, Transaction } from "@/types";
+import { Rate, Room, Transaction } from "@/types";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getExpectedCheckoutDatetime } from "./Room";
@@ -16,22 +16,37 @@ interface Props {
     numberOfDays: number | undefined;
     setNumberOfDays: (value: number) => void;
     active_transaction: Transaction | null;
+    roomDetails: Room;
 }
 
 const CheckInForm = ({
     rates,
     roomRateId,
-    setRoomRateId,
     numberOfDays,
     setNumberOfDays,
     active_transaction,
     setStayExtension,
     stayExtension,
+    roomDetails,
+    setRoomRateId,
+    setRoomRateUpgradeId,
+    roomRateUpgradeId,
 }: Props) => {
     const [selectedRate, setSelectedRate] = useState<Rate | null>(() =>
         active_transaction
             ? rates.find((rate) => rate.id === stayExtension) ?? null
             : rates.find((rate) => rate.id === roomRateId) ?? null
+    );
+
+    // FOR RATE UPGRADING
+    let upgradedRate = rates.find(
+        (rate) => rate.id === active_transaction?.latest_rate_availed.rateId
+    );
+    let filteredRatesForUpgrade = rates.filter(
+        (rate) =>
+            rate.duration * (numberOfDays ?? 1) >
+            (upgradedRate?.duration ?? 1) *
+                (active_transaction?.latest_rate_availed.multiplier ?? 1)
     );
 
     const formatTransactionDuration = (numberOfHours?: number) => {
@@ -133,33 +148,51 @@ const CheckInForm = ({
                     </div>
                 )}
 
-                <div className="divider"></div>
-                <fieldset className="fieldset w-full max-w-xs">
-                    <legend className="fieldset-legend">
-                        Upgrade rate availed
-                    </legend>
-                    <select
-                        value={active_transaction ? stayExtension : roomRateId}
-                        className="select select-lg w-full"
-                        onChange={(e) => {
-                            active_transaction
-                                ? setStayExtension(Number(e.target.value))
-                                : setRoomRateId(Number(e.target.value));
-                        }}
-                    >
-                        <option disabled={true} value={0}>
-                            Select room rate
-                        </option>
-                        {rates.map((rate, index) => (
-                            <option key={index} value={rate.id}>
-                                {rate.duration >= 24
-                                    ? "Daily rate - ₱" + rate.rate
-                                    : rate.duration + "Hours - ₱" + rate.rate}
-                            </option>
-                        ))}
-                    </select>
-                </fieldset>
-                <div className="divider"></div>
+                {roomDetails.room_status === "occupied" && upgradedRate && (
+                    <>
+                        <div className="divider my-0"></div>
+                        <fieldset className="fieldset w-full max-w-xs">
+                            <legend className="fieldset-legend">
+                                Upgrade rate availed
+                            </legend>
+                            <select
+                                value={roomRateUpgradeId}
+                                className="select select-lg w-full"
+                                onChange={(e) =>
+                                    setRoomRateUpgradeId(Number(e.target.value))
+                                }
+                            >
+                                <option disabled={true} value={0}>
+                                    {upgradedRate.duration >= 24
+                                        ? "Daily rate - ₱" + upgradedRate.rate
+                                        : upgradedRate.duration +
+                                          "Hours - ₱" +
+                                          upgradedRate.rate}
+                                </option>
+                                {filteredRatesForUpgrade.map((rate, index) => (
+                                    <option key={index} value={rate.id}>
+                                        {rate.duration >= 24
+                                            ? "Daily rate - ₱" + rate.rate
+                                            : rate.duration +
+                                              "Hours - ₱" +
+                                              rate.rate}
+                                    </option>
+                                ))}
+                            </select>
+                        </fieldset>
+                        {roomRateUpgradeId > 0 && (
+                            <div className="flex">
+                                <button
+                                    className="btn btn-square btn-error"
+                                    onClick={() => setRoomRateUpgradeId(0)}
+                                >
+                                    <X />
+                                </button>
+                            </div>
+                        )}
+                        <div className="divider my-0"></div>
+                    </>
+                )}
 
                 <div className="flex gap-2">
                     <fieldset className="fieldset w-full max-w-xs">

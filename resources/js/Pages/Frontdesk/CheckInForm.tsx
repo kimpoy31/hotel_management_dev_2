@@ -40,13 +40,11 @@ const CheckInForm = ({
 
     // FOR RATE UPGRADING
     let upgradedRate = rates.find(
-        (rate) => rate.id === active_transaction?.latest_rate_availed.rateId
+        (rate) => rate.id === active_transaction?.latest_rate_availed_id
     );
     let filteredRatesForUpgrade = rates.filter(
         (rate) =>
-            rate.duration * (numberOfDays ?? 1) >
-            (upgradedRate?.duration ?? 1) *
-                (active_transaction?.latest_rate_availed.multiplier ?? 1)
+            rate.duration * (numberOfDays ?? 1) > (upgradedRate?.duration ?? 1)
     );
 
     const formatTransactionDuration = (numberOfHours?: number) => {

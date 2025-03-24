@@ -24,7 +24,7 @@ class Transaction extends Model
         'damaged_items',
         'settlement_payment',
         'overtime_charge',
-        'latest_rate_availed'
+        'latest_rate_availed_id'
     ];
 
     protected $casts = [
@@ -37,6 +37,6 @@ class Transaction extends Model
         'total_payment' => 'decimal:2',
         'settlement_payment' => 'decimal:2',
         'overtime_charge' => 'decimal:2',
-        'latest_rate_availed' => 'array',
+        'latest_rate_availed_id' => 'integer',
     ];
 }

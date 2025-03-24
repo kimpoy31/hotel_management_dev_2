@@ -44,7 +44,7 @@ export interface Transaction {
     check_in: string; // ISO date format (e.g., "2025-03-15T14:30:00Z")
     check_out?: string;
     expected_check_out: string;
-    latest_rate_availed: { rateId: number; multiplier: number };
+    latest_rate_availed_id: number;
     number_of_hours: number;
     rate: number;
     room_number: string;

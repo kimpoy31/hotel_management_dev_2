@@ -112,10 +112,7 @@ const Room = ({
             room_id: room.id,
             room_additions: JSON.stringify(roomAdditions),
             check_in: checkInTime,
-            latest_rate_availed: JSON.stringify({
-                rateId: roomRateId,
-                multiplier: numberOfDays < 1 ? 1 : numberOfDays,
-            }),
+            latest_rate_availed_id: roomRateId,
             expected_check_out,
             number_of_hours: numberOfHours,
             rate: roomRate?.rate,

@@ -84,7 +84,7 @@ class FrontdeskController extends Controller
             'check_in' => $request->input('check_in'),
             'expected_check_out' => $request->input('expected_check_out'),
             'number_of_hours' => $request->input('number_of_hours'),
-            'latest_rate_availed' => Rate::find($request->input('rate_id')),
+            'latest_rate_availed' => json_decode($request->input('latest_rate_availed'),true),
             'rate' => $request->input('rate'),
             'room_number' => $request->input('room_number'),
             'customer_name' => $request->input('customer_name'),

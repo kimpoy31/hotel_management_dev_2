@@ -8,8 +8,10 @@ import { getExpectedCheckoutDatetime } from "./Room";
 interface Props {
     rates: Rate[];
     roomRateId: number;
+    roomRateUpgradeId: number;
     stayExtension: number;
     setRoomRateId: (value: number) => void;
+    setRoomRateUpgradeId: (value: number) => void;
     setStayExtension: (value: number) => void;
     numberOfDays: number | undefined;
     setNumberOfDays: (value: number) => void;
@@ -130,6 +132,34 @@ const CheckInForm = ({
                         </div>
                     </div>
                 )}
+
+                <div className="divider"></div>
+                <fieldset className="fieldset w-full max-w-xs">
+                    <legend className="fieldset-legend">
+                        Upgrade rate availed
+                    </legend>
+                    <select
+                        value={active_transaction ? stayExtension : roomRateId}
+                        className="select select-lg w-full"
+                        onChange={(e) => {
+                            active_transaction
+                                ? setStayExtension(Number(e.target.value))
+                                : setRoomRateId(Number(e.target.value));
+                        }}
+                    >
+                        <option disabled={true} value={0}>
+                            Select room rate
+                        </option>
+                        {rates.map((rate, index) => (
+                            <option key={index} value={rate.id}>
+                                {rate.duration >= 24
+                                    ? "Daily rate - ₱" + rate.rate
+                                    : rate.duration + "Hours - ₱" + rate.rate}
+                            </option>
+                        ))}
+                    </select>
+                </fieldset>
+                <div className="divider"></div>
 
                 <div className="flex gap-2">
                     <fieldset className="fieldset w-full max-w-xs">

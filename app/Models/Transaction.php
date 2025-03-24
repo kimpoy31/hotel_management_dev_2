@@ -37,5 +37,6 @@ class Transaction extends Model
         'total_payment' => 'decimal:2',
         'settlement_payment' => 'decimal:2',
         'overtime_charge' => 'decimal:2',
+        'latest_rate_availed' => 'array',
     ];
 }

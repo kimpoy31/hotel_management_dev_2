@@ -9,6 +9,8 @@ return new class extends Migration {
     {
         Schema::table('transactions', function (Blueprint $table) {
             $table->json('latest_rate_availed')->after('expected_check_out');
+            $table->dateTime('check_in')->change();
+            $table->dateTime('check_out')->nullable()->change();
         });
     }
 
@@ -16,6 +18,8 @@ return new class extends Migration {
     {
         Schema::table('transactions', function (Blueprint $table) {
             $table->dropColumn('latest_rate_availed');
+            $table->timestamp('check_in')->change(); // Revert back to timestamp
+            $table->timestamp('check_out')->nullable()->change();
         });
     }
 };

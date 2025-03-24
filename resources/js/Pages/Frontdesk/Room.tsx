@@ -72,8 +72,10 @@ const Room = ({
     const [customerIDPicture, setCustomerIDpicture] = useState<File | null>(
         null
     );
+
     // OCCUPIED ROOM VARIABLES
     const [stayExtension, setStayExtension] = useState(0);
+    const [roomRateUpgradeId, setRoomRateUpgradeId] = useState(0);
 
     // Room variable
     const [roomRateId, setRoomRateId] = useState(0);
@@ -110,6 +112,10 @@ const Room = ({
             room_id: room.id,
             room_additions: JSON.stringify(roomAdditions),
             check_in: checkInTime,
+            latest_rate_availed: JSON.stringify({
+                rateId: roomRateId,
+                multiplier: numberOfDays < 1 ? 1 : numberOfDays,
+            }),
             expected_check_out,
             number_of_hours: numberOfHours,
             rate: roomRate?.rate,
@@ -156,6 +162,8 @@ const Room = ({
                 active_transaction={active_transaction}
                 setStayExtension={setStayExtension}
                 stayExtension={stayExtension}
+                roomRateUpgradeId={roomRateUpgradeId}
+                setRoomRateUpgradeId={setRoomRateUpgradeId}
             />
             <SetRoomAdditions
                 inventoryItems={inventory_items}

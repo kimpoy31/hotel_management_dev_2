@@ -152,32 +152,15 @@ class FrontdeskController extends Controller
         return to_route('frontdesk.room.form', $id);
     }
 
-
-    public function handleStayExtension(Request $request) {
-        $rate = Rate::find($request->input('rate_id'));
+    public function extend_stay_duration (Request $request) {
         $transaction = Transaction::find($request->input('transaction_id'));
     
-        if (!$rate || !$transaction) {
-            return response()->json(['error' => 'Rate or Transaction not found'], 404);
-        }
-    
-        // Decode existing stay_extensions or initialize as an empty array
-        $stayExtensions = $transaction->stay_extensions ?: [];
-    
-        // Append the full $rate object directly
-        $stayExtensions[] = $rate;
-    
-        // Update the transaction with the new stay_extensions array
         $transaction->update([
-            'stay_extensions' => $stayExtensions,
+            'expected_check_out' => $request->input('expected_check_out'),
+            'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
+            'number_of_hours' => $transaction->number_of_hours + $request->input('number_of_hours'),
+            'total_payment' =>  $transaction->total_payment + $request->input('total_amount_to_add'),
         ]);
-    
-        // Update the transaction with the new stay_extensions array
-        $transaction->update([
-            'stay_extensions' => $stayExtensions,
-        ]);
-    
-        return response()->json(['message' => 'Stay extension added successfully', 'stay_extensions' => $stayExtensions]);
     }
 
     public function upgrade_rate_availed (Request $request) {

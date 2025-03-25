@@ -74,7 +74,7 @@ const Room = ({
     );
 
     // OCCUPIED ROOM VARIABLES
-    const [stayExtension, setStayExtension] = useState(0);
+    const [stayExtensionId, setStayExtensionId] = useState(0);
     const [roomRateUpgradeId, setRoomRateUpgradeId] = useState(0);
 
     // Room variable
@@ -157,8 +157,8 @@ const Room = ({
                 numberOfDays={numberOfDays}
                 setNumberOfDays={setNumberOfDays}
                 active_transaction={active_transaction}
-                setStayExtension={setStayExtension}
-                stayExtension={stayExtension}
+                setStayExtensionId={setStayExtensionId}
+                stayExtensionId={stayExtensionId}
                 roomRateUpgradeId={roomRateUpgradeId}
                 setRoomRateUpgradeId={setRoomRateUpgradeId}
                 roomDetails={room}
@@ -277,7 +277,7 @@ const Room = ({
 export default Room;
 
 // let roomRate = active_transaction
-// ? rates.find((rate) => rate.id === stayExtension) ?? null
+// ? rates.find((rate) => rate.id === stayExtensionId) ?? null
 // : rates.find((rate) => rate.id === roomRateId) ?? null;
 
 // const isBeforeTwoPM = () => {

@@ -14,6 +14,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('frontdesk/upgrade-rate/{id}', [FrontdeskController::class, 'upgrade_rate_availed'])
     ->name('upgrade.rate.availed');
 
+    Route::patch('frontdesk/extend-duration', [FrontdeskController::class, 'extend_stay_duration'])
+    ->name('extend.stay.duration');
+
     Route::post('frontdesk/room/check-in', [FrontdeskController::class, 'check_in'])
         ->name('frontdesk.check_in');
 });

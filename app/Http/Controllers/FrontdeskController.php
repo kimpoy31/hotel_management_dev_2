@@ -179,5 +179,15 @@ class FrontdeskController extends Controller
     
         return response()->json(['message' => 'Stay extension added successfully', 'stay_extensions' => $stayExtensions]);
     }
-    
+
+    public function upgrade_rate_availed (Request $request) {
+        $transaction = Transaction::find($request->input('transaction_id'));
+
+        $transaction->update([
+            'expected_check_out' => $request->input('expected_check_out'),
+            'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
+            'number_of_hours' => $request->input('number_of_hours'),
+            'total_payment' =>  $transaction->total_payment + $request->input('total_amount_to_add'),
+        ]);
+    }
 }

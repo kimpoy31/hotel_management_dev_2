@@ -100,8 +100,8 @@ class FrontdeskController extends Controller
             'overtime_charge' => $generalSettings->overtime_charge,
         ]);
 
-        $checkIn = Carbon::parse($request->input('check_in'))->format('F j, Y g:i A');
-        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->format('F j, Y g:i A');
+        $checkIn = Carbon::parse($request->input('check_in'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
 
         $transaction_message = 'Checked in to Room ' . $transaction->room_number . '. Check-in: ' . $checkIn . '. Expected Checkout: ' . $expectedCheckOut . '.';
 

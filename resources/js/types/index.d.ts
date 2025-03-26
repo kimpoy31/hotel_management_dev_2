@@ -58,14 +58,14 @@ export interface Transaction {
     damaged_items?: string;
     settlement_payment?: number;
     overtime_charge: number;
-    transaction_logs: TransactionLog[]
+    transaction_logs: TransactionLog[];
 }
 
-export interface TransactionLog{
+export interface TransactionLog {
     id: number;
     transaction_id: number;
     transaction_officer: string;
-    transaction_type: 'check-in' | 'upgrade' | 'extend' | 'room addition';
+    transaction_type: "check-in" | "upgrade" | "extend" | "room addition";
     transaction_description: string;
     status: "active" | "in-active";
     created_at: string;

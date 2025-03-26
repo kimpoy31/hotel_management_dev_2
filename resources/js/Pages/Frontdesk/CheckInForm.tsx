@@ -104,10 +104,9 @@ const CheckInForm = ({
 
     const handleStayExtension = async () => {
         let expected_check_out = getExpectedCheckoutDatetime(
-            active_transaction?.check_in ?? new Date(),
-            (active_transaction?.number_of_hours ?? 0) +
-                (extensionRate?.duration ?? 0) *
-                    (numberOfDays && numberOfDays < 1 ? 1 : numberOfDays ?? 1)
+            active_transaction?.expected_check_out ?? new Date(),
+            (selectedRate?.duration ?? 0) *
+                (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
         );
 
         await router.patch(route("extend.stay.duration"), {
@@ -295,23 +294,53 @@ const CheckInForm = ({
                                                         <td>
                                                             <div className="flex gap-2">
                                                                 <div>
-                                                                    Expected
+                                                                    Previous
+                                                                    expected
                                                                     checkout:
                                                                 </div>
                                                                 <div className="text-accent-content font-bold">
                                                                     {getExpectedCheckoutDatetime(
                                                                         active_transaction?.check_in ??
                                                                             new Date(),
-                                                                        active_transaction.number_of_hours +
-                                                                            upgradedRate.duration -
-                                                                            prevRateAvailed.duration
+                                                                        active_transaction.number_of_hours
                                                                     ).toDateString()}{" "}
                                                                     {getExpectedCheckoutDatetime(
                                                                         active_transaction?.check_in ??
                                                                             new Date(),
-                                                                        active_transaction.number_of_hours +
-                                                                            upgradedRate.duration -
-                                                                            prevRateAvailed.duration
+                                                                        active_transaction.number_of_hours
+                                                                    ).toLocaleTimeString()}
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <div className="flex gap-2">
+                                                                <div>
+                                                                    Updated
+                                                                    expected
+                                                                    checkout:
+                                                                </div>
+                                                                <div className="text-accent-content font-bold">
+                                                                    {getExpectedCheckoutDatetime(
+                                                                        active_transaction?.expected_check_out ??
+                                                                            new Date(),
+                                                                        (active_transaction?.number_of_hours ??
+                                                                            0) +
+                                                                            ((upgradedRate?.duration ??
+                                                                                0) -
+                                                                                (prevRateAvailed?.duration ??
+                                                                                    0))
+                                                                    ).toDateString()}{" "}
+                                                                    {getExpectedCheckoutDatetime(
+                                                                        active_transaction?.expected_check_out ??
+                                                                            new Date(),
+                                                                        (active_transaction?.number_of_hours ??
+                                                                            0) +
+                                                                            ((upgradedRate?.duration ??
+                                                                                0) -
+                                                                                (prevRateAvailed?.duration ??
+                                                                                    0))
                                                                     ).toLocaleTimeString()}
                                                                 </div>
                                                             </div>
@@ -339,7 +368,9 @@ const CheckInForm = ({
                     <div className="flex gap-x-2 lg:flex-row flex-col">
                         <fieldset className="fieldset w-full max-w-xs">
                             <legend className="fieldset-legend">
-                                Room rate / duration
+                                {roomDetails.room_status === "occupied"
+                                    ? "Extend duration"
+                                    : "Room rate / duration"}
                             </legend>
                             <select
                                 value={

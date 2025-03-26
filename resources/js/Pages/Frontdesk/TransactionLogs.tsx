@@ -22,7 +22,9 @@ const TransactionLogs = ({ transaction_logs }: Props) => {
                     <tbody>
                         {transaction_logs.map((transaction, index) => (
                             <tr key={index}>
-                                <td>{transaction.transaction_description}</td>
+                                <td className="min-w-sm">
+                                    {transaction.transaction_description}
+                                </td>
                                 <td>{transaction.transaction_officer}</td>
                                 <td>
                                     {new Date(

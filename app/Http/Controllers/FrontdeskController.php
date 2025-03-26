@@ -113,7 +113,7 @@ class FrontdeskController extends Controller
             $transaction_message .= ' Room additions: ' . $additions . '.';
         }
 
-        $transaction_message .= ' Total payment: ₱' . $transaction->total_payment;
+        $transaction_message .= ' Transaction payment: ₱' . $transaction->total_payment;
 
         TransactionLog::create([
             'transaction_id' => $transaction->id,
@@ -168,7 +168,7 @@ class FrontdeskController extends Controller
             $transaction_message .= 'Room additions: ' . $additions . '.';
         }
 
-        $transaction_message .= ' Total payment: ₱' . $request->input('total_payment');
+        $transaction_message .= ' Transaction payment: ₱' . $request->input('total_payment');
 
         TransactionLog::create([
             'transaction_id' => $transaction->id,
@@ -197,10 +197,31 @@ class FrontdeskController extends Controller
 
         return to_route('frontdesk.room.form', $id);
     }
+    
+    // REUSABLE FUNCTION
+    public function formatTransactionDuration(int $numberOfHours): string
+    {
+        $days = floor($numberOfHours / 24);
+        $hours = $numberOfHours % 24;
+
+        if ($days > 0 && $hours > 0) {
+            return "{$days} " . ($days > 1 ? "Days" : "Day") . " & {$hours} " . ($hours > 1 ? "Hours" : "Hour");
+        } elseif ($days > 0) {
+            return "{$days} " . ($days > 1 ? "Days" : "Day");
+        } elseif ($hours > 0) {
+            return "{$hours} " . ($hours > 1 ? "Hours" : "Hour");
+        }
+
+        return "0 Hours";
+    }
 
     public function extend_stay_duration(Request $request)
     {
         $transaction = Transaction::find($request->input('transaction_id'));
+        $transaction_message = 'Extended stay duration. ' . $this->formatTransactionDuration($transaction->number_of_hours) . ' + '. $this->formatTransactionDuration($request->input('number_of_hours'));
+        $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add') ;
+        $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
 
         $transaction->update([
             'expected_check_out' => $request->input('expected_check_out'),
@@ -208,8 +229,6 @@ class FrontdeskController extends Controller
             'number_of_hours' => $transaction->number_of_hours + $request->input('number_of_hours'),
             'total_payment' =>  $transaction->total_payment + $request->input('total_amount_to_add'),
         ]);
-
-        $transaction_message = 'Extended stay duration: ' + $request->input('number_of_hours');
 
         TransactionLog::create([
             'transaction_id' => $transaction->id,
@@ -222,12 +241,25 @@ class FrontdeskController extends Controller
     public function upgrade_rate_availed(Request $request)
     {
         $transaction = Transaction::find($request->input('transaction_id'));
+        $prevRateAvailed = Rate::find($transaction->latest_rate_availed_id);
+        $upgradeRateAvailed = Rate::find($request->input('latest_rate_availed_id'));
+        $transaction_message = 'Rate upgraded: ' . $prevRateAvailed->duration . ' Hours - ₱' . $prevRateAvailed->rate . ' -> ' . $upgradeRateAvailed->duration . ' Hours - ₱' . $upgradeRateAvailed->rate;
+        $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add') ;
 
         $transaction->update([
             'expected_check_out' => $request->input('expected_check_out'),
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
             'number_of_hours' => $request->input('number_of_hours'),
             'total_payment' =>  $transaction->total_payment + $request->input('total_amount_to_add'),
+        ]);
+
+        TransactionLog::create([
+            'transaction_id' => $transaction->id,
+            'transaction_officer' => Auth::user()->fullname,
+            'transaction_type' => 'upgrade',
+            'transaction_description' => $transaction_message,
         ]);
     }
 }

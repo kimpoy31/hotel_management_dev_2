@@ -14,24 +14,24 @@ const TransactionLogs = ({ transaction_logs }: Props) => {
                 <table className="table table-pin-rows table-sm">
                     <thead className="uppercase">
                         <tr>
-                            <th>Transaction Date</th>
                             <th>Transaction</th>
                             <th>Processed by</th>
+                            <th>Transaction Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         {transaction_logs.map((transaction, index) => (
                             <tr key={index}>
+                                <td>{transaction.transaction_description}</td>
+                                <td>{transaction.transaction_officer}</td>
                                 <td>
                                     {new Date(
                                         transaction.created_at
                                     ).toDateString()}{" "}
                                     {new Date(
                                         transaction.created_at
-                                    ).toLocaleDateString()}
+                                    ).toLocaleTimeString()}
                                 </td>
-                                <td>{transaction.transaction_description}</td>
-                                <td>{transaction.transaction_officer}</td>
                             </tr>
                         ))}
                     </tbody>

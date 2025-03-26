@@ -8,6 +8,7 @@ use App\Models\Rate;
 use App\Models\Room;
 use App\Models\Transaction;
 use App\Models\TransactionLog;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -99,7 +100,10 @@ class FrontdeskController extends Controller
             'overtime_charge' => $generalSettings->overtime_charge,
         ]);
 
-        $transaction_message = 'Checked in to Room ' . $transaction->room_number;
+        $checkIn = Carbon::parse($request->input('check_in'))->format('F j, Y g:i A');
+        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->format('F j, Y g:i A');
+
+        $transaction_message = 'Checked in to Room ' . $transaction->room_number . '. Check-in: ' . $checkIn . '. Expected Checkout: ' . $expectedCheckOut . '.';
 
         if (!empty($transaction->room_additions)) {
             $additions = collect($transaction->room_additions)
@@ -203,6 +207,15 @@ class FrontdeskController extends Controller
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
             'number_of_hours' => $transaction->number_of_hours + $request->input('number_of_hours'),
             'total_payment' =>  $transaction->total_payment + $request->input('total_amount_to_add'),
+        ]);
+
+        $transaction_message = 'Extended stay duration: ' + $request->input('number_of_hours');
+
+        TransactionLog::create([
+            'transaction_id' => $transaction->id,
+            'transaction_officer' => Auth::user()->fullname,
+            'transaction_type' => 'extend',
+            'transaction_description' => $transaction_message,
         ]);
     }
 

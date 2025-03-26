@@ -4,7 +4,7 @@ import React from "react";
 
 const BackButton = ({ routeName }: { routeName: string }) => {
     return (
-        <Link href={route(routeName)} className="btn btn-dash">
+        <Link href={route(routeName)} className="btn btn-dash w-full">
             <MoveLeft /> Go back
         </Link>
     );

@@ -86,25 +86,26 @@ const Admin = ({
                 </div>
                 <RateTable rates={rates ?? []} />
             </Card>
-            <Card className="max-w-lg self-start">
-                <div className="flex justify-between ">
-                    <h2 className="card-title">General settings</h2>
-                    <button
-                        className={`btn btn-sm ${
-                            isEditing ? "btn-success" : "btn-accent"
-                        } `}
-                        onClick={async () => {
-                            await handleGeneralSettingSubmit();
-                            setIsEditing(!isEditing);
-                        }}
-                    >
-                        {isEditing ? "Save" : "Edit"}
-                    </button>
-                </div>
+            <Card>
+                <h2 className="card-title">General settings</h2>
                 <fieldset className="fieldset">
-                    <legend className="fieldset-legend">
-                        Overtime charge (per hour)
-                    </legend>
+                    <div className="flex justify-between max-w-xs">
+                        <legend className="fieldset-legend">
+                            Overtime charge (per hour)
+                        </legend>
+                        <button
+                            className={`btn btn-sm ${
+                                isEditing ? "btn-success" : "btn-accent"
+                            } `}
+                            onClick={async () => {
+                                await handleGeneralSettingSubmit();
+                                setIsEditing(!isEditing);
+                            }}
+                        >
+                            {isEditing ? "Save" : "Edit"}
+                        </button>
+                    </div>
+
                     <input
                         type="number"
                         className="input input-lg"

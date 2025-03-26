@@ -45,8 +45,10 @@ const EmployeeForm = ({ errors, employee }: Props) => {
     };
 
     return (
-        <div className="flex flex-col gap-2">
-            <BackButton routeName="admin" />
+        <div className="flex flex-col gap-2 items-center">
+            <div className="max-w-7xl w-full flex ">
+                <BackButton routeName="admin" />
+            </div>
             <Card>
                 <FormHeader>
                     {employee ? "Edit employee" : "Add employee"}

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
@@ -39,4 +40,13 @@ class Transaction extends Model
         'overtime_charge' => 'decimal:2',
         'latest_rate_availed_id' => 'integer',
     ];
+
+    protected $appends = ['transaction_logs']; // Append to JSON response
+
+    protected function transactionLogs(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => TransactionLog::where('transaction_id', $this->id)->get(),
+        );
+    }
 }

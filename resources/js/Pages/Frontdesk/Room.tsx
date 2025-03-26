@@ -17,6 +17,7 @@ import CheckInForm from "./CheckInForm";
 import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
 import { router } from "@inertiajs/react";
+import TransactionLogs from "./TransactionLogs";
 
 interface Props {
     room: RoomProp;
@@ -173,6 +174,12 @@ const Room = ({
                     active_transaction={active_transaction}
                     room_id={room.id}
                 />
+
+                {active_transaction && (
+                    <TransactionLogs
+                        transaction_logs={active_transaction.transaction_logs}
+                    />
+                )}
 
                 {/* Check in button */}
                 <AlertDialog

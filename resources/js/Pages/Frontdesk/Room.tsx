@@ -97,6 +97,9 @@ const Room = ({
     );
     const [checkInTime, setCheckInTime] = useState(new Date());
 
+    // ROOM RESERVATION VARS
+    const [isReservingRoom, setIsReservingRoom] = useState(false);
+
     const checkIn = async () => {
         let numberOfHours =
             roomRate!.duration < 24
@@ -131,10 +134,27 @@ const Room = ({
 
     return (
         <div className="flex justify-center">
-            <Card className="lg:card-md card-xs ">
+            <Card className="lg:card-md card-xs">
                 <BackButton routeName="frontdesk" />
                 <RoomHeader room={room} />
                 <div className="divider m-0"></div>
+                <div
+                    className={`p-4 border-2 border-dashed rounded-xl ${
+                        isReservingRoom
+                            ? "border-error"
+                            : "border-accent-content"
+                    }`}
+                >
+                    <button
+                        className={`btn btn-lg w-full ${
+                            isReservingRoom ? "btn-error" : "btn-neutral"
+                        }`}
+                        onClick={() => setIsReservingRoom(!isReservingRoom)}
+                    >
+                        {isReservingRoom ? "Cancel" : "Add Room Reservation"}
+                    </button>
+                </div>
+
                 <DisplayRoomInclusions
                     roomInclusionItems={room.room_inclusion_items ?? []}
                     roomInclusions={room.room_inclusions ?? []}

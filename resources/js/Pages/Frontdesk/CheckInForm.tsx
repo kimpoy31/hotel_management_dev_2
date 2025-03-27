@@ -85,8 +85,10 @@ const CheckInForm = ({
         );
 
         let number_of_hours =
-            (active_transaction?.number_of_hours ?? 0) +
-            ((upgradedRate?.duration ?? 0) - (prevRateAvailed?.duration ?? 0));
+            active_transaction &&
+            active_transaction?.number_of_hours +
+                ((upgradedRate?.duration ?? 0) -
+                    (prevRateAvailed?.duration ?? 0));
 
         let total_amount_to_add =
             (upgradedRate?.rate ?? 0) - (prevRateAvailed?.rate ?? 0);
@@ -323,24 +325,18 @@ const CheckInForm = ({
                                                                 </div>
                                                                 <div className="text-accent-content font-bold">
                                                                     {getExpectedCheckoutDatetime(
-                                                                        active_transaction?.expected_check_out ??
+                                                                        active_transaction?.check_in ??
                                                                             new Date(),
-                                                                        (active_transaction?.number_of_hours ??
-                                                                            0) +
-                                                                            ((upgradedRate?.duration ??
-                                                                                0) -
-                                                                                (prevRateAvailed?.duration ??
-                                                                                    0))
+                                                                        active_transaction.number_of_hours +
+                                                                            (upgradedRate.duration -
+                                                                                prevRateAvailed.duration)
                                                                     ).toDateString()}{" "}
                                                                     {getExpectedCheckoutDatetime(
-                                                                        active_transaction?.expected_check_out ??
+                                                                        active_transaction?.check_in ??
                                                                             new Date(),
-                                                                        (active_transaction?.number_of_hours ??
-                                                                            0) +
-                                                                            ((upgradedRate?.duration ??
-                                                                                0) -
-                                                                                (prevRateAvailed?.duration ??
-                                                                                    0))
+                                                                        active_transaction.number_of_hours +
+                                                                            (upgradedRate.duration -
+                                                                                prevRateAvailed.duration)
                                                                     ).toLocaleTimeString()}
                                                                 </div>
                                                             </div>

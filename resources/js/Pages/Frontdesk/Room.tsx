@@ -18,6 +18,7 @@ import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
 import { router } from "@inertiajs/react";
 import TransactionLogs from "./TransactionLogs";
+import CountdownTimer from "@/components/CountdownTimer";
 
 interface Props {
     room: RoomProp;
@@ -135,6 +136,7 @@ const Room = ({
                 <BackButton routeName="frontdesk" />
                 <RoomHeader room={room} />
                 <div className="divider m-0"></div>
+
                 <DisplayRoomInclusions
                     roomInclusionItems={room.room_inclusion_items ?? []}
                     roomInclusions={room.room_inclusions ?? []}
@@ -182,7 +184,18 @@ const Room = ({
                 )}
 
                 <div className="divider"></div>
-
+                {room.room_status !== "available" && (
+                    <CountdownTimer
+                        expected_check_out={
+                            active_transaction?.expected_check_out ?? ""
+                        }
+                        overtime_penalty={
+                            active_transaction?.overtime_charge ?? 0
+                        }
+                        roomStatus={room.room_status}
+                        className="text-xl"
+                    />
+                )}
                 {/* Check in button */}
                 {room.room_status === "available" && (
                     <AlertDialog

@@ -79,24 +79,26 @@ export interface Room {
     room_rates: Rate[];
     room_inclusions?: InclusionItem[]; // Nullable array of strings for inclusions
     room_inclusion_items: InventoryItem[]; // Nullable array of strings for inclusions
-    room_status:
-        | "available"
-        | "occupied"
-        | "pending_inspection"
-        | "pending_settlement"
-        | "cleaning"
-        | "reserved"
-        | "out_of_service"
-        | "under_maintenance"
-        | "no_show"
-        | "blocked";
+    room_status: RoomStatus;
     active_transaction?: number | null; // Nullable number for active transaction
+    active_transaction_object: Transaction | null;
     status: "active" | "in-active";
 }
 
 export type Status = "active" | "in-active";
 export type UserRoles = "administrator" | "frontdesk" | "housekeeper";
 export type ItemType = "room amenity" | "consumable";
+export type RoomStatus =
+    | "available"
+    | "occupied"
+    | "pending_inspection"
+    | "pending_settlement"
+    | "cleaning"
+    | "reserved"
+    | "out_of_service"
+    | "under_maintenance"
+    | "no_show"
+    | "blocked";
 
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>

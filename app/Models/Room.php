@@ -23,7 +23,7 @@ class Room extends Model
         'room_inclusions' => 'array',
     ];
 
-    protected $appends = ['room_rates', 'room_inclusion_items']; // Append to JSON response
+    protected $appends = ['room_rates', 'room_inclusion_items', 'active_transaction_object']; // Append to JSON response
 
     protected function roomRates(): Attribute
     {
@@ -51,4 +51,12 @@ class Room extends Model
             }
         );
     }
+
+    protected function activeTransactionObject(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => Transaction::where('id', $this->active_transaction)->first() // Returns null if no transaction is found
+        );
+    }
+    
 }

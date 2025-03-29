@@ -1,6 +1,7 @@
 import { Room } from "@/types";
 import { Link } from "@inertiajs/react";
-import React from "react";
+import React, { useEffect } from "react";
+import CountdownTimer from "./CountdownTimer";
 
 interface Props {
     navigateOnClick: boolean;
@@ -33,6 +34,10 @@ export const getTextColor = (room: Room) => {
 };
 
 const RoomCard = ({ className, room, navigateOnClick }: Props) => {
+    useEffect(() => {
+        console.log("Active Transaction", room.active_transaction_object);
+    }, []);
+
     return (
         <Link
             href={navigateOnClick ? route("frontdesk.room.form", room.id) : ""}
@@ -65,6 +70,15 @@ const RoomCard = ({ className, room, navigateOnClick }: Props) => {
                 </div>
                 {room.room_type}
             </div>
+            <CountdownTimer
+                expected_check_out={
+                    room.active_transaction_object?.expected_check_out ?? ""
+                }
+                overtime_penalty={
+                    room.active_transaction_object?.overtime_charge ?? 0
+                }
+                roomStatus={room.room_status}
+            />
         </Link>
     );
 };

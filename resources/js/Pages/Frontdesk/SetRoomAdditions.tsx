@@ -6,11 +6,11 @@ import React, { useEffect, useState } from "react";
 interface Props {
     inventoryItems: InventoryItem[];
     roomAdditions: AdditionItem[];
-    newRoomAdditions: AdditionItem[];
+    newRoomAdditions?: AdditionItem[];
     setRoomAdditions: React.Dispatch<React.SetStateAction<AdditionItem[]>>;
-    setNewRoomAdditions: React.Dispatch<React.SetStateAction<AdditionItem[]>>;
-    active_transaction: Transaction | null;
-    room_id: number;
+    setNewRoomAdditions?: React.Dispatch<React.SetStateAction<AdditionItem[]>>;
+    active_transaction?: Transaction | null;
+    room_id?: number;
 }
 
 const SetRoomAdditions = ({
@@ -75,7 +75,7 @@ const SetRoomAdditions = ({
         name: string
     ) => {
         active_transaction
-            ? setNewRoomAdditions((prev) =>
+            ? setNewRoomAdditions?.((prev) =>
                   updateAdditions(prev, item_id, action, type, price, name)
               )
             : setRoomAdditions((prev) =>
@@ -86,7 +86,7 @@ const SetRoomAdditions = ({
     const updateRoomAdditions = async () => {
         await router.patch(route("update.room.additions", room_id), {
             new_room_additions: JSON.stringify(newRoomAdditions),
-            total_payment: newRoomAdditions.reduce(
+            total_payment: newRoomAdditions?.reduce(
                 (total, item) => total + item.price * item.quantity,
                 0
             ),
@@ -95,7 +95,7 @@ const SetRoomAdditions = ({
         // Merge newRoomAdditions into roomAdditions
         const mergedRoomAdditions = [...roomAdditions];
 
-        newRoomAdditions.forEach((newItem) => {
+        newRoomAdditions?.forEach((newItem) => {
             const existingItemIndex = mergedRoomAdditions.findIndex(
                 (item) => item.item_id === newItem.item_id
             );
@@ -125,16 +125,16 @@ const SetRoomAdditions = ({
                             }`}
                             onClick={() => {
                                 setIsEditing(!isEditing);
-                                setNewRoomAdditions([]);
+                                setNewRoomAdditions?.([]);
                             }}
                         >
                             {isEditing ? "Cancel" : "Edit"}
                         </button>
-                        {isEditing && newRoomAdditions.length > 0 && (
+                        {isEditing && (newRoomAdditions?.length ?? 0) > 0 && (
                             <AlertDialog
                                 confirmAction={async () => {
                                     await updateRoomAdditions();
-                                    setNewRoomAdditions([]);
+                                    setNewRoomAdditions?.([]);
                                     setIsEditing(false);
                                 }}
                                 buttonTitle="Save"
@@ -153,7 +153,7 @@ const SetRoomAdditions = ({
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {newRoomAdditions.map(
+                                            {newRoomAdditions?.map(
                                                 (item, index) => (
                                                     <tr key={index}>
                                                         <td>{item.name}</td>
@@ -174,7 +174,7 @@ const SetRoomAdditions = ({
                                     <div>Total Amount</div>
                                     <div className="font-bold text-lg">
                                         ₱
-                                        {newRoomAdditions.reduce(
+                                        {newRoomAdditions?.reduce(
                                             (total, item) =>
                                                 total +
                                                 item.price * item.quantity,
@@ -205,7 +205,7 @@ const SetRoomAdditions = ({
                                         roomAddition.item_id ===
                                         inventoryItem.id
                                 )?.quantity ?? 0) +
-                                (newRoomAdditions.find(
+                                (newRoomAdditions?.find(
                                     (roomAddition) =>
                                         roomAddition.item_id ===
                                         inventoryItem.id

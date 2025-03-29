@@ -19,4 +19,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('frontdesk/room/check-in', [FrontdeskController::class, 'check_in'])
         ->name('frontdesk.check_in');
+
+
+    Route::get('frontdesk/reserve-room', [FrontdeskController::class, 'room_reserve_form'])
+    ->name('frontdesk.room.reserve.form');
 });

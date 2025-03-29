@@ -31,6 +31,13 @@ class FrontdeskController extends Controller
         ]);
     }
 
+    public function room_reserve_form()
+    {
+        return Inertia::render('Frontdesk/RoomReservationForm', [
+            'rooms' => Room::where('status', 'active')->get(),
+        ]);
+    }
+
     public function check_in(Request $request)
     {
         // Validation rules

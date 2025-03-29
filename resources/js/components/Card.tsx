@@ -11,7 +11,7 @@ const Card = ({
         <div
             className={`card flex-none w-full max-w-7xl bg-base-100 card-md shadow-sm ${className}`}
         >
-            <div className="card-body">{children}</div>
+            <div className="card-body gap-0">{children}</div>
         </div>
     );
 };

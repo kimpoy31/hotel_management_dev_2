@@ -17,8 +17,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     textCentered,
 }) => {
     const getTimeLeft = useCallback(() => {
-        console.log("Expected Check-Out (Raw):", expected_check_out);
-
         // Convert expected check-out and current time to Philippine Time (UTC+8)
         const targetTime = new Date(
             new Date(expected_check_out).toLocaleString("en-US", {

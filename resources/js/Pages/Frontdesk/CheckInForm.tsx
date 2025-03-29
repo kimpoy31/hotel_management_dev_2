@@ -115,7 +115,9 @@ const CheckInForm = ({
             transaction_id: active_transaction?.id,
             expected_check_out,
             latest_rate_availed_id: stayExtensionId,
-            number_of_hours: extensionRate?.duration,
+            number_of_hours:
+                (extensionRate?.duration ?? 0) *
+                ((numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1),
             total_amount_to_add:
                 (extensionRate?.rate ?? 0) *
                 ((numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1),

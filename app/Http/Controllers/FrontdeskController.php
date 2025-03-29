@@ -222,7 +222,7 @@ class FrontdeskController extends Controller
         $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add') ;
         $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
         $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-
+        
         $transaction->update([
             'expected_check_out' => $request->input('expected_check_out'),
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),

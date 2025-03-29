@@ -35,6 +35,8 @@ class FrontdeskController extends Controller
     {
         return Inertia::render('Frontdesk/RoomReservationForm', [
             'rooms' => Room::where('status', 'active')->get(),
+            'inventory_items' => InventoryItem::where('status', 'active')->get(),
+            'rates' => Rate::where('status', 'active')->get(),
         ]);
     }
 

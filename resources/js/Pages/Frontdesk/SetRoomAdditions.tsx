@@ -11,6 +11,7 @@ interface Props {
     setNewRoomAdditions?: React.Dispatch<React.SetStateAction<AdditionItem[]>>;
     active_transaction?: Transaction | null;
     room_id?: number;
+    hideLabel?: boolean;
 }
 
 const SetRoomAdditions = ({
@@ -21,6 +22,7 @@ const SetRoomAdditions = ({
     setNewRoomAdditions,
     active_transaction,
     room_id,
+    hideLabel,
 }: Props) => {
     const [isEditing, setIsEditing] = useState(false);
 
@@ -114,9 +116,11 @@ const SetRoomAdditions = ({
     };
 
     return (
-        <fieldset className="fieldset">
+        <fieldset className="fieldset pb-6">
             <div className="flex flex-col gap-2">
-                <legend className="fieldset-legend">Room additions</legend>
+                {hideLabel !== true && (
+                    <legend className="fieldset-legend">Room additions</legend>
+                )}
                 {active_transaction && (
                     <div className="flex gap-1">
                         <button

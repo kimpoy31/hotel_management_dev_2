@@ -51,7 +51,7 @@ const RoomCard = ({ className, room, navigateOnClick }: Props) => {
                 {room.room_status}
             </div>
             <div
-                className={`text-center bg-base-200 sm:py-10 p-4 flex flex-col rounded-lg ${getBgColor(
+                className={`text-center justify-center bg-base-200 sm:py-10 p-4 flex flex-col rounded-lg ${getBgColor(
                     room
                 )} ${getTextColor(room)}`}
             >
@@ -69,16 +69,16 @@ const RoomCard = ({ className, room, navigateOnClick }: Props) => {
                     {room.room_status}
                 </div>
                 {room.room_type}
+                <CountdownTimer
+                    expected_check_out={
+                        room.active_transaction_object?.expected_check_out ?? ""
+                    }
+                    overtime_penalty={
+                        room.active_transaction_object?.overtime_charge ?? 0
+                    }
+                    roomStatus={room.room_status}
+                />
             </div>
-            <CountdownTimer
-                expected_check_out={
-                    room.active_transaction_object?.expected_check_out ?? ""
-                }
-                overtime_penalty={
-                    room.active_transaction_object?.overtime_charge ?? 0
-                }
-                roomStatus={room.room_status}
-            />
         </Link>
     );
 };

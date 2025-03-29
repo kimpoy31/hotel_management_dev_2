@@ -6,6 +6,7 @@ interface CountdownTimerProps {
     overtime_penalty: number;
     roomStatus?: RoomStatus;
     className?: string;
+    textCentered?: boolean;
 }
 
 const CountdownTimer: React.FC<CountdownTimerProps> = ({
@@ -13,12 +14,20 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     overtime_penalty,
     roomStatus,
     className,
+    textCentered,
 }) => {
     const getTimeLeft = useCallback(() => {
         console.log("Expected Check-Out (Raw):", expected_check_out);
 
-        const targetTime = new Date(expected_check_out);
-        const now = new Date();
+        // Convert expected check-out and current time to Philippine Time (UTC+8)
+        const targetTime = new Date(
+            new Date(expected_check_out).toLocaleString("en-US", {
+                timeZone: "Asia/Manila",
+            })
+        );
+        const now = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" })
+        );
         const targetTimestamp = targetTime.getTime();
 
         if (isNaN(targetTimestamp)) {
@@ -64,14 +73,14 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
     return (
         <div
-            className={`text-center font-bold bg-base-200 p-2 ${
+            className={`font-bold bg-base-200 p-2 ${
                 timeLeft.isOvertime ? "text-error" : "text-success"
             } ${className}`}
         >
             {roomStatus === "available" ? "Vacant" : timeLeft.time}
             {timeLeft.isOvertime ? (
                 <div className="text-xs font-semibold">
-                    Total Overtime: {timeLeft.totalHours} hours
+                    Overtime penalty: ₱{timeLeft.totalHours * overtime_penalty}{" "}
                 </div>
             ) : (
                 <div className="text-xs font-semibold">-</div>

@@ -193,7 +193,7 @@ const Room = ({
                             active_transaction?.overtime_charge ?? 0
                         }
                         roomStatus={room.room_status}
-                        className="text-xl"
+                        className="text-xl text-center"
                     />
                 )}
                 {/* Check in button */}

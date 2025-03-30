@@ -31,6 +31,10 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
     let filteredRates = rates.filter((rate) =>
         selectedRoom?.room_rate_ids.includes(rate.id)
     );
+    let roomAdditionsTotalPayment = roomAdditions.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+    );
 
     useEffect(() => {
         if (reservationDate) {
@@ -309,7 +313,8 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                         !selectedRoomId ||
                         ((selectedRate?.duration ?? 0) >= 24
                             ? !reservationDate
-                            : !reservationDateTime)
+                            : !reservationDateTime) ||
+                        isFullPayment === null
                     }
                 >
                     <div className="overflow-x-auto overflow-y-auto max-h-64">
@@ -388,12 +393,16 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                                     ₱
                                     {isFullPayment
                                         ? (selectedRate?.rate ?? 0) *
-                                          (numberOfDays < 1 ? 1 : numberOfDays)
+                                              (numberOfDays < 1
+                                                  ? 1
+                                                  : numberOfDays) +
+                                          roomAdditionsTotalPayment
                                         : (selectedRate?.rate ?? 0) *
-                                          (numberOfDays < 1
-                                              ? 1
-                                              : numberOfDays) *
-                                          0.5}
+                                              (numberOfDays < 1
+                                                  ? 1
+                                                  : numberOfDays) *
+                                              0.5 +
+                                          roomAdditionsTotalPayment}
                                 </div>
                             </div>
                         </div>

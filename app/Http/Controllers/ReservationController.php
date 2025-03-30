@@ -14,7 +14,7 @@ class ReservationController extends Controller
 
         $reservation = Reservation::create([
             'reserved_room_id' => $request->input('reserved_room_id'),
-            'room_additions' => $request->input('room_additions'),
+            'room_additions' => json_decode($request->input('room_additions'),true),
             'rate_availed_id' => $request->input('rate_availed_id'),
             'check_in_datetime' => $request->input('check_in_datetime'),
             'expected_check_out' => $request->input('expected_check_out'),

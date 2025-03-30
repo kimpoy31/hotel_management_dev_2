@@ -5,6 +5,7 @@ use App\Models\GeneralSetting;
 use App\Models\InventoryItem;
 use App\Models\OvertimeCharge;
 use App\Models\Rate;
+use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -35,13 +36,9 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('frontdesk', function () {
-        // $employees = User::where('status', 'active')->where('username', '!=', 'admin')->get();
-        // $inventory_items = InventoryItem::where('status', 'active')->get();
-        // $rates = Rate::where('status', 'active')->get();
-        // $settings = GeneralSetting::find(1);
-
         return Inertia::render('Frontdesk',[
             'rooms' => Room::where('status', 'active')->get(),
+            'reservations' => Reservation::where('reservation_status', 'pending')->get(),
         ]);
     })->name('frontdesk');
 });

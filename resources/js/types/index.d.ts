@@ -85,6 +85,24 @@ export interface Room {
     status: "active" | "in-active";
 }
 
+export interface Reservation {
+    id: number;
+    reserved_room_id: number;
+    room_additions?: AdditionItem[]; // Assuming an array of objects
+    rate_availed_id: number;
+    check_in_datetime: string; // ISO format datetime
+    expected_check_out: string;
+    number_of_hours: number;
+    number_of_days: number;
+    guest_name: string;
+    guest_address: string;
+    guest_contact_number: string;
+    total_payment: number;
+    pending_payment: number;
+    transaction_officer: string;
+    reservation_status: "pending" | "completed" | "cancelled";
+}
+
 export type Status = "active" | "in-active";
 export type UserRoles = "administrator" | "frontdesk" | "housekeeper";
 export type ItemType = "room amenity" | "consumable";

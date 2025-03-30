@@ -7,6 +7,8 @@ import React, { useEffect, useState } from "react";
 import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
 import { formatTransactionDuration } from "./CheckInForm";
+import { router } from "@inertiajs/react";
+import { getExpectedCheckoutDatetime } from "./Room";
 
 interface Props {
     rooms: Room[];
@@ -48,6 +50,40 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
         setReservationDateTime("");
         setNumberOfDays(1);
     }, [roomRateAvailedId]);
+
+    const handleSubmit = async () => {
+        await router.post(route("reserve.room"), {
+            reserved_room_id: selectedRoomId,
+            room_additions: JSON.stringify(roomAdditions),
+            rate_availed_id: roomRateAvailedId,
+            check_in_datetime: reservationDateTime,
+            expected_check_out: getExpectedCheckoutDatetime(
+                reservationDateTime,
+                (selectedRate?.duration ?? 0) *
+                    (numberOfDays < 1 ? 1 : numberOfDays)
+            ),
+            number_of_hours:
+                (selectedRate?.duration ?? 0) *
+                (numberOfDays < 1 ? 1 : numberOfDays),
+            number_of_days: numberOfDays < 1 ? 1 : numberOfDays,
+            guest_name: guestName,
+            guest_address: guestAddress,
+            guest_contact_number: guestContactNumber,
+            total_payment: isFullPayment
+                ? (selectedRate?.rate ?? 0) *
+                      (numberOfDays < 1 ? 1 : numberOfDays) +
+                  roomAdditionsTotalPayment
+                : (selectedRate?.rate ?? 0) *
+                      (numberOfDays < 1 ? 1 : numberOfDays) *
+                      0.5 +
+                  roomAdditionsTotalPayment,
+            pending_payment: !isFullPayment
+                ? (selectedRate?.rate ?? 0) *
+                  (numberOfDays < 1 ? 1 : numberOfDays) *
+                  0.5
+                : 0,
+        });
+    };
 
     return (
         <div className="flex justify-center">
@@ -316,6 +352,7 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                             : !reservationDateTime) ||
                         isFullPayment === null
                     }
+                    confirmAction={() => handleSubmit()}
                 >
                     <div className="overflow-x-auto overflow-y-auto max-h-64">
                         <div>

@@ -22,6 +22,7 @@ class Reservation extends Model
         'total_payment',
         'pending_payment',
         'transaction_officer',
+        'reservation_status'
     ];
 
     protected $casts = [

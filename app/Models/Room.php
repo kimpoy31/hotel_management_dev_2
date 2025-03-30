@@ -15,12 +15,14 @@ class Room extends Model
         'room_status',
         'active_transaction',
         'status',
+        'room_reservation_ids'
     ];
 
     protected $casts = [
         'room_rates' => 'array',
         'room_rate_ids' => 'array',
         'room_inclusions' => 'array',
+        'room_reservation_ids' => 'array',
     ];
 
     protected $appends = ['room_rates', 'room_inclusion_items', 'active_transaction_object']; // Append to JSON response

@@ -80,7 +80,8 @@ export interface Room {
     room_inclusions?: InclusionItem[]; // Nullable array of strings for inclusions
     room_inclusion_items: InventoryItem[]; // Nullable array of strings for inclusions
     room_status: RoomStatus;
-    active_transaction?: number | null; // Nullable number for active transaction
+    active_transaction?: number | null; // Nullable number for active transaction'
+    room_reservation_ids: number[];
     active_transaction_object: Transaction | null;
     status: "active" | "in-active";
 }

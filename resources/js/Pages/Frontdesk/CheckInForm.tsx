@@ -20,6 +20,29 @@ interface Props {
     roomDetails: Room;
 }
 
+export const formatTransactionDuration = (numberOfHours?: number) => {
+    if (!numberOfHours) return "";
+
+    const days = Math.floor(numberOfHours / 24);
+    const hours = numberOfHours % 24;
+
+    if (days > 0 && hours > 0) {
+        return `${days} ${days > 1 ? "Days" : "Day"} & ${hours} ${
+            hours > 1 ? "Hours" : "Hour"
+        }`;
+    }
+
+    if (days > 0) {
+        return `${days} ${days > 1 ? "Days" : "Day"}`;
+    }
+
+    if (hours > 0) {
+        return `${hours} ${hours > 1 ? "Hours" : "Hour"}`;
+    }
+
+    return "";
+};
+
 const CheckInForm = ({
     rates,
     roomRateId,
@@ -52,29 +75,6 @@ const CheckInForm = ({
 
     // FOR STAY EXTENSION
     let extensionRate = rates.find((rate) => rate.id === stayExtensionId);
-
-    const formatTransactionDuration = (numberOfHours?: number) => {
-        if (!numberOfHours) return "";
-
-        const days = Math.floor(numberOfHours / 24);
-        const hours = numberOfHours % 24;
-
-        if (days > 0 && hours > 0) {
-            return `${days} ${days > 1 ? "Days" : "Day"} & ${hours} ${
-                hours > 1 ? "Hours" : "Hour"
-            }`;
-        }
-
-        if (days > 0) {
-            return `${days} ${days > 1 ? "Days" : "Day"}`;
-        }
-
-        if (hours > 0) {
-            return `${hours} ${hours > 1 ? "Hours" : "Hour"}`;
-        }
-
-        return "";
-    };
 
     const handleRateUpgrade = async () => {
         let expected_check_out = getExpectedCheckoutDatetime(

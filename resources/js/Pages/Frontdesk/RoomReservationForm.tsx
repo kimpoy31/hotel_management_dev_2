@@ -5,6 +5,8 @@ import FormHeader from "@/components/FormHeader";
 import { AdditionItem, InventoryItem, Rate, Room } from "@/types";
 import React, { useEffect, useState } from "react";
 import SetRoomAdditions from "./SetRoomAdditions";
+import AlertDialog from "@/components/AlertDialog";
+import { formatTransactionDuration } from "./CheckInForm";
 
 interface Props {
     rooms: Room[];
@@ -13,16 +15,35 @@ interface Props {
 }
 
 const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
-    const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+    const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
     const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>([]);
     const [roomRateAvailedId, setRoomRateAvailedId] = useState(0);
     const [numberOfDays, setNumberOfDays] = useState(1);
+    const [guestName, setGuestName] = useState("");
+    const [guestAddress, setGuestAddress] = useState("");
+    const [guestContactNumber, setGuestContactNumber] = useState("");
+    const [reservationDateTime, setReservationDateTime] = useState<string>("");
+    const [reservationDate, setReservationDate] = useState<string>("");
+    const [isFullPayment, setIsFullPayment] = useState<boolean | null>(null);
 
+    let selectedRate = rates.find((rate) => rate.id === roomRateAvailedId);
+    let selectedRoom = rooms.find((room) => room.id === selectedRoomId);
     let filteredRates = rates.filter((rate) =>
         selectedRoom?.room_rate_ids.includes(rate.id)
     );
 
-    let selectedRate = rates.find((rate) => rate.id === roomRateAvailedId);
+    useEffect(() => {
+        if (reservationDate) {
+            const dateTime = `${reservationDate}T14:00`;
+            setReservationDateTime(dateTime);
+        }
+    }, [reservationDate]);
+
+    useEffect(() => {
+        setReservationDate("");
+        setReservationDateTime("");
+        setNumberOfDays(1);
+    }, [roomRateAvailedId]);
 
     return (
         <div className="flex justify-center">
@@ -42,8 +63,8 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                             key={index}
                             onClick={() => {
                                 room.id === selectedRoom?.id
-                                    ? setSelectedRoom(null)
-                                    : setSelectedRoom(room);
+                                    ? setSelectedRoomId(null)
+                                    : setSelectedRoomId(room.id);
                             }}
                             className={`rounded-xl sm:max-w-52 ${
                                 room.id === selectedRoom?.id &&
@@ -69,7 +90,7 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                 {selectedRoom && (
                     <>
                         <FormHeader className="text-start ">
-                            Additional information
+                            Room Additions
                         </FormHeader>
 
                         <SetRoomAdditions
@@ -92,6 +113,10 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                                     <input
                                         type="text"
                                         className="input input-lg capitalize w-full"
+                                        value={guestName}
+                                        onChange={(e) =>
+                                            setGuestName(e.target.value)
+                                        }
                                     />
                                 </fieldset>
                                 <fieldset className="fieldset w-full max-w-sm">
@@ -101,6 +126,10 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                                     <input
                                         type="text"
                                         className="input input-lg capitalize w-full "
+                                        value={guestAddress}
+                                        onChange={(e) =>
+                                            setGuestAddress(e.target.value)
+                                        }
                                     />
                                 </fieldset>
                             </div>
@@ -111,6 +140,10 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                                 <input
                                     type="text"
                                     className="input input-lg capitalize w-full"
+                                    value={guestContactNumber}
+                                    onChange={(e) =>
+                                        setGuestContactNumber(e.target.value)
+                                    }
                                 />
                             </fieldset>
                         </div>
@@ -178,24 +211,194 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                         </div>
 
                         {/* RESERVE DATE AND TIME */}
-                        <div className="bg-base-300 border-4 border-base-100 border-dashed p-4 pb-6 mt-8 ">
-                            <div className="flex flex-wrap">
-                                <fieldset className="fieldset w-full max-w-sm">
-                                    <legend className="fieldset-legend">
-                                        Reservation date & time
-                                    </legend>
-                                    <input
-                                        type="datetime-local"
-                                        className="input input-lg"
-                                    />
-                                </fieldset>
+                        {selectedRate && (
+                            <div className="bg-base-300 border-4 border-base-100 border-dashed p-4 pb-6 mt-8 ">
+                                <div className="flex flex-wrap">
+                                    <fieldset className="fieldset w-full max-w-sm">
+                                        <legend className="fieldset-legend">
+                                            Reservation date & time
+                                        </legend>
+                                        {selectedRate.duration < 24 ? (
+                                            <input
+                                                type="datetime-local"
+                                                className="input input-lg"
+                                                value={reservationDateTime}
+                                                onChange={(e) =>
+                                                    setReservationDateTime(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        ) : (
+                                            <input
+                                                type="date"
+                                                className="input input-lg"
+                                                value={reservationDate}
+                                                onChange={(e) =>
+                                                    setReservationDate(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        )}
+                                    </fieldset>
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </>
                 )}
 
+                {roomRateAvailedId > 0 && reservationDateTime && (
+                    <div className="mt-8 gap-2 flex sm:flex-row flex-col bg-base-300 p-4 border-4 border-dashed border-base-100">
+                        <div
+                            className={`w-full bg-secondary text-secondary-content p-8 rounded-xl shadow-xl cursor-pointer hover:brightness-110 flex flex-col ${
+                                isFullPayment === false &&
+                                "border-4 border-success"
+                            }`}
+                            onClick={() => {
+                                isFullPayment === null
+                                    ? setIsFullPayment(false)
+                                    : isFullPayment === true
+                                    ? setIsFullPayment(false)
+                                    : setIsFullPayment(null);
+                            }}
+                        >
+                            <div className="text-2xl font-bold">
+                                ₱
+                                {(
+                                    (selectedRate?.rate ?? 0) *
+                                    (numberOfDays < 1 ? 1 : numberOfDays) *
+                                    0.5
+                                ).toFixed(2)}
+                            </div>
+                            <div className="italic">50% Downpayment</div>
+                        </div>
+                        <div
+                            className={`w-full bg-secondary text-secondary-content p-8 rounded-xl shadow-xl cursor-pointer hover:brightness-110 flex flex-col ${
+                                isFullPayment === true &&
+                                "border-4 border-success"
+                            }`}
+                            onClick={() => {
+                                isFullPayment === null
+                                    ? setIsFullPayment(true)
+                                    : isFullPayment === false
+                                    ? setIsFullPayment(true)
+                                    : setIsFullPayment(null);
+                            }}
+                        >
+                            <div className="text-2xl font-bold">
+                                ₱
+                                {(selectedRate?.rate ?? 0) *
+                                    (numberOfDays < 1 ? 1 : numberOfDays)}
+                            </div>
+                            <div className="italic">Full payment</div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="divider"></div>
-                <button className="btn btn-accent">Submit reservation</button>
+                <AlertDialog
+                    buttonTitle="Submit reservation"
+                    buttonClassname="btn btn-accent"
+                    modalTitle="Reservation details"
+                    modalButtonDisabled={
+                        !guestName.trim() ||
+                        !guestAddress.trim() ||
+                        !guestContactNumber.trim() ||
+                        !roomRateAvailedId ||
+                        !selectedRoomId ||
+                        ((selectedRate?.duration ?? 0) >= 24
+                            ? !reservationDate
+                            : !reservationDateTime)
+                    }
+                >
+                    <div className="overflow-x-auto overflow-y-auto max-h-64">
+                        <div>
+                            <div className="flex gap-2">
+                                <div>Room:</div>
+                                <div className="font-bold text-accent-content">
+                                    {selectedRoom?.room_number}
+                                </div>
+                            </div>
+                            {roomAdditions.length > 0 && (
+                                <div className="flex gap-2">
+                                    <div>Room additions:</div>
+                                    <div className="font-bold text-accent-content">
+                                        {roomAdditions.map(
+                                            (item) =>
+                                                item.name +
+                                                " " +
+                                                item.quantity +
+                                                "pc(s), "
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex gap-2">
+                                <div>Reservation date & time:</div>
+                                <div className="font-bold text-accent-content">
+                                    {new Date(
+                                        reservationDateTime
+                                    ).toLocaleDateString()}{" "}
+                                    {new Date(
+                                        reservationDateTime
+                                    ).toLocaleTimeString()}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Stay duration:</div>
+                                <div className="font-bold text-accent-content">
+                                    {formatTransactionDuration(
+                                        (selectedRate?.duration ?? 0) *
+                                            (numberOfDays < 1
+                                                ? 1
+                                                : numberOfDays)
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Guest name:</div>
+                                <div className="font-bold text-accent-content">
+                                    {guestName}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Guest address:</div>
+                                <div className="font-bold text-accent-content">
+                                    {guestAddress}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Guest contact number:</div>
+                                <div className="font-bold text-accent-content">
+                                    {guestContactNumber}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Received payment:</div>
+                                <div className="font-bold text-accent-content">
+                                    {isFullPayment
+                                        ? "Full amount"
+                                        : "Downpayment"}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Payment amount:</div>
+                                <div className="font-bold text-accent-content">
+                                    ₱
+                                    {isFullPayment
+                                        ? (selectedRate?.rate ?? 0) *
+                                          (numberOfDays < 1 ? 1 : numberOfDays)
+                                        : (selectedRate?.rate ?? 0) *
+                                          (numberOfDays < 1
+                                              ? 1
+                                              : numberOfDays) *
+                                          0.5}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </AlertDialog>
             </Card>
         </div>
     );

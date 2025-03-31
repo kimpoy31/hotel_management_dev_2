@@ -97,6 +97,7 @@ const RoomReservationForm = ({
 
     const handleSubmit = async () => {
         await router.post(route("reserve.room"), {
+            reservation_id: reservation?.id ?? null,
             reserved_room_id: selectedRoomId,
             room_additions: JSON.stringify(roomAdditions),
             rate_availed_id: roomRateAvailedId,

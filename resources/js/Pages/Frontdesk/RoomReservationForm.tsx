@@ -64,12 +64,6 @@ const RoomReservationForm = ({
     );
 
     useEffect(() => {
-        setReservationDate("");
-        setReservationDateTime("");
-        setNumberOfDays(1);
-    }, [roomRateAvailedId]);
-
-    useEffect(() => {
         if (reservation) {
             if (reservation.number_of_hours >= 24) {
                 setReservationDateTime(
@@ -91,9 +85,11 @@ const RoomReservationForm = ({
         }
     }, [reservationDate, reservation]); // Include `reservation` as a dependency
 
-    useEffect(() => {
-        console.log("dateTime", reservationDateTime);
-    }, [reservationDateTime]);
+    const resetReservationDates = () => {
+        setReservationDate("");
+        setReservationDateTime("");
+        setNumberOfDays(1);
+    };
 
     const handleSubmit = async () => {
         await router.post(route("reserve.room"), {
@@ -243,11 +239,12 @@ const RoomReservationForm = ({
                                     <select
                                         value={roomRateAvailedId}
                                         className="select select-lg"
-                                        onChange={(e) =>
+                                        onChange={(e) => {
+                                            resetReservationDates();
                                             setRoomRateAvailedId(
                                                 Number(e.target.value)
-                                            )
-                                        }
+                                            );
+                                        }}
                                     >
                                         <option disabled={true} value={0}>
                                             Please select

@@ -41,7 +41,7 @@ const RoomCard = ({ className, room, navigateOnClick }: Props) => {
     return (
         <Link
             href={navigateOnClick ? route("frontdesk.room.form", room.id) : ""}
-            className={`${className} gap-2 flex sm:flex-col flex-row p-2 rounded bg-base-100 w-full sm:max-w-72 cursor-pointer hover:brightness-110 shadow hover:shadow-lg`}
+            className={`${className} gap-2 flex sm:flex-col flex-row p-2 rounded bg-base-100 w-full md:max-w-72 cursor-pointer hover:brightness-110 shadow hover:shadow-lg`}
         >
             <div
                 className={`sm:block hidden font-bold text-center uppercase py-1 rounded-lg ${getBgColor(

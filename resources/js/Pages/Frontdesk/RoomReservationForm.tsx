@@ -305,11 +305,13 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                         >
                             <div className="text-2xl font-bold">
                                 ₱
-                                {(
-                                    (selectedRate?.rate ?? 0) *
-                                    (numberOfDays < 1 ? 1 : numberOfDays) *
-                                    0.5
-                                ).toFixed(2)}
+                                {parseFloat(
+                                    (
+                                        (selectedRate?.rate ?? 0) *
+                                        (numberOfDays < 1 ? 1 : numberOfDays) *
+                                        0.5
+                                    ).toFixed(2)
+                                ) + roomAdditionsTotalPayment}
                             </div>
                             <div className="italic">50% Downpayment</div>
                         </div>
@@ -329,7 +331,8 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                             <div className="text-2xl font-bold">
                                 ₱
                                 {(selectedRate?.rate ?? 0) *
-                                    (numberOfDays < 1 ? 1 : numberOfDays)}
+                                    (numberOfDays < 1 ? 1 : numberOfDays) +
+                                    roomAdditionsTotalPayment}
                             </div>
                             <div className="italic">Full payment</div>
                         </div>

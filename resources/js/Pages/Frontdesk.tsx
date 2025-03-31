@@ -43,9 +43,13 @@ const Frontdesk = ({ rooms, reservations }: Props) => {
                 <div className="lg:p-4 p-2 bg-base-200 flex sm:flex-row flex-col gap-2">
                     {reservations.length > 0 ? (
                         reservations.map((reservation, index) => (
-                            <div
+                            <Link
+                                href={route(
+                                    "frontdesk.room.reserve.form",
+                                    reservation.id
+                                )}
                                 key={index}
-                                className="bg-secondary cursor-pointer hover:brightness-110 hover:shadow-xl p-2 flex gap-1 w-full sm:max-w-56 max-w-xs rounded-xl"
+                                className="bg-secondary cursor-pointer hover:brightness-110 hover:shadow-xl p-2 flex gap-1 w-full sm:max-w-56 rounded-xl"
                             >
                                 <div className="bg-base-100 h-20 w-16 rounded-lg justify-center flex items-center text-xl font-bold">
                                     {
@@ -70,7 +74,7 @@ const Frontdesk = ({ rooms, reservations }: Props) => {
                                         Check-in date & time
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))
                     ) : (
                         <DisplayEmpty borderColor="border-zinc-700" />

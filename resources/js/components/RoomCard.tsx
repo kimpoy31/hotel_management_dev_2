@@ -34,10 +34,6 @@ export const getTextColor = (room: Room) => {
 };
 
 const RoomCard = ({ className, room, navigateOnClick }: Props) => {
-    useEffect(() => {
-        console.log("Active Transaction", room.active_transaction_object);
-    }, []);
-
     return (
         <Link
             href={navigateOnClick ? route("frontdesk.room.form", room.id) : ""}

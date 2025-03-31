@@ -2,7 +2,7 @@ import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
 import CountdownTimer from "@/components/CountdownTimer";
 import FormHeader from "@/components/FormHeader";
-import { AdditionItem, InventoryItem, Rate, Room } from "@/types";
+import { AdditionItem, InventoryItem, Rate, Reservation, Room } from "@/types";
 import React, { useEffect, useState } from "react";
 import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
@@ -14,19 +14,44 @@ interface Props {
     rooms: Room[];
     inventory_items: InventoryItem[];
     rates: Rate[];
+    reservation?: Reservation | null;
 }
 
-const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
-    const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
-    const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>([]);
-    const [roomRateAvailedId, setRoomRateAvailedId] = useState(0);
-    const [numberOfDays, setNumberOfDays] = useState(1);
-    const [guestName, setGuestName] = useState("");
-    const [guestAddress, setGuestAddress] = useState("");
-    const [guestContactNumber, setGuestContactNumber] = useState("");
+const RoomReservationForm = ({
+    rooms,
+    inventory_items,
+    rates,
+    reservation,
+}: Props) => {
+    const [selectedRoomId, setSelectedRoomId] = useState<number | null>(
+        reservation?.reserved_room_id ?? null
+    );
+    const [roomAdditions, setRoomAdditions] = useState<AdditionItem[]>(
+        reservation?.room_additions ?? []
+    );
+    const [roomRateAvailedId, setRoomRateAvailedId] = useState(
+        reservation?.rate_availed_id ?? 0
+    );
+    const [numberOfDays, setNumberOfDays] = useState(
+        reservation?.number_of_days ?? 1
+    );
+    const [guestName, setGuestName] = useState(reservation?.guest_name ?? "");
+    const [guestAddress, setGuestAddress] = useState(
+        reservation?.guest_address ?? ""
+    );
+    const [guestContactNumber, setGuestContactNumber] = useState(
+        reservation?.guest_contact_number ?? ""
+    );
     const [reservationDateTime, setReservationDateTime] = useState<string>("");
     const [reservationDate, setReservationDate] = useState<string>("");
-    const [isFullPayment, setIsFullPayment] = useState<boolean | null>(null);
+
+    const [isFullPayment, setIsFullPayment] = useState<boolean | null>(
+        reservation?.pending_payment === null
+            ? null
+            : reservation?.pending_payment === 0
+            ? true
+            : false
+    );
 
     let selectedRate = rates.find((rate) => rate.id === roomRateAvailedId);
     let selectedRoom = rooms.find((room) => room.id === selectedRoomId);
@@ -39,17 +64,36 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
     );
 
     useEffect(() => {
-        if (reservationDate) {
-            const dateTime = `${reservationDate}T14:00`;
-            setReservationDateTime(dateTime);
-        }
-    }, [reservationDate]);
-
-    useEffect(() => {
         setReservationDate("");
         setReservationDateTime("");
         setNumberOfDays(1);
     }, [roomRateAvailedId]);
+
+    useEffect(() => {
+        if (reservation) {
+            if (reservation.number_of_hours >= 24) {
+                setReservationDateTime(
+                    reservation.check_in_datetime.replace(" ", "T").slice(0, 16)
+                ); // Ensure correct format
+            }
+            if (reservation.number_of_hours < 24) {
+                setReservationDate(reservation.check_in_datetime); // Extract date part
+            }
+        }
+    }, [reservation]); // Runs when `reservation` updates
+
+    useEffect(() => {
+        if (!reservation && reservationDate) {
+            const dateTime = `${reservationDate}T14:00`; // Ensure format is `YYYY-MM-DDTHH:MM`
+            setReservationDateTime(dateTime);
+        } else {
+            setReservationDateTime(reservation?.check_in_datetime ?? "");
+        }
+    }, [reservationDate, reservation]); // Include `reservation` as a dependency
+
+    useEffect(() => {
+        console.log("dateTime", reservationDateTime);
+    }, [reservationDateTime]);
 
     const handleSubmit = async () => {
         await router.post(route("reserve.room"), {
@@ -188,7 +232,7 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                             </fieldset>
                         </div>
 
-                        {/* RESERVE DATE AND TIME */}
+                        {/* RESERVE RATE AND DURATION */}
                         <div className="bg-base-300 border-4 border-base-100 border-dashed p-4 pb-6 mt-8 ">
                             <div className="flex flex-wrap">
                                 <fieldset className="fieldset w-full max-w-sm">
@@ -262,7 +306,13 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                                             <input
                                                 type="datetime-local"
                                                 className="input input-lg"
-                                                value={reservationDateTime}
+                                                value={
+                                                    reservationDateTime
+                                                        ? reservationDateTime
+                                                              .replace(" ", "T")
+                                                              .slice(0, 16)
+                                                        : ""
+                                                }
                                                 onChange={(e) =>
                                                     setReservationDateTime(
                                                         e.target.value
@@ -273,7 +323,13 @@ const RoomReservationForm = ({ rooms, inventory_items, rates }: Props) => {
                                             <input
                                                 type="date"
                                                 className="input input-lg"
-                                                value={reservationDate}
+                                                value={
+                                                    reservationDateTime
+                                                        ? reservationDateTime.split(
+                                                              "T"
+                                                          )[0]
+                                                        : ""
+                                                } // Extract only YYYY-MM-DD
                                                 onChange={(e) =>
                                                     setReservationDate(
                                                         e.target.value

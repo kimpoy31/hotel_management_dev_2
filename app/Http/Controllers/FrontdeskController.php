@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GeneralSetting;
 use App\Models\InventoryItem;
 use App\Models\Rate;
+use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\Transaction;
 use App\Models\TransactionLog;
@@ -31,12 +32,15 @@ class FrontdeskController extends Controller
         ]);
     }
 
-    public function room_reserve_form()
+    public function room_reserve_form($id = null)
     {
+        $reservation = Reservation::find($id);
+
         return Inertia::render('Frontdesk/RoomReservationForm', [
             'rooms' => Room::where('status', 'active')->get(),
             'inventory_items' => InventoryItem::where('status', 'active')->get(),
             'rates' => Rate::where('status', 'active')->get(),
+            'reservation' => $reservation ?: null, // Append only if not null
         ]);
     }
 
@@ -206,7 +210,7 @@ class FrontdeskController extends Controller
 
         return to_route('frontdesk.room.form', $id);
     }
-    
+
     // REUSABLE FUNCTION
     public function formatTransactionDuration(int $numberOfHours): string
     {
@@ -227,11 +231,11 @@ class FrontdeskController extends Controller
     public function extend_stay_duration(Request $request)
     {
         $transaction = Transaction::find($request->input('transaction_id'));
-        $transaction_message = 'Extended stay duration. ' . $this->formatTransactionDuration($transaction->number_of_hours) . ' + '. $this->formatTransactionDuration($request->input('number_of_hours'));
-        $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add') ;
+        $transaction_message = 'Extended stay duration. ' . $this->formatTransactionDuration($transaction->number_of_hours) . ' + ' . $this->formatTransactionDuration($request->input('number_of_hours'));
+        $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add');
         $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
         $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-        
+
         $transaction->update([
             'expected_check_out' => $request->input('expected_check_out'),
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
@@ -255,7 +259,7 @@ class FrontdeskController extends Controller
         $transaction_message = 'Rate upgraded: ' . $prevRateAvailed->duration . ' Hours - ₱' . $prevRateAvailed->rate . ' -> ' . $upgradeRateAvailed->duration . ' Hours - ₱' . $upgradeRateAvailed->rate;
         $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
         $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-        $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add') ;
+        $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add');
 
         $transaction->update([
             'expected_check_out' => $request->input('expected_check_out'),

@@ -9,18 +9,18 @@ Route::middleware('auth')->group(function () {
         ->name('frontdesk.room.form');
 
     Route::patch('frontdesk/room-additions/{id}', [FrontdeskController::class, 'update_room_additions'])
-    ->name('update.room.additions');
-    
+        ->name('update.room.additions');
+
     Route::patch('frontdesk/upgrade-rate/{id}', [FrontdeskController::class, 'upgrade_rate_availed'])
-    ->name('upgrade.rate.availed');
+        ->name('upgrade.rate.availed');
 
     Route::patch('frontdesk/extend-duration', [FrontdeskController::class, 'extend_stay_duration'])
-    ->name('extend.stay.duration');
+        ->name('extend.stay.duration');
 
     Route::post('frontdesk/room/check-in', [FrontdeskController::class, 'check_in'])
         ->name('frontdesk.check_in');
 
 
-    Route::get('frontdesk/reserve-room', [FrontdeskController::class, 'room_reserve_form'])
-    ->name('frontdesk.room.reserve.form');
+    Route::get('frontdesk/reserve-room/{id?}', [FrontdeskController::class, 'room_reserve_form'])
+        ->name('frontdesk.room.reserve.form');
 });

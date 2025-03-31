@@ -27,7 +27,7 @@ class Reservation extends Model
 
     protected $casts = [
         'room_additions' => 'array',
-        'check_in_datetime' => 'datetime',
+        'check_in_datetime' => 'datetime:Y-m-d\TH:i',
         'expected_check_out' => 'datetime',
         'total_payment' => 'decimal:2',
         'pending_payment' => 'decimal:2',

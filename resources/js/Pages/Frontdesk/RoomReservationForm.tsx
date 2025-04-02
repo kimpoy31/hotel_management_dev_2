@@ -42,8 +42,9 @@ const RoomReservationForm = ({
     const [guestContactNumber, setGuestContactNumber] = useState(
         reservation?.guest_contact_number ?? ""
     );
-    const [reservationDateTime, setReservationDateTime] = useState<string>("");
-    const [reservationDate, setReservationDate] = useState<string>("");
+    const [reservationDateTime, setReservationDateTime] = useState<string>(
+        reservation?.check_in_datetime ?? ""
+    );
 
     const [isFullPayment, setIsFullPayment] = useState<boolean | null>(
         reservation?.pending_payment === null
@@ -63,30 +64,7 @@ const RoomReservationForm = ({
         0
     );
 
-    useEffect(() => {
-        if (reservation) {
-            if (reservation.number_of_hours >= 24) {
-                setReservationDateTime(
-                    reservation.check_in_datetime.replace(" ", "T").slice(0, 16)
-                ); // Ensure correct format
-            }
-            if (reservation.number_of_hours < 24) {
-                setReservationDate(reservation.check_in_datetime); // Extract date part
-            }
-        }
-    }, [reservation]); // Runs when `reservation` updates
-
-    useEffect(() => {
-        if (!reservation && reservationDate) {
-            const dateTime = `${reservationDate}T14:00`; // Ensure format is `YYYY-MM-DDTHH:MM`
-            setReservationDateTime(dateTime);
-        } else {
-            setReservationDateTime(reservation?.check_in_datetime ?? "");
-        }
-    }, [reservationDate, reservation]); // Include `reservation` as a dependency
-
     const resetReservationDates = () => {
-        setReservationDate("");
         setReservationDateTime("");
         setNumberOfDays(1);
     };
@@ -329,8 +307,9 @@ const RoomReservationForm = ({
                                                         : ""
                                                 } // Extract only YYYY-MM-DD
                                                 onChange={(e) =>
-                                                    setReservationDate(
-                                                        e.target.value
+                                                    setReservationDateTime(
+                                                        e.target.value +
+                                                            "T14:00:00.000Z"
                                                     )
                                                 }
                                             />
@@ -404,9 +383,7 @@ const RoomReservationForm = ({
                         !guestContactNumber.trim() ||
                         !roomRateAvailedId ||
                         !selectedRoomId ||
-                        ((selectedRate?.duration ?? 0) >= 24
-                            ? !reservationDate
-                            : !reservationDateTime) ||
+                        !reservationDateTime ||
                         isFullPayment === null
                     }
                     confirmAction={() => handleSubmit()}

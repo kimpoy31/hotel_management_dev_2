@@ -59,7 +59,7 @@ const RoomReservationForm = ({
     let filteredRates = rates.filter((rate) =>
         selectedRoom?.room_rate_ids.includes(rate.id)
     );
-    let roomAdditionsTotalPayment = roomAdditions.reduce(
+    let roomAdditionsTotalAmount = roomAdditions.reduce(
         (total, item) => total + item.price * item.quantity,
         0
     );
@@ -91,11 +91,11 @@ const RoomReservationForm = ({
             total_payment: isFullPayment
                 ? (selectedRate?.rate ?? 0) *
                       (numberOfDays < 1 ? 1 : numberOfDays) +
-                  roomAdditionsTotalPayment
+                  roomAdditionsTotalAmount
                 : (selectedRate?.rate ?? 0) *
                       (numberOfDays < 1 ? 1 : numberOfDays) *
                       0.5 +
-                  roomAdditionsTotalPayment,
+                  roomAdditionsTotalAmount,
             pending_payment: !isFullPayment
                 ? (selectedRate?.rate ?? 0) *
                   (numberOfDays < 1 ? 1 : numberOfDays) *
@@ -344,9 +344,37 @@ const RoomReservationForm = ({
                                         (numberOfDays < 1 ? 1 : numberOfDays) *
                                         0.5
                                     ).toFixed(2)
-                                ) + roomAdditionsTotalPayment}
+                                ) + roomAdditionsTotalAmount}
                             </div>
-                            <div className="italic">50% Downpayment</div>
+                            <div className="italic">
+                                50% Downpayment :{" "}
+                                <span className="text-warning">
+                                    {" "}
+                                    ₱
+                                    {parseFloat(
+                                        (
+                                            (selectedRate?.rate ?? 0) *
+                                            (numberOfDays < 1
+                                                ? 1
+                                                : numberOfDays) *
+                                            0.5
+                                        ).toFixed(2)
+                                    )}
+                                </span>
+                            </div>
+                            {roomAdditions.length > 0 && (
+                                <div className="flex gap-1 ">
+                                    +
+                                    {roomAdditions.map((item, index) => (
+                                        <div key={index}>
+                                            {item.name}({item.quantity}x):
+                                            <span className="text-warning italic">
+                                                ₱{item.price * item.quantity},
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div
                             className={`w-full bg-secondary text-secondary-content p-8 rounded-xl shadow-xl cursor-pointer hover:brightness-110 flex flex-col ${
@@ -363,18 +391,51 @@ const RoomReservationForm = ({
                         >
                             <div className="text-2xl font-bold">
                                 ₱
-                                {(selectedRate?.rate ?? 0) *
-                                    (numberOfDays < 1 ? 1 : numberOfDays) +
-                                    roomAdditionsTotalPayment}
+                                {parseFloat(
+                                    (
+                                        (selectedRate?.rate ?? 0) *
+                                        (numberOfDays < 1 ? 1 : numberOfDays)
+                                    ).toFixed(2)
+                                ) + roomAdditionsTotalAmount}
                             </div>
-                            <div className="italic">Full payment</div>
+                            <div className="italic">
+                                Full payment :{" "}
+                                <span className="text-warning">
+                                    {" "}
+                                    ₱
+                                    {parseFloat(
+                                        (
+                                            (selectedRate?.rate ?? 0) *
+                                            (numberOfDays < 1
+                                                ? 1
+                                                : numberOfDays)
+                                        ).toFixed(2)
+                                    )}
+                                </span>
+                            </div>
+                            {roomAdditions.length > 0 && (
+                                <div className="flex gap-1 ">
+                                    +
+                                    {roomAdditions.map((item, index) => (
+                                        <div key={index}>
+                                            {item.name}({item.quantity}x):
+                                            <span className="text-warning italic">
+                                                ₱{item.price * item.quantity},
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
-
                 <div className="divider"></div>
                 <AlertDialog
-                    buttonTitle="Submit reservation"
+                    buttonTitle={
+                        reservation
+                            ? "Update reservation"
+                            : "Submit reservation"
+                    }
                     buttonClassname="btn btn-accent"
                     modalTitle="Reservation details"
                     modalButtonDisabled={
@@ -467,13 +528,13 @@ const RoomReservationForm = ({
                                               (numberOfDays < 1
                                                   ? 1
                                                   : numberOfDays) +
-                                          roomAdditionsTotalPayment
+                                          roomAdditionsTotalAmount
                                         : (selectedRate?.rate ?? 0) *
                                               (numberOfDays < 1
                                                   ? 1
                                                   : numberOfDays) *
                                               0.5 +
-                                          roomAdditionsTotalPayment}
+                                          roomAdditionsTotalAmount}
                                 </div>
                             </div>
                         </div>

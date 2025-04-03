@@ -23,20 +23,37 @@ export const isOverlapping = (
     reservations: Reservation[],
     checkIn: string,
     checkOut: string,
-    reservedRoomId: number
+    reservedRoomId: number,
+    currentlyCheckedIn?: string, // Optional: Current guest's check-in datetime
+    currentlyCheckedInExpectedCheckout?: string // Optional: Current guest's expected checkout datetime
 ): boolean => {
     return reservations.some((reservation) => {
         // Check if the reservation is for the same room
         if (reservation.reserved_room_id !== reservedRoomId) return false;
 
         // Convert to Date objects for comparison
-        const existingCheckIn = new Date(reservation.check_in_datetime);
-        const existingCheckOut = new Date(reservation.expected_check_out);
-        const newCheckIn = new Date(checkIn);
-        const newCheckOut = new Date(checkOut);
+        const existingCheckIn = new Date(
+            reservation.check_in_datetime.replace("Z", "")
+        ); // Remove 'Z' for proper comparison
+        const existingCheckOut = new Date(
+            reservation.expected_check_out.replace("Z", "")
+        ); // Remove 'Z' for proper comparison
+        const newCheckIn = new Date(checkIn.replace("Z", "")); // Remove 'Z' from check-in datetime
+        const newCheckOut = new Date(checkOut.replace("Z", "")); // Remove 'Z' from checkout datetime
 
-        // Check for overlap: if the new check-in is before an existing check-out
-        // and the new check-out is after an existing check-in, there's an overlap
+        // Skip checking if the current guest's stay is the same as the new reservation
+        if (
+            currentlyCheckedIn &&
+            currentlyCheckedInExpectedCheckout &&
+            reservedRoomId === reservation.reserved_room_id &&
+            newCheckIn >= new Date(currentlyCheckedIn.replace("Z", "")) && // New check-in should not overlap with current guest's stay
+            newCheckOut <=
+                new Date(currentlyCheckedInExpectedCheckout.replace("Z", "")) // New check-out should not overlap with current guest's stay
+        ) {
+            return false; // Do not consider as overlap with current guest
+        }
+
+        // Check for overlap with other reservations
         return newCheckIn < existingCheckOut && newCheckOut > existingCheckIn;
     });
 };
@@ -114,6 +131,10 @@ const RoomReservationForm = ({
         (selectedRate?.duration ?? 0) *
             (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
     );
+
+    useEffect(() => {
+        console.log(selectedRoom);
+    }, [selectedRoom]);
 
     const handleSubmit = async () => {
         await router.post(route("reserve.room"), {
@@ -483,6 +504,19 @@ const RoomReservationForm = ({
                     </div>
                 )}
                 <div className="divider"></div>
+                {isOverlapping(
+                    reservations,
+                    reservationDateTime ?? "", // <-- Ensure a valid string for function
+                    expected_check_out?.toString() ?? "",
+                    selectedRoomId ?? 0,
+                    selectedRoom?.active_transaction_object?.check_in,
+                    selectedRoom?.active_transaction_object?.expected_check_out
+                ) && (
+                    <div className="w-full text-center p-2 border border-error rounded-lg mb-2 text-error">
+                        Selected duration overlaps with currently checked-in
+                        guest or other reservations on this room
+                    </div>
+                )}
                 <AlertDialog
                     buttonTitle={
                         reservation
@@ -500,14 +534,15 @@ const RoomReservationForm = ({
                         !reservationDateTime || // <-- Ensures it's checked first
                         new Date(reservationDateTime) <= new Date() ||
                         isFullPayment === null ||
-                        (reservation?.check_in_datetime !==
-                            reservationDateTime &&
-                            isOverlapping(
-                                reservations,
-                                reservationDateTime ?? "", // <-- Ensure a valid string for function
-                                expected_check_out?.toString() ?? "",
-                                selectedRoomId ?? 0
-                            ))
+                        isOverlapping(
+                            reservations,
+                            reservationDateTime ?? "", // <-- Ensure a valid string for function
+                            expected_check_out?.toString() ?? "",
+                            selectedRoomId ?? 0,
+                            selectedRoom?.active_transaction_object?.check_in,
+                            selectedRoom?.active_transaction_object
+                                ?.expected_check_out
+                        )
                     }
                     confirmAction={() => handleSubmit()}
                 >

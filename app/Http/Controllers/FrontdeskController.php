@@ -34,16 +34,18 @@ class FrontdeskController extends Controller
 
     public function room_reserve_form($id = null)
     {
-        $reservation = Reservation::find($id);
-
+        $reservation = $id ? Reservation::find($id) : null;
+        $reserved_room = $reservation ? Room::find($reservation->reserved_room_id) : null;
+    
         return Inertia::render('Frontdesk/RoomReservationForm', [
             'rooms' => Room::where('status', 'active')->get(),
             'inventory_items' => InventoryItem::where('status', 'active')->get(),
             'rates' => Rate::where('status', 'active')->get(),
-            'reservation' => $reservation ?: null, // Append only if not null
+            'reservation' => $reservation, // Will be null if not found
+            'reserved_room' => $reserved_room, // Will be null if no reservation exists
         ]);
     }
-
+    
     public function check_in(Request $request)
     {
         // Validation rules

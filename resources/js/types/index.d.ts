@@ -75,12 +75,12 @@ export interface Room {
     id: number;
     room_number: string;
     room_type: string;
-    room_rate_ids: number[]; // Assuming room rates is a key-value pair of rates
+    room_rate_ids: number[];
     room_rates: Rate[];
-    room_inclusions?: InclusionItem[]; // Nullable array of strings for inclusions
-    room_inclusion_items: InventoryItem[]; // Nullable array of strings for inclusions
+    room_inclusions?: InclusionItem[];
+    room_inclusion_items: InventoryItem[];
     room_status: RoomStatus;
-    active_transaction?: number | null; // Nullable number for active transaction'
+    active_transaction?: number | null;
     room_reservation_ids: number[];
     active_transaction_object: Transaction | null;
     status: "active" | "in-active";

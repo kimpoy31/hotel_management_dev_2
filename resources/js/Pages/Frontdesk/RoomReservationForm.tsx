@@ -14,9 +14,32 @@ interface Props {
     rooms: Room[];
     inventory_items: InventoryItem[];
     rates: Rate[];
+    reservations: Reservation[];
     reservation?: Reservation | null;
     reserved_room?: Room | null;
 }
+
+export const isOverlapping = (
+    reservations: Reservation[],
+    checkIn: string,
+    checkOut: string,
+    reservedRoomId: number
+): boolean => {
+    return reservations.some((reservation) => {
+        // Check if the reservation is for the same room
+        if (reservation.reserved_room_id !== reservedRoomId) return false;
+
+        // Convert to Date objects for comparison
+        const existingCheckIn = new Date(reservation.check_in_datetime);
+        const existingCheckOut = new Date(reservation.expected_check_out);
+        const newCheckIn = new Date(checkIn);
+        const newCheckOut = new Date(checkOut);
+
+        // Check for overlap: if the new check-in is before an existing check-out
+        // and the new check-out is after an existing check-in, there's an overlap
+        return newCheckIn < existingCheckOut && newCheckOut > existingCheckIn;
+    });
+};
 
 const RoomReservationForm = ({
     rooms,
@@ -24,6 +47,7 @@ const RoomReservationForm = ({
     rates,
     reservation,
     reserved_room,
+    reservations,
 }: Props) => {
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(
         reservation?.reserved_room_id ?? null
@@ -58,13 +82,6 @@ const RoomReservationForm = ({
             ? false
             : true
     );
-    // const [isFullPayment, setIsFullPayment] = useState<boolean | null>(
-    //     reservation?.pending_payment === null
-    //         ? null
-    //         : reservation?.pending_payment === 0
-    //         ? true
-    //         : false
-    // );
 
     let filteredRooms = reserved_room
         ? rooms.filter(
@@ -91,6 +108,12 @@ const RoomReservationForm = ({
         setReservationDateTime("");
         setNumberOfDays(1);
     };
+
+    let expected_check_out = getExpectedCheckoutDatetime(
+        reservationDateTime ? new Date(reservationDateTime) : new Date(),
+        (selectedRate?.duration ?? 0) *
+            (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
+    );
 
     const handleSubmit = async () => {
         await router.post(route("reserve.room"), {
@@ -329,12 +352,16 @@ const RoomReservationForm = ({
                                                           )[0]
                                                         : ""
                                                 } // Extract only YYYY-MM-DD
-                                                onChange={(e) =>
+                                                onChange={(e) => {
                                                     setReservationDateTime(
                                                         e.target.value +
-                                                            "T14:00:00.000Z"
-                                                    )
-                                                }
+                                                            "T14:00:00.000"
+                                                    );
+                                                    console.log(
+                                                        e.target.value +
+                                                            "T14:00:00.000"
+                                                    );
+                                                }}
                                             />
                                         )}
                                     </fieldset>
@@ -470,8 +497,17 @@ const RoomReservationForm = ({
                         !guestContactNumber.trim() ||
                         !roomRateAvailedId ||
                         !selectedRoomId ||
-                        !reservationDateTime ||
-                        isFullPayment === null
+                        !reservationDateTime || // <-- Ensures it's checked first
+                        new Date(reservationDateTime) <= new Date() ||
+                        isFullPayment === null ||
+                        (reservation?.check_in_datetime !==
+                            reservationDateTime &&
+                            isOverlapping(
+                                reservations,
+                                reservationDateTime ?? "", // <-- Ensure a valid string for function
+                                expected_check_out?.toString() ?? "",
+                                selectedRoomId ?? 0
+                            ))
                     }
                     confirmAction={() => handleSubmit()}
                 >

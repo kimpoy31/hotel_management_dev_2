@@ -41,10 +41,14 @@ class FrontdeskController extends Controller
             'rooms' => Room::where('status', 'active')->get(),
             'inventory_items' => InventoryItem::where('status', 'active')->get(),
             'rates' => Rate::where('status', 'active')->get(),
+            'reservations' => Reservation::where('reservation_status', 'pending')
+                ->when($reservation, fn($query) => $query->where('id', '!=', $reservation->id))
+                ->get(),
             'reservation' => $reservation, // Will be null if not found
             'reserved_room' => $reserved_room, // Will be null if no reservation exists
         ]);
     }
+    
     
     public function check_in(Request $request)
     {

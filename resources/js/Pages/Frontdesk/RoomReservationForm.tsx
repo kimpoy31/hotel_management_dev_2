@@ -19,13 +19,11 @@ interface Props {
     reserved_room?: Room | null;
 }
 
-export const isOverlapping = (
+export const isOverlappingReservations = (
     reservations: Reservation[],
     checkIn: string,
     checkOut: string,
-    reservedRoomId: number,
-    currentlyCheckedIn?: string, // Optional: Current guest's check-in datetime
-    currentlyCheckedInExpectedCheckout?: string // Optional: Current guest's expected checkout datetime
+    reservedRoomId: number
 ): boolean => {
     return reservations.some((reservation) => {
         // Check if the reservation is for the same room
@@ -40,18 +38,6 @@ export const isOverlapping = (
         ); // Remove 'Z' for proper comparison
         const newCheckIn = new Date(checkIn.replace("Z", "")); // Remove 'Z' from check-in datetime
         const newCheckOut = new Date(checkOut.replace("Z", "")); // Remove 'Z' from checkout datetime
-
-        // Skip checking if the current guest's stay is the same as the new reservation
-        if (
-            currentlyCheckedIn &&
-            currentlyCheckedInExpectedCheckout &&
-            reservedRoomId === reservation.reserved_room_id &&
-            newCheckIn >= new Date(currentlyCheckedIn.replace("Z", "")) && // New check-in should not overlap with current guest's stay
-            newCheckOut <=
-                new Date(currentlyCheckedInExpectedCheckout.replace("Z", "")) // New check-out should not overlap with current guest's stay
-        ) {
-            return false; // Do not consider as overlap with current guest
-        }
 
         // Check for overlap with other reservations
         return newCheckIn < existingCheckOut && newCheckOut > existingCheckIn;
@@ -504,13 +490,11 @@ const RoomReservationForm = ({
                     </div>
                 )}
                 <div className="divider"></div>
-                {isOverlapping(
+                {isOverlappingReservations(
                     reservations,
                     reservationDateTime ?? "", // <-- Ensure a valid string for function
                     expected_check_out?.toString() ?? "",
-                    selectedRoomId ?? 0,
-                    selectedRoom?.active_transaction_object?.check_in,
-                    selectedRoom?.active_transaction_object?.expected_check_out
+                    selectedRoomId ?? 0
                 ) && (
                     <div className="w-full text-center p-2 border border-error rounded-lg mb-2 text-error">
                         Selected duration overlaps with currently checked-in
@@ -534,14 +518,17 @@ const RoomReservationForm = ({
                         !reservationDateTime || // <-- Ensures it's checked first
                         new Date(reservationDateTime) <= new Date() ||
                         isFullPayment === null ||
-                        isOverlapping(
+                        // Check if the room is currently occupied and if it overlaps with the new reservation
+                        (selectedRoom?.active_transaction_object
+                            ?.expected_check_out &&
+                            new Date(
+                                selectedRoom.active_transaction_object.expected_check_out
+                            ) > new Date(reservationDateTime)) ||
+                        isOverlappingReservations(
                             reservations,
                             reservationDateTime ?? "", // <-- Ensure a valid string for function
                             expected_check_out?.toString() ?? "",
-                            selectedRoomId ?? 0,
-                            selectedRoom?.active_transaction_object?.check_in,
-                            selectedRoom?.active_transaction_object
-                                ?.expected_check_out
+                            selectedRoomId ?? 0
                         )
                     }
                     confirmAction={() => handleSubmit()}

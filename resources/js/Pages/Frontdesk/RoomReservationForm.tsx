@@ -54,10 +54,17 @@ const RoomReservationForm = ({
     const [isFullPayment, setIsFullPayment] = useState<boolean | null>(
         reservation?.pending_payment === null
             ? null
-            : reservation?.pending_payment === 0
-            ? true
-            : false
+            : (reservation?.pending_payment ?? 0) > 0
+            ? false
+            : true
     );
+    // const [isFullPayment, setIsFullPayment] = useState<boolean | null>(
+    //     reservation?.pending_payment === null
+    //         ? null
+    //         : reservation?.pending_payment === 0
+    //         ? true
+    //         : false
+    // );
 
     let filteredRooms = reserved_room
         ? rooms.filter(
@@ -339,6 +346,7 @@ const RoomReservationForm = ({
 
                 {roomRateAvailedId > 0 && reservationDateTime && (
                     <div className="mt-8 gap-2 flex sm:flex-row flex-col bg-base-300 p-4 border-4 border-dashed border-base-100">
+                        {/* Downpayment */}
                         <div
                             className={`w-full bg-secondary text-secondary-content p-8 rounded-xl shadow-xl cursor-pointer hover:brightness-110 flex flex-col ${
                                 isFullPayment === false &&
@@ -392,6 +400,8 @@ const RoomReservationForm = ({
                                 </div>
                             )}
                         </div>
+
+                        {/* Full payment*/}
                         <div
                             className={`w-full bg-secondary text-secondary-content p-8 rounded-xl shadow-xl cursor-pointer hover:brightness-110 flex flex-col ${
                                 isFullPayment === true &&

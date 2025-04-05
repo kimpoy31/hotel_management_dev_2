@@ -297,6 +297,16 @@ class FrontdeskController extends Controller
 
         $room->update(['room_status' => 'pending_inspection']);
 
+        $transaction_message = 'Room status changed from "Occupied" -> "Pending Inspection". Collected overtime charge amount: ₱' . $overtime_charge ;
+        $transaction_message .= '. Collected pending payment: ₱' . $pending_payment ;
+
+        TransactionLog::create([
+            'transaction_id' => $transaction->id,
+            'transaction_officer' => Auth::user()->fullname,
+            'transaction_type' => 'checkout',
+            'transaction_description' => $transaction_message,
+        ]);
+
         return to_route('frontdesk');
     }
 }

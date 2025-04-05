@@ -16,6 +16,8 @@ export const getBgColor = (room: Room) => {
         bgColor = "bg-emerald-800";
     } else if (room.room_status === "occupied") {
         bgColor = "bg-secondary";
+    } else if (room.room_status === "pending_inspection") {
+        bgColor = "bg-neutral";
     }
 
     return bgColor;
@@ -28,6 +30,8 @@ export const getTextColor = (room: Room) => {
         textColor = "text-emerald-100";
     } else if (room.room_status === "occupied") {
         textColor = "text-secondary-content";
+    } else if (room.room_status === "pending_inspection") {
+        textColor = "text-neutral-content";
     }
 
     return textColor;
@@ -44,7 +48,7 @@ const RoomCard = ({ className, room, navigateOnClick }: Props) => {
                     room
                 )} ${getTextColor(room)}`}
             >
-                {room.room_status}
+                {room.room_status.replace("_", " ")}
             </div>
             <div
                 className={`text-center justify-center bg-base-200 sm:py-10 p-4 flex flex-col rounded-lg ${getBgColor(

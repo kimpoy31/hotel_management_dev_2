@@ -1,6 +1,5 @@
 import { getBgColor, getTextColor } from "@/components/RoomCard";
 import { Room } from "@/types";
-import React from "react";
 
 const RoomHeader = ({ room }: { room: Room }) => {
     return (
@@ -10,7 +9,7 @@ const RoomHeader = ({ room }: { room: Room }) => {
                     room
                 )} ${getTextColor(room)}`}
             >
-                {room.room_status}
+                {room.room_status.replace("_", " ")}
             </div>
             <div
                 className={`text-center bg-base-200 py-4 flex flex-col rounded-lg ${getBgColor(

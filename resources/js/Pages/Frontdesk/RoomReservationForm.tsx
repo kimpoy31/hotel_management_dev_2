@@ -624,68 +624,77 @@ const RoomReservationForm = ({
                         </div>
                     </div>
                 </AlertDialog>
-                <div className="divider"></div>
-                {reservation && reserved_room?.room_status !== "available" && (
-                    <div className="w-full text-center p-2 border border-error rounded-lg mb-2 text-error">
-                        Early check-in disabled. Room is currently not available
-                        for checking in
-                    </div>
+
+                {reservation && reserved_room?.room_status === "available" && (
+                    <>
+                        <div className="divider"></div>
+                        <AlertDialog
+                            buttonTitle="Early Check-in"
+                            buttonClassname="btn btn-xl btn-success"
+                            modalTitle={`Early Check-in`}
+                            confirmAction={() =>
+                                console.log(outStandingBalancePayment)
+                            }
+                            modalButtonDisabled={
+                                reserved_room?.room_status !== "available"
+                            }
+                        >
+                            <div className="flex gap-2">
+                                <div>Guest name:</div>
+                                <div className="font-bold text-accent-content">
+                                    {guestName}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Guest address:</div>
+                                <div className="font-bold text-accent-content">
+                                    {guestAddress}
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <div>Guest contact number:</div>
+                                <div className="font-bold text-accent-content">
+                                    {guestContactNumber}
+                                </div>
+                            </div>
+                            <div className="divider m-0"></div>
+                            <div className="flex gap-2 justify-between">
+                                <div className="text-lg">
+                                    Outstanding balance:
+                                </div>
+                                <div className="font-bold text-accent-content text-xl">
+                                    ₱{reservation?.pending_payment}
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-2 items-center mt-2">
+                                Confirm payment:{" "}
+                                <input
+                                    type="checkbox"
+                                    className="checkbox checkbox-success"
+                                    checked={outStandingBalancePayment !== null}
+                                    onChange={() => {
+                                        setOutStandingBalancePayment((prev) =>
+                                            prev === null
+                                                ? reservation?.pending_payment ??
+                                                  0
+                                                : null
+                                        );
+                                    }}
+                                />
+                            </div>
+                        </AlertDialog>
+                    </>
                 )}
+
                 {reservation && (
-                    <AlertDialog
-                        buttonTitle="Early Check-in"
-                        buttonClassname="btn btn-xl btn-success"
-                        modalTitle={`Early Check-in`}
-                        confirmAction={() =>
-                            console.log(outStandingBalancePayment)
-                        }
-                        modalButtonDisabled={
-                            reserved_room?.room_status !== "available"
-                        }
-                    >
-                        <div className="flex gap-2">
-                            <div>Guest name:</div>
-                            <div className="font-bold text-accent-content">
-                                {guestName}
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
-                            <div>Guest address:</div>
-                            <div className="font-bold text-accent-content">
-                                {guestAddress}
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
-                            <div>Guest contact number:</div>
-                            <div className="font-bold text-accent-content">
-                                {guestContactNumber}
-                            </div>
-                        </div>
-                        <div className="divider m-0"></div>
-                        <div className="flex gap-2 justify-between">
-                            <div className="text-lg">Outstanding balance:</div>
-                            <div className="font-bold text-accent-content text-xl">
-                                ₱{reservation?.pending_payment}
-                            </div>
-                        </div>
-                        <div className="flex justify-end gap-2 items-center mt-2">
-                            Confirm payment:{" "}
-                            <input
-                                type="checkbox"
-                                className="checkbox checkbox-success"
-                                checked={outStandingBalancePayment !== null}
-                                onChange={() => {
-                                    setOutStandingBalancePayment((prev) =>
-                                        prev === null
-                                            ? reservation?.pending_payment ?? 0
-                                            : null
-                                    );
-                                }}
-                            />
-                        </div>
-                    </AlertDialog>
+                    <>
+                        <div className="divider"></div>
+                        <AlertDialog
+                            buttonTitle="Cancel Reservation"
+                            buttonClassname="btn btn-error "
+                        ></AlertDialog>
+                    </>
                 )}
-                <AlertDialog buttonTitle="Cancel Reservation"></AlertDialog>
             </Card>
         </div>
     );

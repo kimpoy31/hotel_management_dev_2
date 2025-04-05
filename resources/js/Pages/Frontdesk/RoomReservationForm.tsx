@@ -685,6 +685,7 @@ const RoomReservationForm = ({
                         </div>
                     </AlertDialog>
                 )}
+                <AlertDialog buttonTitle="Cancel Reservation"></AlertDialog>
             </Card>
         </div>
     );

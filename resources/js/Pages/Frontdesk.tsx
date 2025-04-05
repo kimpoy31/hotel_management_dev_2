@@ -49,30 +49,36 @@ const Frontdesk = ({ rooms, reservations }: Props) => {
                                     reservation.id
                                 )}
                                 key={index}
-                                className="bg-secondary cursor-pointer hover:brightness-110 hover:shadow-xl p-2 flex gap-1 w-full sm:max-w-56 rounded-xl"
+                                className="bg-secondary cursor-pointer hover:brightness-110 hover:shadow-xl p-2 flex flex-col gap-1 w-full sm:max-w-56 rounded-xl"
                             >
-                                <div className="bg-base-100 h-20 w-16 rounded-lg justify-center flex items-center text-xl font-bold">
-                                    {
-                                        rooms.find(
-                                            (room) =>
-                                                room.id ===
-                                                reservation.reserved_room_id
-                                        )?.room_number
-                                    }
+                                <div className="flex gap-2">
+                                    <div className="bg-base-100 h-20 w-16 rounded-lg justify-center flex items-center text-xl font-bold">
+                                        {
+                                            rooms.find(
+                                                (room) =>
+                                                    room.id ===
+                                                    reservation.reserved_room_id
+                                            )?.room_number
+                                        }
+                                    </div>
+                                    <div className="flex flex-col text-sm">
+                                        <div className="font-bold">
+                                            {new Date(
+                                                reservation.check_in_datetime
+                                            ).toDateString()}{" "}
+                                            {new Date(
+                                                reservation.check_in_datetime
+                                            ).toLocaleTimeString()}
+                                        </div>
+
+                                        <div className="font-bold italic">
+                                            Check-in date & time
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col text-sm">
-                                    <div className="font-bold">
-                                        {new Date(
-                                            reservation.check_in_datetime
-                                        ).toDateString()}{" "}
-                                        {new Date(
-                                            reservation.check_in_datetime
-                                        ).toLocaleTimeString()}
-                                    </div>
-                                    <div className="divider my-0"></div>
-                                    <div className="font-bold italic">
-                                        Check-in date & time
-                                    </div>
+                                <div className="divider my-0"></div>
+                                <div className="capitalize text-center">
+                                    {reservation.guest_name}
                                 </div>
                             </Link>
                         ))

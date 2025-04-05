@@ -281,4 +281,22 @@ class FrontdeskController extends Controller
             'transaction_description' => $transaction_message,
         ]);
     }
+
+    public function check_out (Request $request) {
+        $overtime_charge = $request->input('overtime_charge');
+        $pending_payment = $request->input('pending_payment');
+        $transaction = Transaction::find($request->input('transaction_id'));
+        $room = Room::find($request->input('room_id'));
+
+        $transaction->update([
+            'pending_payments' => $transaction->pending_payments - $pending_payment,
+            'overtime_charge' => $overtime_charge,
+            'total_payment' => $transaction->total_payment + $overtime_charge + $pending_payment,
+            'check_out' => Carbon::now('Asia/Manila')->toDateTimeString(),
+        ]);
+
+        $room->update(['room_status' => 'pending_inspection']);
+
+        return to_route('frontdesk');
+    }
 }

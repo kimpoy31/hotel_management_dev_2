@@ -17,9 +17,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('frontdesk/extend-duration', [FrontdeskController::class, 'extend_stay_duration'])
         ->name('extend.stay.duration');
 
+    Route::patch('frontdesk/room/check-out', [FrontdeskController::class, 'check_out'])
+        ->name('frontdesk.checkout');
+
     Route::post('frontdesk/room/check-in', [FrontdeskController::class, 'check_in'])
         ->name('frontdesk.check_in');
-
 
     Route::get('frontdesk/reserve-room/{id?}', [FrontdeskController::class, 'room_reserve_form'])
         ->name('frontdesk.room.reserve.form');

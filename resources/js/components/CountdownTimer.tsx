@@ -75,8 +75,14 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
                 timeLeft.isOvertime ? "text-error" : "text-success"
             } ${className}`}
         >
-            {roomStatus === "available" ? "Vacant" : timeLeft.time}
-            {timeLeft.isOvertime ? (
+            {roomStatus === "available"
+                ? "Vacant"
+                : roomStatus === "occupied"
+                ? timeLeft.time
+                : roomStatus === "pending_inspection"
+                ? "Under inspection"
+                : "-"}
+            {timeLeft.isOvertime && roomStatus === "occupied" ? (
                 <div className="text-xs font-semibold">
                     Overtime penalty: ₱{timeLeft.totalHours * overtime_penalty}{" "}
                 </div>

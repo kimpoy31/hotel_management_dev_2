@@ -28,6 +28,21 @@ interface Props {
     active_transaction: Transaction | null;
 }
 
+export const calculateOvertimeHours = (input: string | Date): number => {
+    const givenDate = new Date(input);
+    const now = new Date();
+
+    if (isNaN(givenDate.getTime()) || givenDate >= now) {
+        return 0;
+    }
+
+    const diffMs = now.getTime() - givenDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+
+    return diffHours + 1; // Always round up
+};
+
 export const getExpectedCheckoutDatetime = (
     checkInTime: Date | string,
     durationInHours: number
@@ -98,6 +113,9 @@ const Room = ({
     );
     const [checkInTime, setCheckInTime] = useState(new Date());
 
+    // Checkout vars
+    const [collectOvertimeCharge, setCollectOvertimeCharge] = useState(true);
+
     const checkIn = async () => {
         let numberOfHours =
             roomRate!.duration < 24
@@ -128,6 +146,19 @@ const Room = ({
 
         setNumberOfDays(1);
         setRoomRateId(0);
+    };
+
+    const checkOut = async () => {
+        await router.patch(route("frontdesk.checkout"), {
+            overtime_charge: collectOvertimeCharge
+                ? calculateOvertimeHours(
+                      active_transaction?.expected_check_out ?? new Date()
+                  ) * (active_transaction?.overtime_charge ?? 0)
+                : 0,
+            pending_payment: active_transaction?.pending_payment ?? 0,
+            transaction_id: active_transaction?.id,
+            room_id: room.id,
+        });
     };
 
     return (
@@ -167,15 +198,18 @@ const Room = ({
                     setRoomRateUpgradeId={setRoomRateUpgradeId}
                     roomDetails={room}
                 />
-                <SetRoomAdditions
-                    inventoryItems={inventory_items}
-                    roomAdditions={roomAdditions}
-                    setRoomAdditions={setRoomAdditions}
-                    newRoomAdditions={newRoomAdditions}
-                    setNewRoomAdditions={setNewRoomAdditions}
-                    active_transaction={active_transaction}
-                    room_id={room.id}
-                />
+                {(room.room_status === "occupied" ||
+                    room.room_status === "available") && (
+                    <SetRoomAdditions
+                        inventoryItems={inventory_items}
+                        roomAdditions={roomAdditions}
+                        setRoomAdditions={setRoomAdditions}
+                        newRoomAdditions={newRoomAdditions}
+                        setNewRoomAdditions={setNewRoomAdditions}
+                        active_transaction={active_transaction}
+                        room_id={room.id}
+                    />
+                )}
 
                 {active_transaction && (
                     <TransactionLogs
@@ -184,7 +218,7 @@ const Room = ({
                 )}
 
                 <div className="divider"></div>
-                {room.room_status !== "available" && (
+                {room.room_status === "occupied" && (
                     <CountdownTimer
                         expected_check_out={
                             active_transaction?.expected_check_out ?? ""
@@ -307,18 +341,65 @@ const Room = ({
                             buttonTitle="Checkout"
                             buttonClassname="btn btn-secondary"
                             modalTitle="Checkout"
+                            confirmAction={() => checkOut()}
                         >
                             This will finalize the transaction for{" "}
                             <span className="font-bold text-lg text-accent-content">
                                 {active_transaction?.customer_name}
                             </span>{" "}
-                            . Please collect any pending payment indicated below
-                            before proceeding. Proceed with checkout?
-                            <div className="divider"></div>
+                            . Please collect any pending payment or charges (if
+                            any) indicated below before proceeding. Proceed with
+                            checkout?
+                            <div className="divider my-0"></div>
+                            <div className="flex justify-between">
+                                Overtime charge:
+                                <div className="font-extrabold">
+                                    ₱{" "}
+                                    {collectOvertimeCharge
+                                        ? calculateOvertimeHours(
+                                              active_transaction?.expected_check_out ??
+                                                  new Date()
+                                          ) *
+                                          (active_transaction?.overtime_charge ??
+                                              0)
+                                        : 0}
+                                </div>
+                            </div>
                             <div className="flex justify-between">
                                 Pending payment:
+                                <div className="font-extrabold">
+                                    ₱ {active_transaction?.pending_payment ?? 0}
+                                </div>
+                            </div>
+                            <div className="divider my-0"></div>
+                            <div className="flex justify-between items-center bg-base-200 p-2">
+                                Collect overtime charge:
+                                <input
+                                    type="checkbox"
+                                    className="checkbox checkbox-success"
+                                    checked={collectOvertimeCharge}
+                                    onChange={() => {
+                                        setCollectOvertimeCharge(
+                                            !collectOvertimeCharge
+                                        );
+                                    }}
+                                />
+                            </div>
+                            <div className="divider m-0"></div>
+                            <div className="flex justify-between mb-4">
+                                Total amount:
                                 <div className="font-extrabold text-2xl">
-                                    ₱{active_transaction?.pending_payment ?? 0}
+                                    ₱
+                                    {(active_transaction?.pending_payment ??
+                                        0) +
+                                        (collectOvertimeCharge
+                                            ? calculateOvertimeHours(
+                                                  active_transaction?.expected_check_out ??
+                                                      new Date()
+                                              ) *
+                                              (active_transaction?.overtime_charge ??
+                                                  0)
+                                            : 0)}
                                 </div>
                             </div>
                         </AlertDialog>

@@ -183,6 +183,24 @@ const CheckInForm = ({
                                         </td>
                                     </tr>
                                     <tr>
+                                        <td className="w-fit">
+                                            <div className="flex gap-2 text-nowrap">
+                                                Checkout:{" "}
+                                                {active_transaction?.check_out}
+                                                <span className="font-bold text-accent-content text-nowrap">
+                                                    {active_transaction?.check_out &&
+                                                        new Date(
+                                                            active_transaction?.check_out
+                                                        ).toDateString()}{" "}
+                                                    {active_transaction?.check_out &&
+                                                        new Date(
+                                                            active_transaction?.check_out
+                                                        ).toLocaleTimeString()}
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td>
                                             <div className="flex gap-2">
                                                 Stay duration:
@@ -362,219 +380,231 @@ const CheckInForm = ({
                         )}
                     </div>
                 )}
-                <div className="bg-base-300 rounded-lg border-4 border-base-100 border-dashed p-4 pb-6">
-                    <div className="flex gap-x-2 lg:flex-row flex-col">
-                        <fieldset className="fieldset w-full max-w-xs">
-                            <legend className="fieldset-legend">
-                                {roomDetails.room_status === "occupied"
-                                    ? "Extend duration"
-                                    : "Room rate / duration"}
-                            </legend>
-                            <select
-                                value={
-                                    active_transaction
-                                        ? stayExtensionId
-                                        : roomRateId
-                                }
-                                className="select select-lg w-full"
-                                onChange={(e) => {
-                                    active_transaction
-                                        ? setStayExtensionId(
-                                              Number(e.target.value)
-                                          )
-                                        : setRoomRateId(Number(e.target.value));
-                                }}
-                            >
-                                <option disabled={true} value={0}>
-                                    Select room rate
-                                </option>
-                                {rates.map((rate, index) => (
-                                    <option key={index} value={rate.id}>
-                                        {rate.duration >= 24
-                                            ? "Daily rate - ₱" + rate.rate
-                                            : rate.duration +
-                                              "Hours - ₱" +
-                                              rate.rate}
-                                    </option>
-                                ))}
-                            </select>
-                        </fieldset>
-
-                        {selectedRate && selectedRate.duration >= 24 && (
-                            <fieldset className="fieldset w-full">
+                {(roomDetails.room_status === "occupied" ||
+                    roomDetails.room_status === "available") && (
+                    <div className="bg-base-300 rounded-lg border-4 border-base-100 border-dashed p-4 pb-6">
+                        <div className="flex gap-x-2 lg:flex-row flex-col">
+                            <fieldset className="fieldset w-full max-w-xs">
                                 <legend className="fieldset-legend">
-                                    Number of days
+                                    {roomDetails.room_status === "occupied"
+                                        ? "Extend duration"
+                                        : "Room rate / duration"}
                                 </legend>
-                                <input
-                                    type="number"
-                                    className="input input-lg max-w-32"
+                                <select
                                     value={
-                                        !isNaN(numberOfDays!) &&
-                                        numberOfDays &&
-                                        numberOfDays > 0
-                                            ? numberOfDays
-                                            : ""
+                                        active_transaction
+                                            ? stayExtensionId
+                                            : roomRateId
                                     }
-                                    onChange={(e) =>
-                                        setNumberOfDays?.(
-                                            Math.floor(Number(e.target.value))
-                                        )
-                                    }
-                                />
+                                    className="select select-lg w-full"
+                                    onChange={(e) => {
+                                        active_transaction
+                                            ? setStayExtensionId(
+                                                  Number(e.target.value)
+                                              )
+                                            : setRoomRateId(
+                                                  Number(e.target.value)
+                                              );
+                                    }}
+                                >
+                                    <option disabled={true} value={0}>
+                                        Select room rate
+                                    </option>
+                                    {rates.map((rate, index) => (
+                                        <option key={index} value={rate.id}>
+                                            {rate.duration >= 24
+                                                ? "Daily rate - ₱" + rate.rate
+                                                : rate.duration +
+                                                  "Hours - ₱" +
+                                                  rate.rate}
+                                        </option>
+                                    ))}
+                                </select>
                             </fieldset>
-                        )}
-                    </div>
 
-                    {active_transaction && stayExtensionId > 0 && (
-                        <div className="flex gap-1 mt-4">
-                            <button
-                                className="btn btn-error btn-square"
-                                onClick={() => {
-                                    setStayExtensionId(0);
-                                    setNumberOfDays(0);
-                                }}
-                            >
-                                <X />
-                            </button>
+                            {selectedRate && selectedRate.duration >= 24 && (
+                                <fieldset className="fieldset w-full">
+                                    <legend className="fieldset-legend">
+                                        Number of days
+                                    </legend>
+                                    <input
+                                        type="number"
+                                        className="input input-lg max-w-32"
+                                        value={
+                                            !isNaN(numberOfDays!) &&
+                                            numberOfDays &&
+                                            numberOfDays > 0
+                                                ? numberOfDays
+                                                : ""
+                                        }
+                                        onChange={(e) =>
+                                            setNumberOfDays?.(
+                                                Math.floor(
+                                                    Number(e.target.value)
+                                                )
+                                            )
+                                        }
+                                    />
+                                </fieldset>
+                            )}
+                        </div>
 
-                            <AlertDialog
-                                confirmAction={() => handleStayExtension()}
-                                buttonTitle="Extend duration"
-                                buttonClassname="btn btn-success w-fit"
-                                modalButtonDisabled={!stayExtensionId}
-                                modalTitle="Extend duration"
-                                modalDescription={`Are you sure you want to extend the customer's stay duration for Room Number ${active_transaction?.room_number}?`}
-                            >
-                                <div className="overflow-x-auto overflow-y-auto max-h-72">
-                                    <table className="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th className="uppercase">
-                                                    Updated Details
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td className="w-fit">
-                                                    <div className="flex flex-col gap-2 text-nowrap">
-                                                        <div>
-                                                            Expected checkout:
+                        {active_transaction && stayExtensionId > 0 && (
+                            <div className="flex gap-1 mt-4">
+                                <button
+                                    className="btn btn-error btn-square"
+                                    onClick={() => {
+                                        setStayExtensionId(0);
+                                        setNumberOfDays(0);
+                                    }}
+                                >
+                                    <X />
+                                </button>
+
+                                <AlertDialog
+                                    confirmAction={() => handleStayExtension()}
+                                    buttonTitle="Extend duration"
+                                    buttonClassname="btn btn-success w-fit"
+                                    modalButtonDisabled={!stayExtensionId}
+                                    modalTitle="Extend duration"
+                                    modalDescription={`Are you sure you want to extend the customer's stay duration for Room Number ${active_transaction?.room_number}?`}
+                                >
+                                    <div className="overflow-x-auto overflow-y-auto max-h-72">
+                                        <table className="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th className="uppercase">
+                                                        Updated Details
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td className="w-fit">
+                                                        <div className="flex flex-col gap-2 text-nowrap">
+                                                            <div>
+                                                                Expected
+                                                                checkout:
+                                                            </div>
+                                                            <div className="font-bold text-accent-content text-nowrap">
+                                                                {new Date(
+                                                                    active_transaction!.expected_check_out
+                                                                ).toDateString()}{" "}
+                                                                {new Date(
+                                                                    active_transaction!.expected_check_out
+                                                                ).toLocaleTimeString()}
+                                                            </div>
                                                         </div>
-                                                        <div className="font-bold text-accent-content text-nowrap">
-                                                            {new Date(
-                                                                active_transaction!.expected_check_out
-                                                            ).toDateString()}{" "}
-                                                            {new Date(
-                                                                active_transaction!.expected_check_out
-                                                            ).toLocaleTimeString()}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                </tr>
 
-                                            <tr>
-                                                <td className="w-fit">
-                                                    <div className="flex flex-col gap-2 text-nowrap">
-                                                        <div>
-                                                            Updated expected
-                                                            checkout:
-                                                        </div>
+                                                <tr>
+                                                    <td className="w-fit">
+                                                        <div className="flex flex-col gap-2 text-nowrap">
+                                                            <div>
+                                                                Updated expected
+                                                                checkout:
+                                                            </div>
 
-                                                        <div className="font-bold text-accent-content text-nowrap">
-                                                            {getExpectedCheckoutDatetime(
-                                                                active_transaction.expected_check_out,
-                                                                (selectedRate?.duration ??
-                                                                    0) *
-                                                                    (numberOfDays &&
-                                                                    numberOfDays >
-                                                                        0
-                                                                        ? numberOfDays
-                                                                        : 1)
-                                                            ).toDateString()}{" "}
-                                                            {getExpectedCheckoutDatetime(
-                                                                active_transaction.expected_check_out,
-                                                                (selectedRate?.duration ??
-                                                                    0) *
-                                                                    (numberOfDays &&
-                                                                    numberOfDays >
-                                                                        0
-                                                                        ? numberOfDays
-                                                                        : 1)
-                                                            ).toLocaleTimeString()}
+                                                            <div className="font-bold text-accent-content text-nowrap">
+                                                                {getExpectedCheckoutDatetime(
+                                                                    active_transaction.expected_check_out,
+                                                                    (selectedRate?.duration ??
+                                                                        0) *
+                                                                        (numberOfDays &&
+                                                                        numberOfDays >
+                                                                            0
+                                                                            ? numberOfDays
+                                                                            : 1)
+                                                                ).toDateString()}{" "}
+                                                                {getExpectedCheckoutDatetime(
+                                                                    active_transaction.expected_check_out,
+                                                                    (selectedRate?.duration ??
+                                                                        0) *
+                                                                        (numberOfDays &&
+                                                                        numberOfDays >
+                                                                            0
+                                                                            ? numberOfDays
+                                                                            : 1)
+                                                                ).toLocaleTimeString()}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                </tr>
 
-                                            <tr>
-                                                <td>
-                                                    <div className="flex gap-2">
-                                                        Updated stay duration:
-                                                        <span className="font-bold text-accent-content">
+                                                <tr>
+                                                    <td>
+                                                        <div className="flex gap-2">
+                                                            Updated stay
+                                                            duration:
+                                                            <span className="font-bold text-accent-content">
+                                                                {selectedRate?.duration &&
+                                                                    formatTransactionDuration(
+                                                                        selectedRate.duration <
+                                                                            24
+                                                                            ? active_transaction.number_of_hours +
+                                                                                  selectedRate.duration
+                                                                            : active_transaction.number_of_hours +
+                                                                                  selectedRate.duration *
+                                                                                      (numberOfDays
+                                                                                          ? Math.max(
+                                                                                                numberOfDays,
+                                                                                                1
+                                                                                            )
+                                                                                          : 1)
+                                                                    )}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                                <tr className="w-fit">
+                                                    <td className="flex gap-2 text-nowrap">
+                                                        Extended by:
+                                                        <span className="font-bold text-success text-nowrap">
                                                             {selectedRate?.duration &&
                                                                 formatTransactionDuration(
                                                                     selectedRate.duration <
                                                                         24
-                                                                        ? active_transaction.number_of_hours +
-                                                                              selectedRate.duration
-                                                                        : active_transaction.number_of_hours +
-                                                                              selectedRate.duration *
-                                                                                  (numberOfDays
-                                                                                      ? Math.max(
-                                                                                            numberOfDays,
-                                                                                            1
-                                                                                        )
-                                                                                      : 1)
+                                                                        ? selectedRate.duration
+                                                                        : selectedRate.duration *
+                                                                              (numberOfDays
+                                                                                  ? Math.max(
+                                                                                        numberOfDays,
+                                                                                        1
+                                                                                    )
+                                                                                  : 1)
                                                                 )}
                                                         </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-                                            <tr className="w-fit">
-                                                <td className="flex gap-2 text-nowrap">
-                                                    Extended by:
-                                                    <span className="font-bold text-success text-nowrap">
-                                                        {selectedRate?.duration &&
-                                                            formatTransactionDuration(
-                                                                selectedRate.duration <
-                                                                    24
-                                                                    ? selectedRate.duration
-                                                                    : selectedRate.duration *
-                                                                          (numberOfDays
-                                                                              ? Math.max(
-                                                                                    numberOfDays,
-                                                                                    1
-                                                                                )
-                                                                              : 1)
-                                                            )}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div className="divider m-0"></div>
-                                    <div className="flex justify-between">
-                                        <div> Please collect total amount:</div>
-                                        <div className="font-bold text-lg">
-                                            ₱
-                                            {selectedRate?.duration &&
-                                            selectedRate?.duration < 24
-                                                ? selectedRate?.rate
-                                                : selectedRate?.rate &&
-                                                  selectedRate?.rate *
-                                                      (numberOfDays &&
-                                                      numberOfDays > 0
-                                                          ? numberOfDays
-                                                          : 1)}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div className="divider m-0"></div>
+                                        <div className="flex justify-between">
+                                            <div>
+                                                {" "}
+                                                Please collect total amount:
+                                            </div>
+                                            <div className="font-bold text-lg">
+                                                ₱
+                                                {selectedRate?.duration &&
+                                                selectedRate?.duration < 24
+                                                    ? selectedRate?.rate
+                                                    : selectedRate?.rate &&
+                                                      selectedRate?.rate *
+                                                          (numberOfDays &&
+                                                          numberOfDays > 0
+                                                              ? numberOfDays
+                                                              : 1)}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </AlertDialog>
-                        </div>
-                    )}
-                </div>
+                                </AlertDialog>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

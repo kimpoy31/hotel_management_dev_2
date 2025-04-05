@@ -65,6 +65,7 @@ const RoomCard = ({ className, room, navigateOnClick }: Props) => {
                     {room.room_status}
                 </div>
                 {room.room_type}
+
                 <CountdownTimer
                     expected_check_out={
                         room.active_transaction_object?.expected_check_out ?? ""

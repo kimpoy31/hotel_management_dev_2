@@ -300,24 +300,33 @@ const Room = ({
                         </div>
                     </AlertDialog>
                 )}
+                {room.room_status === "occupied" && (
+                    <>
+                        <div className="divider"></div>
+                        <AlertDialog
+                            buttonTitle="Checkout"
+                            buttonClassname="btn btn-secondary"
+                            modalTitle="Checkout"
+                        >
+                            This will finalize the transaction for{" "}
+                            <span className="font-bold text-lg text-accent-content">
+                                {active_transaction?.customer_name}
+                            </span>{" "}
+                            . Please collect any pending payment indicated below
+                            before proceeding. Proceed with checkout?
+                            <div className="divider"></div>
+                            <div className="flex justify-between">
+                                Pending payment:
+                                <div className="font-extrabold text-2xl">
+                                    ₱{active_transaction?.pending_payment ?? 0}
+                                </div>
+                            </div>
+                        </AlertDialog>
+                    </>
+                )}
             </Card>
         </div>
     );
 };
 
 export default Room;
-
-// let roomRate = active_transaction
-// ? rates.find((rate) => rate.id === stayExtensionId) ?? null
-// : rates.find((rate) => rate.id === roomRateId) ?? null;
-
-// const isBeforeTwoPM = () => {
-// const now = new Date();
-// const twoPM = new Date();
-// twoPM.setHours(14, 0, 0, 0); // Set to 2:00 PM today
-
-// return now < twoPM;
-// };
-
-// (((roomRate?.duration ?? 0) > 23 && isBeforeTwoPM()) ??
-//                 false)

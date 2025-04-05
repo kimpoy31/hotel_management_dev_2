@@ -57,6 +57,7 @@ export interface Transaction {
     missing_items?: any[]; // Adjust type based on expected structure
     damaged_items?: string;
     settlement_payment?: number;
+    pending_payment: number | null;
     overtime_charge: number;
     transaction_logs: TransactionLog[];
 }

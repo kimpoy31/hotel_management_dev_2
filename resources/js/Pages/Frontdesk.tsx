@@ -7,7 +7,7 @@ import { Link } from "@inertiajs/react";
 import React, { useEffect } from "react";
 
 const Frontdesk = () => {
-    const { rooms, reservations, getReservations, getRooms } = useApi();
+    const { rooms, reservations } = useApi();
 
     return (
         <div className="flex w-full flex-col items-center">

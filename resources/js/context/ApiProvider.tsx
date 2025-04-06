@@ -13,8 +13,6 @@ import React, {
 interface ApiContextProps {
     rooms: Room[];
     reservations: Reservation[];
-    getRooms: () => void;
-    getReservations: () => void;
 }
 
 const ApiContext = createContext<ApiContextProps | undefined>(undefined);
@@ -42,12 +40,26 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
     useEffect(() => {
         getRooms();
         getReservations();
+
+        if ((window as any).Echo) {
+            console.log("Reverb is working");
+            const channel = (window as any).Echo.channel("rooms.status");
+
+            channel.listen("RoomStatusUpdated", (e: { rooms: Room[] }) => {
+                console.log("Updated rooms from broadcast:", e.rooms);
+                setRooms(e.rooms);
+            });
+
+            return () => {
+                channel.stopListening("RoomStatusUpdated");
+            };
+        } else {
+            console.warn("Echo is not initialized");
+        }
     }, []);
 
     return (
-        <ApiContext.Provider
-            value={{ rooms, reservations, getRooms, getReservations }}
-        >
+        <ApiContext.Provider value={{ rooms, reservations }}>
             {children}
         </ApiContext.Provider>
     );

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RoomStatusUpdated;
 use App\Models\GeneralSetting;
 use App\Models\InventoryItem;
 use App\Models\Rate;
@@ -145,6 +146,8 @@ class FrontdeskController extends Controller
             'active_transaction' => $transaction->id,
             'room_status' => 'occupied'
         ]);
+
+        broadcast(new RoomStatusUpdated(Room::where('status','active')->get()));
     }
 
     public function update_room_additions(Request $request, $id)
@@ -306,6 +309,8 @@ class FrontdeskController extends Controller
             'transaction_type' => 'checkout',
             'transaction_description' => $transaction_message,
         ]);
+
+        broadcast(new RoomStatusUpdated(Room::where('status','active')->get()));
 
         return to_route('frontdesk');
     }

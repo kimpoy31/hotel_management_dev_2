@@ -102,10 +102,13 @@ class FrontdeskController extends Controller
         // GENERAL SETTINGS
         $generalSettings = GeneralSetting::find(1);
 
+        $checkIn = Carbon::parse($request->input('check_in'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+
         $transaction = Transaction::create([
             'transaction_officer' => Auth::user()->fullname,
-            'check_in' => $request->input('check_in'),
-            'expected_check_out' => $request->input('expected_check_out'),
+            'check_in' => $checkIn,
+            'expected_check_out' => $expectedCheckOut,
             'number_of_hours' => $request->input('number_of_hours'),
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
             'rate' => $request->input('rate'),
@@ -118,9 +121,6 @@ class FrontdeskController extends Controller
             'total_payment' => $request->input('total_payment'),
             'overtime_charge' => $generalSettings->overtime_charge,
         ]);
-
-        $checkIn = Carbon::parse($request->input('check_in'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
 
         $transaction_message = 'Checked in to Room ' . $transaction->room_number . '. Check-in: ' . $checkIn . '. Expected Checkout: ' . $expectedCheckOut . '.';
 

@@ -186,7 +186,6 @@ const CheckInForm = ({
                                         <td className="w-fit">
                                             <div className="flex gap-2 text-nowrap">
                                                 Checkout:{" "}
-                                                {active_transaction?.check_out}
                                                 <span className="font-bold text-accent-content text-nowrap">
                                                     {active_transaction?.check_out &&
                                                         new Date(
@@ -203,7 +202,7 @@ const CheckInForm = ({
                                     <tr>
                                         <td>
                                             <div className="flex gap-2">
-                                                Stay duration:
+                                                Stay duration availed:
                                                 <span className="font-bold text-accent-content">
                                                     {formatTransactionDuration(
                                                         active_transaction.number_of_hours

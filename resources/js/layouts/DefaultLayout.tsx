@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { LogOut, Menu } from "lucide-react";
-import SidebarContent from "@/Layouts/components/SidebarContent";
+
 import AlertDialog from "@/components/AlertDialog";
+import SidebarContent from "./components/SidebarContent";
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
     const triggerModalClick = () => {

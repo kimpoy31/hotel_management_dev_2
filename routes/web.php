@@ -46,4 +46,3 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';
 require __DIR__ . '/frontdesk.php';
-require __DIR__ . '/reservation.php';

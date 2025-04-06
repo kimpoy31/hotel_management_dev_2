@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FrontdeskController;
+use App\Http\Controllers\ReservationController;
+use App\Http\Middleware\FrontdeskMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', FrontdeskMiddleware::class])->group(function () {
     Route::get('frontdesk/room/{id}', [FrontdeskController::class, 'room_form'])
         ->name('frontdesk.room.form');
 
@@ -25,4 +26,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('frontdesk/reserve-room/{id?}', [FrontdeskController::class, 'room_reserve_form'])
         ->name('frontdesk.room.reserve.form');
+
+
+
+    // RESERVATION ROUTES
+    Route::post('room/reserve-room', [ReservationController::class, 'reserve_room'])
+    ->name('reserve.room');
 });

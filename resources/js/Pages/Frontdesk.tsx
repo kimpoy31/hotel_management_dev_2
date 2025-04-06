@@ -1,16 +1,14 @@
 import DisplayEmpty from "@/components/DisplayEmpty";
 import FormHeader from "@/components/FormHeader";
 import RoomCard from "@/components/RoomCard";
+import { useApi } from "@/context/ApiProvider";
 import { Reservation, Room } from "@/types";
 import { Link } from "@inertiajs/react";
 import React from "react";
 
-interface Props {
-    rooms: Room[];
-    reservations: Reservation[];
-}
+const Frontdesk = () => {
+    const { rooms, reservations } = useApi();
 
-const Frontdesk = ({ rooms, reservations }: Props) => {
     return (
         <div className="flex w-full flex-col items-center">
             <div className="w-full lg:max-w-10/12">

@@ -36,11 +36,20 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('frontdesk', function () {
-        return Inertia::render('Frontdesk',[
-            'rooms' => Room::where('status', 'active')->get(),
-            'reservations' => Reservation::where('reservation_status', 'pending')->get(),
-        ]);
+        return Inertia::render('Frontdesk');
     })->name('frontdesk');
+
+
+    Route::get('fetch-rooms', function () {
+        $rooms = Room::where('status', 'active')->get();
+        return $rooms->isEmpty() ? [] : $rooms;
+    })->name('fetch.rooms');
+
+    Route::get('fetch-reservations', function () {
+        $reservations = Reservation::where('reservation_status', 'pending')->get();
+        return $reservations->isEmpty() ? [] : $reservations;
+    })->name('fetch.reservations');
+    
 });
 
 require __DIR__ . '/auth.php';

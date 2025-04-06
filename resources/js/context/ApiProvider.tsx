@@ -45,13 +45,13 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
             console.log("Reverb is working");
             const channel = (window as any).Echo.channel("rooms.status");
 
-            channel.listen("RoomStatusUpdated", (e: { rooms: Room[] }) => {
+            channel.listen("rooms.status", (e: { rooms: Room[] }) => {
                 console.log("Updated rooms from broadcast:", e.rooms);
                 setRooms(e.rooms);
             });
 
             return () => {
-                channel.stopListening("RoomStatusUpdated");
+                channel.stopListening("rooms.status");
             };
         } else {
             console.warn("Echo is not initialized");

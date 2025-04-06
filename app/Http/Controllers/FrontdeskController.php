@@ -13,6 +13,7 @@ use App\Models\TransactionLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -284,7 +285,7 @@ class FrontdeskController extends Controller
             'transaction_description' => $transaction_message,
         ]);
     }
-
+ 
     public function check_out (Request $request) {
         $overtime_charge = $request->input('overtime_charge');
         $pending_payment = $request->input('pending_payment');
@@ -309,6 +310,9 @@ class FrontdeskController extends Controller
             'transaction_type' => 'checkout',
             'transaction_description' => $transaction_message,
         ]);
+
+        // Add log to ensure this method is being called
+        Log::info('Dispatching RoomStatusUpdated event', ['rooms' => Room::where('status','active')->get()]);
 
         broadcast(new RoomStatusUpdated(Room::where('status','active')->get()));
 

@@ -13,6 +13,8 @@ import React, {
 interface ApiContextProps {
     rooms: Room[];
     reservations: Reservation[];
+    getRooms: () => void;
+    getReservations: () => void;
 }
 
 const ApiContext = createContext<ApiContextProps | undefined>(undefined);
@@ -43,7 +45,9 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
     }, []);
 
     return (
-        <ApiContext.Provider value={{ rooms, reservations }}>
+        <ApiContext.Provider
+            value={{ rooms, reservations, getRooms, getReservations }}
+        >
             {children}
         </ApiContext.Provider>
     );

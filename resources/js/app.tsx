@@ -21,7 +21,9 @@ createInertiaApp({
         } else {
             // Use AuthenticatedLayout for all other pages by default
             page.default.layout = (page: any) => (
-                <DefaultLayout>{page}</DefaultLayout>
+                <ApiProvider>
+                    <DefaultLayout>{page}</DefaultLayout>
+                </ApiProvider>
             );
         }
 
@@ -30,11 +32,7 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(
-            <ApiProvider>
-                <App {...props} />
-            </ApiProvider>
-        );
+        root.render(<App {...props} />);
     },
     progress: {
         color: "#4B5563",

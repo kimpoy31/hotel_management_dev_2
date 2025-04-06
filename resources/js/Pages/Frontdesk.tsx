@@ -4,10 +4,10 @@ import RoomCard from "@/components/RoomCard";
 import { useApi } from "@/context/ApiProvider";
 import { Reservation, Room } from "@/types";
 import { Link } from "@inertiajs/react";
-import React from "react";
+import React, { useEffect } from "react";
 
 const Frontdesk = () => {
-    const { rooms, reservations } = useApi();
+    const { rooms, reservations, getReservations, getRooms } = useApi();
 
     return (
         <div className="flex w-full flex-col items-center">

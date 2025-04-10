@@ -12,14 +12,16 @@ class RoomStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $rooms;
+    public $signal;
 
     /**
      * Create a new event instance.
+     *
+     * @param string $signal The signal message to broadcast
      */
-    public function __construct($rooms)
+    public function __construct($signal)
     {
-        $this->rooms = $rooms;
+        $this->signal = $signal;  // Set the signal to broadcast
     }
 
     /**
@@ -34,8 +36,13 @@ class RoomStatusUpdated implements ShouldBroadcast
         ];
     }
 
+    /**
+     * Get the data to broadcast.
+     *
+     * @return array
+     */
     public function broadcastWith()
     {
-        return ['rooms' => $this->rooms]; // Customize broadcasted data
+        return ['signal' => $this->signal];  // Only send the signal
     }
 }

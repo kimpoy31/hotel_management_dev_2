@@ -148,7 +148,7 @@ class FrontdeskController extends Controller
             'room_status' => 'occupied'
         ]);
 
-        broadcast(new RoomStatusUpdated(Room::where('status','active')->get()));
+        RoomStatusUpdated::dispatch('status_updated');
     }
 
     public function update_room_additions(Request $request, $id)
@@ -311,10 +311,9 @@ class FrontdeskController extends Controller
             'transaction_description' => $transaction_message,
         ]);
 
-        // Add log to ensure this method is being called
-        Log::info('Dispatching RoomStatusUpdated event', ['rooms' => Room::where('status','active')->get()]);
+        // broadcast(new RoomStatusUpdated(Room::where('status','active')->get()));
 
-        broadcast(new RoomStatusUpdated(Room::where('status','active')->get()));
+        RoomStatusUpdated::dispatch('status_updated');
 
         return to_route('frontdesk');
     }

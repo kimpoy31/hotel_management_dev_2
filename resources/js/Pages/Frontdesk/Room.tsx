@@ -50,9 +50,17 @@ export const getExpectedCheckoutDatetime = (
     let checkInDate: Date;
 
     if (typeof checkInTime === "string") {
-        checkInDate = new Date(checkInTime);
+        // Convert string to Manila-local time safely
+        const manilaDateStr = new Date(checkInTime).toLocaleString("en-US", {
+            timeZone: "Asia/Manila",
+        });
+        checkInDate = new Date(manilaDateStr);
     } else {
-        checkInDate = checkInTime;
+        // Convert Date object to Manila-local time
+        const manilaDateStr = checkInTime.toLocaleString("en-US", {
+            timeZone: "Asia/Manila",
+        });
+        checkInDate = new Date(manilaDateStr);
     }
 
     if (isNaN(checkInDate.getTime())) {
@@ -63,7 +71,7 @@ export const getExpectedCheckoutDatetime = (
     checkoutDate.setHours(checkoutDate.getHours() + durationInHours);
 
     if (durationInHours > 23) {
-        checkoutDate.setHours(12, 0, 0, 0); // Set time to 12:00 noon
+        checkoutDate.setHours(12, 0, 0, 0); // Set to 12:00 PM sharp
     }
 
     return checkoutDate;

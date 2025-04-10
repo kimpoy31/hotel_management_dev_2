@@ -240,14 +240,16 @@ class FrontdeskController extends Controller
 
     public function extend_stay_duration(Request $request)
     {
+        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+
         $transaction = Transaction::find($request->input('transaction_id'));
         $transaction_message = 'Extended stay duration. ' . $this->formatTransactionDuration($transaction->number_of_hours) . ' + ' . $this->formatTransactionDuration($request->input('number_of_hours'));
         $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add');
         $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-        $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $transaction_message .= '. Updated expected checkout: ' . $expectedCheckOut;
 
         $transaction->update([
-            'expected_check_out' => $request->input('expected_check_out'),
+            'expected_check_out' => $expectedCheckOut,
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
             'number_of_hours' => $transaction->number_of_hours + $request->input('number_of_hours'),
             'total_payment' =>  $transaction->total_payment + $request->input('total_amount_to_add'),

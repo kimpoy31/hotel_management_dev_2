@@ -1,5 +1,5 @@
 import { Room } from "@/types";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import React, { useEffect } from "react";
 import CountdownTimer from "./CountdownTimer";
 

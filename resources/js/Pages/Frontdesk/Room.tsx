@@ -199,7 +199,8 @@ const Room = ({
                     roomDetails={room}
                 />
                 {(room.room_status === "occupied" ||
-                    room.room_status === "available") && (
+                    room.room_status === "available" ||
+                    room.room_status === "pending_inspection") && (
                     <SetRoomAdditions
                         inventoryItems={inventory_items}
                         roomAdditions={roomAdditions}
@@ -208,6 +209,7 @@ const Room = ({
                         setNewRoomAdditions={setNewRoomAdditions}
                         active_transaction={active_transaction}
                         room_id={room.id}
+                        roomStatus={room.room_status}
                     />
                 )}
 

@@ -1,5 +1,11 @@
 import AlertDialog from "@/components/AlertDialog";
-import { AdditionItem, InventoryItem, ItemType, Transaction } from "@/types";
+import {
+    AdditionItem,
+    InventoryItem,
+    ItemType,
+    RoomStatus,
+    Transaction,
+} from "@/types";
 import { router } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
@@ -12,6 +18,7 @@ interface Props {
     active_transaction?: Transaction | null;
     room_id?: number;
     hideLabel?: boolean;
+    roomStatus?: RoomStatus;
 }
 
 const SetRoomAdditions = ({
@@ -23,6 +30,7 @@ const SetRoomAdditions = ({
     active_transaction,
     room_id,
     hideLabel,
+    roomStatus,
 }: Props) => {
     const [isEditing, setIsEditing] = useState(false);
 
@@ -123,17 +131,19 @@ const SetRoomAdditions = ({
                 )}
                 {active_transaction && (
                     <div className="flex gap-1">
-                        <button
-                            className={`btn btn-accent btn-xs ${
-                                isEditing && "btn-error"
-                            }`}
-                            onClick={() => {
-                                setIsEditing(!isEditing);
-                                setNewRoomAdditions?.([]);
-                            }}
-                        >
-                            {isEditing ? "Cancel" : "Edit"}
-                        </button>
+                        {roomStatus !== "pending_inspection" && (
+                            <button
+                                className={`btn btn-accent btn-xs ${
+                                    isEditing && "btn-error"
+                                }`}
+                                onClick={() => {
+                                    setIsEditing(!isEditing);
+                                    setNewRoomAdditions?.([]);
+                                }}
+                            >
+                                {isEditing ? "Cancel" : "Edit"}
+                            </button>
+                        )}
                         {isEditing && (newRoomAdditions?.length ?? 0) > 0 && (
                             <AlertDialog
                                 confirmAction={async () => {

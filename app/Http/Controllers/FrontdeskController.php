@@ -301,7 +301,9 @@ class FrontdeskController extends Controller
         }    
  
         $prevRateAvailed = Rate::find($transaction->latest_rate_availed_id);
-        $transaction_message = 'Rate upgraded from ' . $this->formatTransactionDuration($prevRateAvailed->duration) . ' to ' . $this->formatTransactionDuration($upgradeRateAvailed->duration * $request->input('number_of_days'));
+        $transaction_message = 'Duration upgraded from ' . $this->formatTransactionDuration($prevRateAvailed->duration) . ' to ' . $this->formatTransactionDuration(
+            (int) $upgradeRateAvailed->duration * (int) $request->input('number_of_days')
+        );
         $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
         $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($expectedCheckOut)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
         $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add');

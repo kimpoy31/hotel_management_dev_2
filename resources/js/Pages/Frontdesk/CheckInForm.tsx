@@ -102,11 +102,14 @@ const CheckInForm = ({
                 ((numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1) -
             (prevRateAvailed?.rate ?? 0);
 
+        let number_of_days = (numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1;
+
         await router.patch(route("upgrade.rate.availed", roomDetails.id), {
             transaction_id: active_transaction?.id,
             latest_rate_availed_id: roomRateUpgradeId,
             number_of_hours,
             total_amount_to_add,
+            number_of_days,
         });
 
         setRoomRateUpgradeId(0);
@@ -123,7 +126,6 @@ const CheckInForm = ({
             total_amount_to_add:
                 (extensionRate?.rate ?? 0) *
                 ((numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1),
-            number_of_days: numberOfDays,
         });
 
         setStayExtensionId(0);

@@ -337,6 +337,10 @@ const CheckInForm = ({
                                                                     Updated
                                                                     expected
                                                                     checkout:
+                                                                    {(upgradedRate?.duration ??
+                                                                        0) -
+                                                                        (prevRateAvailed?.duration ??
+                                                                            0)}
                                                                 </div>
                                                                 <div className="text-accent-content font-bold">
                                                                     {getExpectedCheckoutDatetime(

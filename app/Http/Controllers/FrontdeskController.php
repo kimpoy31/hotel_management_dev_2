@@ -313,10 +313,6 @@ class FrontdeskController extends Controller
             'transaction_description' => $transaction_message,
         ]);
 
-        // broadcast(new RoomStatusUpdated(Room::where('status','active')->get()));
-
         RoomStatusUpdated::dispatch('status_updated');
-
-        return to_route('frontdesk');
     }
 }

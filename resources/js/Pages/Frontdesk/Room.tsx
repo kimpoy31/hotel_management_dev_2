@@ -43,40 +43,6 @@ export const calculateOvertimeHours = (input: string | Date): number => {
     return diffHours + 1; // Always round up
 };
 
-export const getExpectedCheckoutDatetime = (
-    checkInTime: Date | string,
-    durationInHours: number
-): Date => {
-    let checkInDate: Date;
-
-    if (typeof checkInTime === "string") {
-        // Convert string to Manila-local time safely
-        const manilaDateStr = new Date(checkInTime).toLocaleString("en-US", {
-            timeZone: "Asia/Manila",
-        });
-        checkInDate = new Date(manilaDateStr);
-    } else {
-        // Convert Date object to Manila-local time
-        const manilaDateStr = checkInTime.toLocaleString("en-US", {
-            timeZone: "Asia/Manila",
-        });
-        checkInDate = new Date(manilaDateStr);
-    }
-
-    if (isNaN(checkInDate.getTime())) {
-        throw new Error("Invalid check-in time");
-    }
-
-    const checkoutDate = new Date(checkInDate.getTime());
-    checkoutDate.setHours(checkoutDate.getHours() + durationInHours);
-
-    if (durationInHours > 23) {
-        checkoutDate.setHours(12, 0, 0, 0); // Set to 12:00 PM sharp
-    }
-
-    return checkoutDate;
-};
-
 const Room = ({
     room,
     rates,
@@ -119,7 +85,6 @@ const Room = ({
         parseFloat(roomRate?.rate.toString() ?? "0") *
             (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
     );
-    const [checkInTime, setCheckInTime] = useState(new Date());
 
     // Checkout vars
     const [collectOvertimeCharge, setCollectOvertimeCharge] = useState(true);
@@ -247,7 +212,6 @@ const Room = ({
                             !customerContactNumber ||
                             roomRateId < 1
                         }
-                        modalButtonOnClick={() => setCheckInTime(new Date())}
                         cancelButtonName="Cancel"
                         confirmAction={() => checkIn()}
                     >

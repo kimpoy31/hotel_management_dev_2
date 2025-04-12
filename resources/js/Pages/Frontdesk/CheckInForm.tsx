@@ -3,7 +3,6 @@ import FormHeader from "@/components/FormHeader";
 import { Rate, Room, Transaction } from "@/types";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getExpectedCheckoutDatetime } from "./Room";
 import { router } from "@inertiajs/react";
 
 import dayjs from "dayjs";

@@ -13,7 +13,7 @@ import DisplayRoomInclusions from "@/components/DisplayRoomInclusions";
 import FormHeader from "@/components/FormHeader";
 import { useState } from "react";
 import CustomerInformationForm from "./CustomerInformationForm";
-import CheckInForm from "./CheckInForm";
+import CheckInForm, { formatTransactionDuration } from "./CheckInForm";
 import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
 import { router } from "@inertiajs/react";
@@ -260,31 +260,23 @@ const Room = ({
                         </div>
 
                         <div className="divider m-0"></div>
-                        <div className="flex justify-between text-lg">
-                            <h1>
-                                Room rate -{" "}
-                                {numberOfDays &&
-                                roomRate?.duration &&
-                                roomRate?.duration > 23 ? (
-                                    <span>
-                                        {numberOfDays < 1 ? 1 : numberOfDays}{" "}
-                                        Day(s)
-                                    </span>
-                                ) : (
-                                    <span>{roomRate?.duration} Hours</span>
-                                )}
-                            </h1>
-                            <div className="flex flex-col items-center">
-                                <span className="capitalize font-bold">
-                                    ₱
-                                    {roomRate &&
-                                        roomRate?.rate *
-                                            (numberOfDays && numberOfDays > 0
-                                                ? numberOfDays
-                                                : 1)}
-                                </span>
+
+                        <div className="flex flex-col items-center text-nowrap bg-base-200 p-2">
+                            <div className="uppercase italic font-bold">
+                                Stay duration
+                            </div>
+                            <div className="font-bold flex gap-1.5 text-lg ">
+                                <div>
+                                    {formatTransactionDuration(
+                                        (roomRate?.duration ?? 0) *
+                                            (numberOfDays < 1
+                                                ? 1
+                                                : numberOfDays)
+                                    )}{" "}
+                                </div>
                             </div>
                         </div>
+
                         {roomAdditions.length > 0 &&
                             roomAdditions.map((additionItem, index) => (
                                 <div

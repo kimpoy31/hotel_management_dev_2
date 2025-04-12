@@ -502,52 +502,30 @@ const CheckInForm = ({
                                             <tbody>
                                                 <tr>
                                                     <td className="w-fit">
-                                                        <div className="flex flex-col gap-2 text-nowrap">
-                                                            <div>
-                                                                Expected
-                                                                checkout:
+                                                        <div className="flex flex-col items-center text-nowrap bg-base-200 p-2">
+                                                            <div className="uppercase italic font-bold">
+                                                                Stay duration
                                                             </div>
-                                                            <div className="font-bold text-accent-content text-nowrap">
-                                                                {new Date(
-                                                                    active_transaction!.expected_check_out
-                                                                ).toDateString()}{" "}
-                                                                {new Date(
-                                                                    active_transaction!.expected_check_out
-                                                                ).toLocaleTimeString()}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                            <div className="font-bold flex gap-1.5 text-lg ">
+                                                                <div>
+                                                                    {formatTransactionDuration(
+                                                                        active_transaction?.number_of_hours
+                                                                    )}{" "}
+                                                                </div>
 
-                                                <tr>
-                                                    <td className="w-fit">
-                                                        <div className="flex flex-col gap-2 text-nowrap">
-                                                            <div>
-                                                                Updated expected
-                                                                checkout:
-                                                            </div>
-
-                                                            <div className="font-bold text-accent-content text-nowrap">
-                                                                {getExpectedCheckoutDatetime(
-                                                                    active_transaction.expected_check_out,
-                                                                    (selectedRate?.duration ??
-                                                                        0) *
-                                                                        (numberOfDays &&
-                                                                        numberOfDays >
-                                                                            0
-                                                                            ? numberOfDays
-                                                                            : 1)
-                                                                ).toDateString()}{" "}
-                                                                {getExpectedCheckoutDatetime(
-                                                                    active_transaction.expected_check_out,
-                                                                    (selectedRate?.duration ??
-                                                                        0) *
-                                                                        (numberOfDays &&
-                                                                        numberOfDays >
-                                                                            0
-                                                                            ? numberOfDays
-                                                                            : 1)
-                                                                ).toLocaleTimeString()}
+                                                                <div className="text-accent-content">
+                                                                    +{" "}
+                                                                    {formatTransactionDuration(
+                                                                        (selectedRate?.duration ??
+                                                                            0) *
+                                                                            (numberOfDays &&
+                                                                            numberOfDays <
+                                                                                1
+                                                                                ? 1
+                                                                                : numberOfDays ??
+                                                                                  1)
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </td>

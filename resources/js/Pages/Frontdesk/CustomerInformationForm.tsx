@@ -53,7 +53,7 @@ const CustomerInformationForm = ({
                         <legend className="fieldset-legend">Address</legend>
                         <input
                             type="text"
-                            className="input input-lg w-full"
+                            className="input input-lg w-full capitalize"
                             value={customerAddress}
                             onChange={(e) => setCustomerAddress(e.target.value)}
                             disabled={!!room_transaction}

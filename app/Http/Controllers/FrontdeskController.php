@@ -58,8 +58,6 @@ class FrontdeskController extends Controller
         $validator = Validator::make($request->all(), [
             'rate_id' => ['required', 'integer'],
             'room_id' => ['required', 'integer'],
-            'check_in' => ['required', 'date'],
-            'expected_check_out' => ['required', 'date'],
             'number_of_hours' => ['required', 'integer'],
             'rate' => ['required', 'numeric', 'min:0.01'],
             'room_number' => ['required', 'string'],
@@ -104,13 +102,13 @@ class FrontdeskController extends Controller
         // GENERAL SETTINGS
         $generalSettings = GeneralSetting::find(1);
 
-        $checkIn = Carbon::parse($request->input('check_in'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $check_in_time = now();
+        $expected_check_out = now()->addHours((int) $request->input('number_of_hours'));
 
         $transaction = Transaction::create([
             'transaction_officer' => Auth::user()->fullname,
-            'check_in' => $checkIn,
-            'expected_check_out' => $expectedCheckOut,
+            'check_in' => $check_in_time,
+            'expected_check_out' => $expected_check_out,
             'number_of_hours' => $request->input('number_of_hours'),
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
             'rate' => $request->input('rate'),
@@ -124,7 +122,10 @@ class FrontdeskController extends Controller
             'overtime_charge' => $generalSettings->overtime_charge,
         ]);
 
-        $transaction_message = 'Checked in to Room ' . $transaction->room_number . '. Check-in: ' . $checkIn . '. Expected Checkout: ' . $expectedCheckOut . '.';
+        $checkIn = Carbon::parse($transaction->check_in)->timezone('Asia/Manila')->format('F j, Y h:i A');
+        $checkOut = Carbon::parse($transaction->expected_check_out)->timezone('Asia/Manila')->format('F j, Y h:i A');
+
+        $transaction_message = 'Checked in to Room ' . $transaction->room_number . '. Check-in: ' . $checkIn . '. Expected Checkout: ' . $checkOut . '.';
 
         if (!empty($transaction->room_additions)) {
             $additions = collect($transaction->room_additions)

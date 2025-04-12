@@ -130,18 +130,12 @@ const Room = ({
                 ? roomRate!.duration
                 : 24 *
                   (!isNaN(numberOfDays) && numberOfDays > 0 ? numberOfDays : 1);
-        let expected_check_out = getExpectedCheckoutDatetime(
-            checkInTime,
-            numberOfHours
-        );
 
         await router.post(route("frontdesk.check_in"), {
             rate_id: roomRateId,
             room_id: room.id,
             room_additions: JSON.stringify(roomAdditions),
-            check_in: checkInTime,
             latest_rate_availed_id: roomRateId,
-            expected_check_out,
             number_of_hours: numberOfHours,
             rate: roomRate?.rate,
             room_number: room.room_number,
@@ -259,33 +253,12 @@ const Room = ({
                     >
                         <div className="divider m-0"></div>
                         <div className="flex gap-2">
-                            <h1> Customer name: </h1>
+                            <h1> Guest name: </h1>
                             <span className="capitalize font-bold">
                                 {customerName}
                             </span>
                         </div>
-                        <div className="flex gap-2">
-                            <h1> Check-in: </h1>
-                            <span className="capitalize font-bold">
-                                {checkInTime.toDateString()}{" "}
-                                {checkInTime.toLocaleTimeString()}
-                            </span>
-                        </div>
-                        <div className="flex gap-2">
-                            <h1> Expected checkout: </h1>
-                            <span className="capitalize font-bold">
-                                {getExpectedCheckoutDatetime(
-                                    checkInTime,
-                                    (roomRate?.duration ?? 0) *
-                                        (numberOfDays > 0 ? numberOfDays : 1)
-                                ).toDateString()}{" "}
-                                {getExpectedCheckoutDatetime(
-                                    checkInTime,
-                                    (roomRate?.duration ?? 0) *
-                                        (numberOfDays > 0 ? numberOfDays : 1)
-                                ).toLocaleTimeString()}
-                            </span>
-                        </div>
+
                         <div className="divider m-0"></div>
                         <div className="flex justify-between text-lg">
                             <h1>

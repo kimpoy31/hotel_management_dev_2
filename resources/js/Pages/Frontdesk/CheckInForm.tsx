@@ -6,6 +6,12 @@ import { useEffect, useState } from "react";
 import { getExpectedCheckoutDatetime } from "./Room";
 import { router } from "@inertiajs/react";
 
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 interface Props {
     rates: Rate[];
     roomRateId: number;
@@ -75,6 +81,16 @@ const CheckInForm = ({
 
     // FOR STAY EXTENSION
     let extensionRate = rates.find((rate) => rate.id === stayExtensionId);
+
+    // TRANSACTION VARS
+    let checkInTime = dayjs
+        .utc(active_transaction?.check_in)
+        .tz("Asia/Manila")
+        .format("MMMM D, YYYY h:mm A");
+    let expectedCheckoutTime = dayjs
+        .utc(active_transaction?.expected_check_out)
+        .tz("Asia/Manila")
+        .format("MMMM D, YYYY h:mm A");
 
     const handleRateUpgrade = async () => {
         let expected_check_out = getExpectedCheckoutDatetime(
@@ -158,10 +174,10 @@ const CheckInForm = ({
                                                 Check-in:
                                                 <span className="font-bold text-accent-content text-nowrap">
                                                     {new Date(
-                                                        active_transaction?.check_in
+                                                        checkInTime
                                                     ).toDateString()}{" "}
                                                     {new Date(
-                                                        active_transaction?.check_in
+                                                        checkInTime
                                                     ).toLocaleTimeString()}
                                                 </span>
                                             </div>
@@ -173,10 +189,10 @@ const CheckInForm = ({
                                                 Expected checkout:
                                                 <span className="font-bold text-accent-content text-nowrap">
                                                     {new Date(
-                                                        active_transaction?.expected_check_out
+                                                        expectedCheckoutTime
                                                     ).toDateString()}{" "}
                                                     {new Date(
-                                                        active_transaction?.expected_check_out
+                                                        expectedCheckoutTime
                                                     ).toLocaleTimeString()}
                                                 </span>
                                             </div>

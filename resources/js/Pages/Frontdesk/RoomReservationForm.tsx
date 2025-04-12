@@ -8,8 +8,6 @@ import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
 import { formatTransactionDuration } from "./CheckInForm";
 import { router } from "@inertiajs/react";
-import { getExpectedCheckoutDatetime } from "./Room";
-
 interface Props {
     rooms: Room[];
     inventory_items: InventoryItem[];
@@ -112,11 +110,7 @@ const RoomReservationForm = ({
         setNumberOfDays(1);
     };
 
-    let expected_check_out = getExpectedCheckoutDatetime(
-        reservationDateTime ? new Date(reservationDateTime) : new Date(),
-        (selectedRate?.duration ?? 0) *
-            (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
-    );
+    let expected_check_out = new Date();
 
     useEffect(() => {
         console.log(selectedRoom);
@@ -129,11 +123,7 @@ const RoomReservationForm = ({
             room_additions: JSON.stringify(roomAdditions),
             rate_availed_id: roomRateAvailedId,
             check_in_datetime: reservationDateTime,
-            expected_check_out: getExpectedCheckoutDatetime(
-                reservationDateTime,
-                (selectedRate?.duration ?? 0) *
-                    (numberOfDays < 1 ? 1 : numberOfDays)
-            ),
+
             number_of_hours:
                 (selectedRate?.duration ?? 0) *
                 (numberOfDays < 1 ? 1 : numberOfDays),

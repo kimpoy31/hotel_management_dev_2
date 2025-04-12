@@ -1,7 +1,7 @@
 import AlertDialog from "@/components/AlertDialog";
 import FormHeader from "@/components/FormHeader";
 import { Rate, Room, Transaction } from "@/types";
-import { X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getExpectedCheckoutDatetime } from "./Room";
 import { router } from "@inertiajs/react";
@@ -93,31 +93,25 @@ const CheckInForm = ({
         .format("MMMM D, YYYY h:mm A");
 
     const handleRateUpgrade = async () => {
-        let expected_check_out = getExpectedCheckoutDatetime(
-            active_transaction?.check_in ?? new Date(),
-            (active_transaction?.number_of_hours ?? 0) +
-                ((upgradedRate?.duration ?? 0) -
-                    (prevRateAvailed?.duration ?? 0))
-        );
-
         let number_of_hours =
-            active_transaction &&
-            active_transaction?.number_of_hours +
-                ((upgradedRate?.duration ?? 0) -
-                    (prevRateAvailed?.duration ?? 0));
+            (upgradedRate?.duration ?? 0) *
+                ((numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1) -
+            (prevRateAvailed?.duration ?? 0);
 
         let total_amount_to_add =
-            (upgradedRate?.rate ?? 0) - (prevRateAvailed?.rate ?? 0);
+            (upgradedRate?.rate ?? 0) *
+                ((numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1) -
+            (prevRateAvailed?.rate ?? 0);
 
         await router.patch(route("upgrade.rate.availed", roomDetails.id), {
             transaction_id: active_transaction?.id,
-            expected_check_out,
             latest_rate_availed_id: roomRateUpgradeId,
             number_of_hours,
             total_amount_to_add,
         });
 
         setRoomRateUpgradeId(0);
+        setNumberOfDays(1);
     };
 
     const handleStayExtension = async () => {
@@ -130,9 +124,11 @@ const CheckInForm = ({
             total_amount_to_add:
                 (extensionRate?.rate ?? 0) *
                 ((numberOfDays ?? 0) < 1 ? 1 : numberOfDays ?? 1),
+            number_of_days: numberOfDays,
         });
 
         setStayExtensionId(0);
+        setNumberOfDays(1);
     };
 
     useEffect(() => {
@@ -228,39 +224,77 @@ const CheckInForm = ({
 
                 {roomDetails.room_status === "occupied" && prevRateAvailed && (
                     <div className="bg-base-300 rounded-lg border-4 border-base-100 border-dashed p-4 pb-6">
-                        <fieldset className="fieldset w-full max-w-xs">
-                            <legend className="fieldset-legend">
-                                Upgrade rate availed
-                            </legend>
-                            <select
-                                value={roomRateUpgradeId}
-                                className={`select select-lg w-full ${
-                                    roomRateUpgradeId === 0 && "text-base-00"
-                                } `}
-                                onChange={(e) =>
-                                    setRoomRateUpgradeId(Number(e.target.value))
-                                }
-                                disabled={filteredRatesForUpgrade.length === 0}
-                            >
-                                <option disabled={true} value={0}>
-                                    Select room rate
-                                </option>
-                                {filteredRatesForUpgrade.map((rate, index) => (
-                                    <option key={index} value={rate.id}>
-                                        {rate.duration >= 24
-                                            ? "Daily rate - ₱" + rate.rate
-                                            : rate.duration +
-                                              "Hours - ₱" +
-                                              rate.rate}
+                        <div className="flex gap-2">
+                            <fieldset className="fieldset w-full max-w-xs">
+                                <legend className="fieldset-legend">
+                                    Upgrade rate availed
+                                </legend>
+                                <select
+                                    value={roomRateUpgradeId}
+                                    className={`select select-lg w-full ${
+                                        roomRateUpgradeId === 0 &&
+                                        "text-base-00"
+                                    } `}
+                                    onChange={(e) =>
+                                        setRoomRateUpgradeId(
+                                            Number(e.target.value)
+                                        )
+                                    }
+                                    disabled={
+                                        filteredRatesForUpgrade.length === 0
+                                    }
+                                >
+                                    <option disabled={true} value={0}>
+                                        Select room rate
                                     </option>
-                                ))}
-                            </select>
-                        </fieldset>
+                                    {filteredRatesForUpgrade.map(
+                                        (rate, index) => (
+                                            <option key={index} value={rate.id}>
+                                                {rate.duration >= 24
+                                                    ? "Daily rate - ₱" +
+                                                      rate.rate
+                                                    : rate.duration +
+                                                      "Hours - ₱" +
+                                                      rate.rate}
+                                            </option>
+                                        )
+                                    )}
+                                </select>
+                            </fieldset>
+                            {(upgradedRate?.duration ?? 0) >= 24 && (
+                                <fieldset className="fieldset w-full">
+                                    <legend className="fieldset-legend">
+                                        Number of days
+                                    </legend>
+                                    <input
+                                        type="number"
+                                        className="input input-lg max-w-32"
+                                        value={
+                                            !isNaN(numberOfDays!) &&
+                                            numberOfDays &&
+                                            numberOfDays > 0
+                                                ? numberOfDays
+                                                : ""
+                                        }
+                                        onChange={(e) =>
+                                            setNumberOfDays?.(
+                                                Math.floor(
+                                                    Number(e.target.value)
+                                                )
+                                            )
+                                        }
+                                    />
+                                </fieldset>
+                            )}
+                        </div>
                         {roomRateUpgradeId > 0 && (
                             <div className="flex gap-1 mt-4">
                                 <button
                                     className="btn btn-square btn-error"
-                                    onClick={() => setRoomRateUpgradeId(0)}
+                                    onClick={() => {
+                                        setRoomRateUpgradeId(0);
+                                        setNumberOfDays(1);
+                                    }}
                                 >
                                     <X />
                                 </button>
@@ -273,118 +307,39 @@ const CheckInForm = ({
                                             handleRateUpgrade()
                                         }
                                     >
-                                        <div className="overflow-x-auto overflow-y-auto max-h-72">
-                                            <table className="table table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Upgrade details</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <div className="flex gap-2">
-                                                                <div>
-                                                                    Previously
-                                                                    availed
-                                                                    rate:
-                                                                </div>
-                                                                <div className="text-accent-content font-bold">
-                                                                    {prevRateAvailed.duration >=
-                                                                    24
-                                                                        ? "Daily rate - ₱" +
-                                                                          prevRateAvailed.rate
-                                                                        : prevRateAvailed.duration +
-                                                                          "Hours - ₱" +
-                                                                          prevRateAvailed.rate}
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div className="flex gap-2">
-                                                                <div>
-                                                                    Upgraded
-                                                                    rate:
-                                                                </div>
-                                                                <div className="text-accent-content font-bold">
-                                                                    {upgradedRate.duration >=
-                                                                    24
-                                                                        ? "Daily rate - ₱" +
-                                                                          upgradedRate.rate
-                                                                        : upgradedRate.duration +
-                                                                          "Hours - ₱" +
-                                                                          upgradedRate.rate}
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div className="flex gap-2">
-                                                                <div>
-                                                                    Previous
-                                                                    expected
-                                                                    checkout:
-                                                                </div>
-                                                                <div className="text-accent-content font-bold">
-                                                                    {new Date(
-                                                                        active_transaction.expected_check_out
-                                                                    ).toDateString()}{" "}
-                                                                    {new Date(
-                                                                        active_transaction.expected_check_out
-                                                                    ).toLocaleTimeString()}
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                            <div className="flex gap-2">
-                                                                <div>
-                                                                    Updated
-                                                                    expected
-                                                                    checkout:
-                                                                    {(upgradedRate?.duration ??
-                                                                        0) -
-                                                                        (prevRateAvailed?.duration ??
-                                                                            0)}
-                                                                </div>
-                                                                <div className="text-accent-content font-bold">
-                                                                    {getExpectedCheckoutDatetime(
-                                                                        active_transaction?.check_in ??
-                                                                            new Date(),
-                                                                        (active_transaction?.number_of_hours ??
-                                                                            0) +
-                                                                            ((upgradedRate?.duration ??
-                                                                                0) -
-                                                                                (prevRateAvailed?.duration ??
-                                                                                    0))
-                                                                    ).toDateString()}{" "}
-                                                                    {getExpectedCheckoutDatetime(
-                                                                        active_transaction?.check_in ??
-                                                                            new Date(),
-                                                                        (active_transaction?.number_of_hours ??
-                                                                            0) +
-                                                                            ((upgradedRate?.duration ??
-                                                                                0) -
-                                                                                (prevRateAvailed?.duration ??
-                                                                                    0))
-                                                                    ).toLocaleTimeString()}
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                        <div className="flex flex-col items-center text-nowrap bg-base-200 p-2">
+                                            <div className="uppercase italic font-bold">
+                                                Upgrade details
+                                            </div>
+                                            <div className="font-bold flex items-center gap-1.5 text-lg ">
+                                                <div>
+                                                    {formatTransactionDuration(
+                                                        prevRateAvailed.duration
+                                                    )}
+                                                </div>
+                                                <ArrowRight size={18} />
+                                                <div className="text-accent-content">
+                                                    {formatTransactionDuration(
+                                                        upgradedRate.duration *
+                                                            (numberOfDays &&
+                                                            numberOfDays < 1
+                                                                ? 1
+                                                                : numberOfDays ??
+                                                                  1)
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
+                                        <div className="flex"></div>
                                         <div className="divider m-0"></div>
                                         <div className="flex justify-between text-lg font-bold">
                                             <div>Amount due:</div>
                                             <div>
                                                 ₱
-                                                {upgradedRate.rate -
+                                                {upgradedRate.rate *
+                                                    ((numberOfDays ?? 0) < 1
+                                                        ? 1
+                                                        : numberOfDays ?? 1) -
                                                     prevRateAvailed.rate}
                                             </div>
                                         </div>

@@ -287,17 +287,29 @@ class FrontdeskController extends Controller
     public function upgrade_rate_availed(Request $request)
     {
         $transaction = Transaction::find($request->input('transaction_id'));
-        $prevRateAvailed = Rate::find($transaction->latest_rate_availed_id);
         $upgradeRateAvailed = Rate::find($request->input('latest_rate_availed_id'));
-        $transaction_message = 'Rate upgraded: ' . $prevRateAvailed->duration . ' Hours - ₱' . $prevRateAvailed->rate . ' -> ' . $upgradeRateAvailed->duration . ' Hours - ₱' . $upgradeRateAvailed->rate;
+        
+        $expectedCheckOut = Carbon::parse($transaction->expected_check_out)
+        ->addHours((int) $request->input('number_of_hours'));
+
+        if ($upgradeRateAvailed->duration >= 24) {
+            // Convert to PH timezone first
+            $expectedCheckOut = $expectedCheckOut->timezone('Asia/Manila')->setTime(12, 0, 0);
+        
+            // Convert back to UTC for storage
+            $expectedCheckOut = $expectedCheckOut->timezone('UTC');
+        }    
+ 
+        $prevRateAvailed = Rate::find($transaction->latest_rate_availed_id);
+        $transaction_message = 'Rate upgraded from ' . $this->formatTransactionDuration($prevRateAvailed->duration) . ' to ' . $this->formatTransactionDuration($upgradeRateAvailed->duration * $request->input('number_of_days'));
         $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-        $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($expectedCheckOut)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
         $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add');
 
         $transaction->update([
-            'expected_check_out' => $request->input('expected_check_out'),
+            'expected_check_out' => $expectedCheckOut,
             'latest_rate_availed_id' => $request->input('latest_rate_availed_id'),
-            'number_of_hours' => $request->input('number_of_hours'),
+            'number_of_hours' => $transaction->number_of_hours + $request->input('number_of_hours'),
             'total_payment' =>  $transaction->total_payment + $request->input('total_amount_to_add'),
         ]);
 
@@ -307,6 +319,8 @@ class FrontdeskController extends Controller
             'transaction_type' => 'upgrade',
             'transaction_description' => $transaction_message,
         ]);
+
+        RoomStatusUpdated::dispatch('status_updated');
     }
  
     public function check_out (Request $request) {

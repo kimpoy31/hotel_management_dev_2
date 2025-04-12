@@ -104,6 +104,14 @@ class FrontdeskController extends Controller
 
         $check_in_time = now();
         $expected_check_out = now()->addHours((int) $request->input('number_of_hours'));
+        
+        if ((int) $request->input('number_of_hours') >= 24) {
+            // Convert to PH timezone first
+            $expected_check_out = $expected_check_out->timezone('Asia/Manila')->setTime(12, 0, 0);
+        
+            // Convert back to UTC for storage
+            $expected_check_out = $expected_check_out->timezone('UTC');
+        }        
 
         $transaction = Transaction::create([
             'transaction_officer' => Auth::user()->fullname,
@@ -299,7 +307,7 @@ class FrontdeskController extends Controller
             'pending_payments' => $transaction->pending_payments - $pending_payment,
             'overtime_charge' => $overtime_charge,
             'total_payment' => $transaction->total_payment + $overtime_charge + $pending_payment,
-            'check_out' => Carbon::now('Asia/Manila')->toDateTimeString(),
+            'check_out' => now(),
         ]);
 
         $room->update(['room_status' => 'pending_inspection']);

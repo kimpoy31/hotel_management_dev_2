@@ -249,13 +249,23 @@ class FrontdeskController extends Controller
 
     public function extend_stay_duration(Request $request)
     {
-        $expectedCheckOut = Carbon::parse($request->input('expected_check_out'))->setTimezone('Asia/Manila')->format('F j, Y g:i A');
+        $transaction = Transaction::find($request->input('transaction_id'));       
 
-        $transaction = Transaction::find($request->input('transaction_id'));
+        $expectedCheckOut = Carbon::parse($transaction->expected_check_out)
+        ->addHours((int) $request->input('number_of_hours'));
+
+        if ((int) $request->input('number_of_hours') >= 24) {
+            // Convert to PH timezone first
+            $expectedCheckOut = $expectedCheckOut->timezone('Asia/Manila')->setTime(12, 0, 0);
+        
+            // Convert back to UTC for storage
+            $expectedCheckOut = $expectedCheckOut->timezone('UTC');
+        }    
+
         $transaction_message = 'Extended stay duration. ' . $this->formatTransactionDuration($transaction->number_of_hours) . ' + ' . $this->formatTransactionDuration($request->input('number_of_hours'));
         $transaction_message .= '. Transaction payment: ₱' . $request->input('total_amount_to_add');
         $transaction_message .= '. Previous expected checkout: ' . Carbon::parse($transaction->expected_check_out)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
-        $transaction_message .= '. Updated expected checkout: ' . $expectedCheckOut;
+        $transaction_message .= '. Updated expected checkout: ' . Carbon::parse($expectedCheckOut)->setTimezone('Asia/Manila')->format('F j, Y g:i A');
 
         $transaction->update([
             'expected_check_out' => $expectedCheckOut,
@@ -270,6 +280,8 @@ class FrontdeskController extends Controller
             'transaction_type' => 'extend',
             'transaction_description' => $transaction_message,
         ]);
+
+        RoomStatusUpdated::dispatch('status_updated');
     }
 
     public function upgrade_rate_availed(Request $request)

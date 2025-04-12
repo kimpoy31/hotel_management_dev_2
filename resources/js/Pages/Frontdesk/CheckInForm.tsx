@@ -121,15 +121,8 @@ const CheckInForm = ({
     };
 
     const handleStayExtension = async () => {
-        let expected_check_out = getExpectedCheckoutDatetime(
-            active_transaction?.expected_check_out ?? new Date(),
-            (selectedRate?.duration ?? 0) *
-                (numberOfDays && numberOfDays > 0 ? numberOfDays : 1)
-        );
-
         await router.patch(route("extend.stay.duration"), {
             transaction_id: active_transaction?.id,
-            expected_check_out,
             latest_rate_availed_id: stayExtensionId,
             number_of_hours:
                 (extensionRate?.duration ?? 0) *

@@ -192,8 +192,8 @@ class FrontdeskController extends Controller
 
         $transaction_message = '';
 
-        if (!empty($transaction->room_additions)) {
-            $additions = collect($transaction->room_additions)
+        if (!empty($new_room_additions)) {
+            $additions = collect($new_room_additions)
                 ->map(fn($item) => $item['name'] . ': ' . $item['quantity'] . ' pc(s)')
                 ->implode(', ');
 
@@ -227,7 +227,7 @@ class FrontdeskController extends Controller
             }
         }
 
-        return to_route('frontdesk.room.form', $id);
+        RoomStatusUpdated::dispatch('status_updated');
     }
 
     // REUSABLE FUNCTION

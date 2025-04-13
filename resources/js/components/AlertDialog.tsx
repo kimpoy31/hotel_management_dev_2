@@ -15,6 +15,7 @@ interface Props {
     confirmButtonClassname?: string;
     confirmButtonDisabled?: boolean;
     cancelButtonName?: string;
+    smallContainer?: ReactNode;
 }
 
 const AlertDialog = ({
@@ -32,6 +33,7 @@ const AlertDialog = ({
     cancelButtonName,
     cancelAction,
     modalButtonDisabled,
+    smallContainer,
 }: Props) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [open, setOpen] = useState(false);
@@ -72,6 +74,7 @@ const AlertDialog = ({
                     <div className="my-2 overflow-y-auto max-h-96 text-sm">
                         {children}
                     </div>
+                    <div className="w-full">{smallContainer}</div>
                     <div className="modal-action gap-1 md:flex-row flex-col-reverse">
                         <button
                             className="btn"

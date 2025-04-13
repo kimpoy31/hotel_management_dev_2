@@ -112,10 +112,6 @@ const RoomReservationForm = ({
 
     let expected_check_out = new Date();
 
-    useEffect(() => {
-        console.log(selectedRoom);
-    }, [selectedRoom]);
-
     const handleSubmit = async () => {
         await router.post(route("reserve.room"), {
             reservation_id: reservation?.id ?? null,
@@ -123,7 +119,6 @@ const RoomReservationForm = ({
             room_additions: JSON.stringify(roomAdditions),
             rate_availed_id: roomRateAvailedId,
             check_in_datetime: reservationDateTime,
-
             number_of_hours:
                 (selectedRate?.duration ?? 0) *
                 (numberOfDays < 1 ? 1 : numberOfDays),
@@ -522,78 +517,10 @@ const RoomReservationForm = ({
                         )
                     }
                     confirmAction={() => handleSubmit()}
-                >
-                    <div className="overflow-x-auto overflow-y-auto max-h-64">
-                        <div>
-                            <div className="flex gap-2">
-                                <div>Room:</div>
-                                <div className="font-bold text-accent-content">
-                                    {selectedRoom?.room_number}
-                                </div>
-                            </div>
-                            {roomAdditions.length > 0 && (
-                                <div className="flex gap-2">
-                                    <div>Room additions:</div>
-                                    <div className="font-bold text-accent-content">
-                                        {roomAdditions.map(
-                                            (item) =>
-                                                item.name +
-                                                " " +
-                                                item.quantity +
-                                                "pc(s), "
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                            <div className="flex gap-2">
-                                <div>Reservation date & time:</div>
-                                <div className="font-bold text-accent-content">
-                                    {new Date(
-                                        reservationDateTime
-                                    ).toLocaleDateString()}{" "}
-                                    {new Date(
-                                        reservationDateTime
-                                    ).toLocaleTimeString()}
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <div>Stay duration:</div>
-                                <div className="font-bold text-accent-content">
-                                    {formatTransactionDuration(
-                                        (selectedRate?.duration ?? 0) *
-                                            (numberOfDays < 1
-                                                ? 1
-                                                : numberOfDays)
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <div>Guest name:</div>
-                                <div className="font-bold text-accent-content">
-                                    {guestName}
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <div>Guest address:</div>
-                                <div className="font-bold text-accent-content">
-                                    {guestAddress}
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <div>Guest contact number:</div>
-                                <div className="font-bold text-accent-content">
-                                    {guestContactNumber}
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <div>Received payment:</div>
-                                <div className="font-bold text-accent-content">
-                                    {isFullPayment
-                                        ? "Full amount"
-                                        : "Downpayment"}
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
+                    smallContainer={
+                        <>
+                            <div className="divider my-1"></div>
+                            <div className="flex gap-2 text-lg justify-between">
                                 <div>Payment amount:</div>
                                 <div className="font-bold text-accent-content">
                                     ₱
@@ -609,6 +536,97 @@ const RoomReservationForm = ({
                                                   : numberOfDays) *
                                               0.5 +
                                           roomAdditionsTotalAmount}
+                                </div>
+                            </div>{" "}
+                            <div className="divider my-1"></div>
+                        </>
+                    }
+                >
+                    <div className="overflow-x-auto overflow-y-auto max-h-64">
+                        <div>
+                            <div className="flex flex-col items-center text-nowrap bg-base-200 p-2">
+                                <div className="uppercase italic font-bold">
+                                    Stay duration
+                                </div>
+                                <div className="font-bold flex gap-1.5 text-lg ">
+                                    {formatTransactionDuration(
+                                        (selectedRate?.duration ?? 0) *
+                                            (numberOfDays < 1
+                                                ? 1
+                                                : numberOfDays)
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Room:
+                                </div>
+                                <div className="font-bold flex gap-1.5">
+                                    {selectedRoom?.room_number}
+                                </div>
+                            </div>
+
+                            {roomAdditions.length > 0 && (
+                                <div className="flex items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                    <div className="uppercase italic font-bold">
+                                        Room additions:
+                                    </div>
+                                    <div className="font-bold flex text-wrap gap-1.5">
+                                        {roomAdditions.map(
+                                            (item) =>
+                                                item.name +
+                                                " " +
+                                                item.quantity +
+                                                "pc(s), "
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Reservation date & time:
+                                </div>
+                                <div className="font-bold flex gap-1.5">
+                                    {new Date(
+                                        reservationDateTime
+                                    ).toLocaleDateString()}{" "}
+                                    {new Date(
+                                        reservationDateTime
+                                    ).toLocaleTimeString()}
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Guest name:
+                                </div>
+                                <div className="font-bold flex gap-1.5 capitalize">
+                                    {guestName}
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Guest address:
+                                </div>
+                                <div className="font-bold flex gap-1.5 capitalize">
+                                    {guestAddress}
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Guest contact number:
+                                </div>
+                                <div className="font-bold flex gap-1.5 capitalize">
+                                    {guestContactNumber}
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Received payment:
+                                </div>
+                                <div className="font-bold flex gap-1.5">
+                                    {isFullPayment
+                                        ? "Full amount"
+                                        : "Downpayment"}
                                 </div>
                             </div>
                         </div>

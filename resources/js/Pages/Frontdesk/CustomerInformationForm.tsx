@@ -40,7 +40,7 @@ const CustomerInformationForm = ({
                         <legend className="fieldset-legend">Fullname</legend>
                         <input
                             type="text"
-                            className="input input-lg w-full capitalize"
+                            className="input input-lg w-full uppercase"
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
                             disabled={!!room_transaction}
@@ -53,7 +53,7 @@ const CustomerInformationForm = ({
                         <legend className="fieldset-legend">Address</legend>
                         <input
                             type="text"
-                            className="input input-lg w-full capitalize"
+                            className="input input-lg w-full uppercase"
                             value={customerAddress}
                             onChange={(e) => setCustomerAddress(e.target.value)}
                             disabled={!!room_transaction}

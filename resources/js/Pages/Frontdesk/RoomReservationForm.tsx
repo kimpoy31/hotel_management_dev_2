@@ -214,7 +214,7 @@ const RoomReservationForm = ({
                                     </legend>
                                     <input
                                         type="text"
-                                        className="input input-lg capitalize w-full"
+                                        className="input input-lg uppercase w-full"
                                         value={guestName}
                                         onChange={(e) =>
                                             setGuestName(e.target.value)
@@ -227,7 +227,7 @@ const RoomReservationForm = ({
                                     </legend>
                                     <input
                                         type="text"
-                                        className="input input-lg capitalize w-full "
+                                        className="input input-lg uppercase w-full "
                                         value={guestAddress}
                                         onChange={(e) =>
                                             setGuestAddress(e.target.value)
@@ -241,7 +241,7 @@ const RoomReservationForm = ({
                                 </legend>
                                 <input
                                     type="text"
-                                    className="input input-lg capitalize w-full"
+                                    className="input input-lg uppercase w-full"
                                     value={guestContactNumber}
                                     onChange={(e) =>
                                         setGuestContactNumber(e.target.value)

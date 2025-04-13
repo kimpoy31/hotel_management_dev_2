@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ReservedRoomStatusUpdated;
 use App\Models\Rate;
 use App\Models\Reservation;
 use App\Models\Room;
@@ -41,6 +42,8 @@ class ReservationController extends Controller
 
         // Save the reservation (either create or update)
         $reservation->save();
+
+        ReservedRoomStatusUpdated::dispatch('status_updated');
 
         return to_route('frontdesk');
     }

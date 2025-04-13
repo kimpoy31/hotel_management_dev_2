@@ -45,33 +45,43 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
         }
     };
 
-    // Fetch all data on mount
     useEffect(() => {
         getRooms();
         getReservations();
+    }, []);
 
-        // Ensure Echo is initialized
-        if ((window as any).Echo) {
-            console.log("Reverb is working");
-
-            // Listen to the event for updates (make sure the event name is correct)
-            const channel = (window as any).Echo.channel("rooms.status");
-
-            channel.listen("RoomStatusUpdated", (e: { signal: string }) => {
-                if (e.signal === "status_updated") {
-                    console.log("yey its working");
-
-                    getRooms(); // Re-fetch rooms data when status is updated
-                }
-            });
-
-            // Cleanup function to stop listening when the component unmounts
-            return () => {
-                channel.stopListening("RoomStatusUpdated");
-            };
-        } else {
+    useEffect(() => {
+        if (!(window as any).Echo) {
             console.warn("Echo is not initialized");
+            return;
         }
+
+        // Room status channel
+        const roomChannel = (window as any).Echo.channel("rooms.status");
+        roomChannel.listen("RoomStatusUpdated", (e: { signal: string }) => {
+            if (e.signal === "status_updated") {
+                getRooms();
+            }
+        });
+
+        // Reservation channel
+        const reservationChannel = (window as any).Echo.channel(
+            "reserved.rooms.status"
+        );
+        reservationChannel.listen(
+            "ReservedRoomStatusUpdated",
+            (e: { signal: string }) => {
+                if (e.signal === "status_updated") {
+                    getReservations();
+                }
+            }
+        );
+
+        // Cleanup function
+        return () => {
+            roomChannel.stopListening("RoomStatusUpdated");
+            reservationChannel.stopListening("ReservedRoomStatusUpdated");
+        };
     }, []);
 
     return (

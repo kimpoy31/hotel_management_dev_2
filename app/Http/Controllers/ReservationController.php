@@ -19,9 +19,15 @@ class ReservationController extends Controller
         // If reservationId exists, find the reservation; otherwise, create a new instance
         $reservation = Reservation::find($reservationId) ?? new Reservation();
 
-        // Parse as PHT and convert to UTC
-        $checkInDatetime = Carbon::parse($request->input('check_in_datetime'), 'Asia/Manila')->utc();
-        $expectedCheckoutDateTime = $checkInDatetime->addHours((int) $request->input('number_of_hours'));
+        // Parse the frontend's PHT datetime and convert to UTC for storage
+        $checkInDatetime = Carbon::parse(
+            $request->input('check_in_datetime'), 
+            'Asia/Manila'
+        )->utc();
+        
+        $expectedCheckoutDateTime = $checkInDatetime->copy()->addHours(
+            (int) $request->input('number_of_hours')
+        );
 
         // Fill in the reservation details
         $reservation->fill([

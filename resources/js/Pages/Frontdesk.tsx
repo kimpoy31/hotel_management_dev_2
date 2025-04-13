@@ -2,9 +2,13 @@ import DisplayEmpty from "@/components/DisplayEmpty";
 import FormHeader from "@/components/FormHeader";
 import RoomCard from "@/components/RoomCard";
 import { useApi } from "@/context/ApiProvider";
-import { Reservation, Room } from "@/types";
 import { Link } from "@inertiajs/react";
-import React, { useEffect } from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const Frontdesk = () => {
     const { rooms, reservations } = useApi();
@@ -61,12 +65,14 @@ const Frontdesk = () => {
                                     </div>
                                     <div className="flex flex-col text-sm">
                                         <div className="font-bold">
-                                            {new Date(
-                                                reservation.check_in_datetime
-                                            ).toDateString()}{" "}
-                                            {new Date(
-                                                reservation.check_in_datetime
-                                            ).toLocaleTimeString()}
+                                            {dayjs
+                                                .utc(
+                                                    reservation.check_in_datetime
+                                                )
+                                                .tz("Asia/Manila")
+                                                .format(
+                                                    "dddd, MMMM D, YYYY h:mm A"
+                                                )}
                                         </div>
 
                                         <div className="font-bold italic">

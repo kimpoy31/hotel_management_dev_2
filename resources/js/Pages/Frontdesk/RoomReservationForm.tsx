@@ -8,6 +8,13 @@ import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
 import { formatTransactionDuration } from "./CheckInForm";
 import { router } from "@inertiajs/react";
+
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 interface Props {
     rooms: Room[];
     inventory_items: InventoryItem[];
@@ -70,7 +77,15 @@ const RoomReservationForm = ({
         reservation?.guest_contact_number ?? ""
     );
     const [reservationDateTime, setReservationDateTime] = useState<string>(
-        reservation?.check_in_datetime ?? ""
+        () => {
+            if (!reservation?.check_in_datetime) return "";
+
+            // Convert UTC from backend to PHT for display
+            return dayjs
+                .utc(reservation.check_in_datetime)
+                .tz("Asia/Manila")
+                .format("MMMM D, YYYY h:mm A");
+        }
     );
     const [outStandingBalancePayment, setOutStandingBalancePayment] = useState<
         number | null
@@ -142,6 +157,24 @@ const RoomReservationForm = ({
         });
     };
 
+    // Helper functions for input handling
+    const formatForInput = (dateStr: string, isDateOnly = false) => {
+        if (!dateStr) return "";
+
+        if (isDateOnly) {
+            return dayjs(dateStr, "MMMM D, YYYY h:mm A").format("YYYY-MM-DD");
+        }
+        return dayjs(dateStr, "MMMM D, YYYY h:mm A").format("YYYY-MM-DDTHH:mm");
+    };
+
+    const parseFromInput = (inputStr: string, isDateOnly = false) => {
+        const dateObj = isDateOnly
+            ? dayjs(inputStr + "T00:00:00")
+            : dayjs(inputStr);
+
+        return dateObj.tz("Asia/Manila").format("MMMM D, YYYY h:mm A");
+    };
+
     return (
         <div className="flex justify-center">
             <Card className="lg:card-md card-xs">
@@ -189,14 +222,12 @@ const RoomReservationForm = ({
                         <FormHeader className="text-start ">
                             Room Additions
                         </FormHeader>
-
                         <SetRoomAdditions
                             roomAdditions={roomAdditions}
                             setRoomAdditions={setRoomAdditions}
                             inventoryItems={inventory_items}
                             hideLabel={true}
                         />
-
                         {/* GUEST INFORMATION  */}
                         <div className="bg-base-300 border-4 border-base-100 border-dashed p-4 pb-6">
                             <legend className="fieldset-legend text-2xl uppercase">
@@ -244,7 +275,6 @@ const RoomReservationForm = ({
                                 />
                             </fieldset>
                         </div>
-
                         {/* RESERVE RATE AND DURATION */}
                         <div className="bg-base-300 border-4 border-base-100 border-dashed p-4 pb-6 mt-8 ">
                             <div className="flex flex-wrap">
@@ -307,10 +337,9 @@ const RoomReservationForm = ({
                                     )}
                             </div>
                         </div>
-
                         {/* RESERVE DATE AND TIME */}
                         {selectedRate && (
-                            <div className="bg-base-300 border-4 border-base-100 border-dashed p-4 pb-6 mt-8 ">
+                            <div className="bg-base-300 border-4 border-base-100 border-dashed p-4 pb-6 mt-8">
                                 <div className="flex flex-wrap">
                                     <fieldset className="fieldset w-full max-w-sm">
                                         <legend className="fieldset-legend">
@@ -320,16 +349,14 @@ const RoomReservationForm = ({
                                             <input
                                                 type="datetime-local"
                                                 className="input input-lg"
-                                                value={
+                                                value={formatForInput(
                                                     reservationDateTime
-                                                        ? reservationDateTime
-                                                              .replace(" ", "T")
-                                                              .slice(0, 16)
-                                                        : ""
-                                                }
+                                                )}
                                                 onChange={(e) =>
                                                     setReservationDateTime(
-                                                        e.target.value
+                                                        parseFromInput(
+                                                            e.target.value
+                                                        )
                                                     )
                                                 }
                                             />
@@ -337,23 +364,18 @@ const RoomReservationForm = ({
                                             <input
                                                 type="date"
                                                 className="input input-lg"
-                                                value={
-                                                    reservationDateTime
-                                                        ? reservationDateTime.split(
-                                                              "T"
-                                                          )[0]
-                                                        : ""
-                                                } // Extract only YYYY-MM-DD
-                                                onChange={(e) => {
+                                                value={formatForInput(
+                                                    reservationDateTime,
+                                                    true
+                                                )}
+                                                onChange={(e) =>
                                                     setReservationDateTime(
-                                                        e.target.value +
-                                                            "T14:00:00.000"
-                                                    );
-                                                    console.log(
-                                                        e.target.value +
-                                                            "T14:00:00.000"
-                                                    );
-                                                }}
+                                                        parseFromInput(
+                                                            e.target.value,
+                                                            true
+                                                        )
+                                                    )
+                                                }
                                             />
                                         )}
                                     </fieldset>

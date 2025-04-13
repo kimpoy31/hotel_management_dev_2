@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RoomStatusUpdated;
 use App\Models\InventoryItem;
 use App\Models\Rate;
 use App\Models\Room;
@@ -29,6 +30,8 @@ class RoomController extends Controller
         $room->update([
             'status' => 'in-active'
         ]);
+
+        RoomStatusUpdated::dispatch('status_updated');
 
         return to_route('admin');
     }
@@ -202,6 +205,8 @@ class RoomController extends Controller
                 }
             }
         }
+
+        RoomStatusUpdated::dispatch('status_updated');
 
         return to_route('admin');
     }

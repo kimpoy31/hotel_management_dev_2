@@ -37,8 +37,7 @@ const SidebarContent = ({
                         <ShieldUser size={20} /> Admin
                     </Link>
                 )}
-                {(roles.includes("administrator") ||
-                    roles.includes("frontdesk")) && (
+                {roles.includes("administrator") && (
                     <Link
                         href={route("frontdesk")}
                         className={`btn rounded-none btn-ghost w-full justify-start hover:bg-secondary  ${

@@ -51,6 +51,8 @@ class ReservationController extends Controller
 
         ReservedRoomStatusUpdated::dispatch('status_updated');
 
-        return to_route('frontdesk');
+        $isAdmin = in_array('administrator', Auth::user()->roles);
+
+        return to_route($isAdmin ? 'frontdesk' : 'dashboard');
     }
 }

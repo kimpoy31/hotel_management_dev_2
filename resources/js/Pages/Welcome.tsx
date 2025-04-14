@@ -1,13 +1,15 @@
 import React from "react";
+import Frontdesk from "./Frontdesk";
+import { usePage } from "@inertiajs/react";
 
 const Welcome = () => {
+    const userRole = usePage().props.auth.user.roles;
+
     return (
-        <div>
-            Welcome
-            <div className="w-96 h-96 bg-amber-900"></div>
-            <div className="w-96 h-96 bg-amber-900"></div>
-            <div className="w-96 h-96 bg-amber-900"></div>
-        </div>
+        <>
+            {userRole.includes("frontdesk") &&
+                !userRole.includes("administrator") && <Frontdesk />}
+        </>
     );
 };
 

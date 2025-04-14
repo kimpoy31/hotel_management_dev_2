@@ -16,7 +16,7 @@ import CustomerInformationForm from "./CustomerInformationForm";
 import CheckInForm, { formatTransactionDuration } from "./CheckInForm";
 import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import TransactionLogs from "./TransactionLogs";
 import CountdownTimer from "@/components/CountdownTimer";
 
@@ -50,6 +50,8 @@ const Room = ({
     errors,
     active_transaction,
 }: Props) => {
+    // const user roles
+    const userRoles = usePage().props.auth.user.roles;
     // Customer information
     const [customerName, setCustomerName] = useState(
         active_transaction?.customer_name ?? ""
@@ -131,7 +133,13 @@ const Room = ({
     return (
         <div className="flex justify-center">
             <Card className="lg:card-md card-xs">
-                <BackButton routeName="frontdesk" />
+                <BackButton
+                    routeName={
+                        userRoles.includes("administrator")
+                            ? "frontdesk"
+                            : "dashboard"
+                    }
+                />
                 <RoomHeader room={room} />
                 <div className="divider m-0"></div>
 

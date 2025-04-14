@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import SetRoomAdditions from "./SetRoomAdditions";
 import AlertDialog from "@/components/AlertDialog";
 import { formatTransactionDuration } from "./CheckInForm";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -57,6 +57,8 @@ const RoomReservationForm = ({
     reserved_room,
     reservations,
 }: Props) => {
+    // const user roles
+    const userRoles = usePage().props.auth.user.roles;
     const [selectedRoomId, setSelectedRoomId] = useState<number | null>(
         reservation?.reserved_room_id ?? null
     );
@@ -178,7 +180,13 @@ const RoomReservationForm = ({
     return (
         <div className="flex justify-center">
             <Card className="lg:card-md card-xs">
-                <BackButton routeName="frontdesk" />
+                <BackButton
+                    routeName={
+                        userRoles.includes("administrator")
+                            ? "frontdesk"
+                            : "dashboard"
+                    }
+                />
                 <div className="sm:p-12 font-bold bg-base-300 p-8 text-center uppercase sm:text-3xl text-xl mt-4">
                     Reservation form
                 </div>

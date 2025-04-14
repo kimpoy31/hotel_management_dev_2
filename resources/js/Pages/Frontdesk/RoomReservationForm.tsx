@@ -677,21 +677,40 @@ const RoomReservationForm = ({
                                 reserved_room?.room_status !== "available"
                             }
                         >
-                            <div className="flex gap-2">
-                                <div>Guest name:</div>
-                                <div className="font-bold text-accent-content">
+                            <div className="flex flex-col items-center text-nowrap bg-base-200 p-2">
+                                <div className="uppercase italic font-bold">
+                                    Stay duration
+                                </div>
+                                <div className="font-bold flex gap-1.5 text-lg ">
+                                    {formatTransactionDuration(
+                                        (selectedRate?.duration ?? 0) *
+                                            (numberOfDays < 1
+                                                ? 1
+                                                : numberOfDays)
+                                    )}
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Guest name:
+                                </div>
+                                <div className="font-bold flex gap-1.5 capitalize">
                                     {guestName}
                                 </div>
                             </div>
-                            <div className="flex gap-2">
-                                <div>Guest address:</div>
-                                <div className="font-bold text-accent-content">
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Guest address:
+                                </div>
+                                <div className="font-bold flex gap-1.5 capitalize">
                                     {guestAddress}
                                 </div>
                             </div>
-                            <div className="flex gap-2">
-                                <div>Guest contact number:</div>
-                                <div className="font-bold text-accent-content">
+                            <div className="flex flex-wrap items-center gap-2 text-nowrap bg-base-200 p-1 mt-1 text-xs">
+                                <div className="uppercase italic font-bold">
+                                    Guest contact number:
+                                </div>
+                                <div className="font-bold flex gap-1.5 capitalize">
                                     {guestContactNumber}
                                 </div>
                             </div>

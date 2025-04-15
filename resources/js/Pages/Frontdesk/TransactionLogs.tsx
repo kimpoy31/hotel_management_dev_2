@@ -1,6 +1,11 @@
 import FormHeader from "@/components/FormHeader";
 import { TransactionLog } from "@/types";
-import React from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface Props {
     transaction_logs: TransactionLog[];
@@ -27,12 +32,12 @@ const TransactionLogs = ({ transaction_logs }: Props) => {
                                 </td>
                                 <td>{transaction.transaction_officer}</td>
                                 <td>
-                                    {new Date(
-                                        transaction.created_at
-                                    ).toDateString()}{" "}
-                                    {new Date(
-                                        transaction.created_at
-                                    ).toLocaleTimeString()}
+                                    {dayjs(transaction.created_at)
+                                        .tz("Asia/Manila")
+                                        .format("MMM D, YYYY")}{" "}
+                                    {dayjs(transaction.created_at)
+                                        .tz("Asia/Manila")
+                                        .format("h:mm A")}
                                 </td>
                             </tr>
                         ))}

@@ -67,6 +67,47 @@ class FrontdeskController extends Controller
             'total_payment' => ['required', 'numeric', 'min:0.01'],
         ]);
 
+        // CHECK IN and EXPECTED CHECKOUT VALUES
+        $check_in_time = now();
+        $expected_check_out = now()->addHours((int) $request->input('number_of_hours'));
+
+        if ((int) $request->input('number_of_hours') >= 24) {
+            // Convert to PH timezone first
+            $expected_check_out = $expected_check_out->timezone('Asia/Manila')->setTime(12, 0, 0);
+        
+            // Convert back to UTC for storage
+            $expected_check_out = $expected_check_out->timezone('UTC');
+        }      
+
+        $reservations = Reservation::where('reservation_status', 'pending')->where('reserved_room_id', $request->room_id)->get();
+
+       // Check for overlapping reservations with ALL conversions inside the loop
+        $hasOverlap = $reservations->contains(function ($reservation) use ($check_in_time, $expected_check_out) {
+            // Convert ALL datetimes to PH time inside the loop
+            $newCheckIn = \Carbon\Carbon::parse($check_in_time)->setTimezone('Asia/Manila');
+            $newCheckOut = \Carbon\Carbon::parse($expected_check_out)->setTimezone('Asia/Manila');
+            $resCheckIn = \Carbon\Carbon::parse($reservation->check_in_datetime)->setTimezone('Asia/Manila');
+            $resCheckOut = \Carbon\Carbon::parse($reservation->expected_check_out)->setTimezone('Asia/Manila');
+
+            return (
+                // Case 1: New reservation starts during existing reservation
+                ($newCheckIn->gte($resCheckIn) && $newCheckIn->lt($resCheckOut)) ||
+                
+                // Case 2: New reservation ends during existing reservation
+                ($newCheckOut->gt($resCheckIn) && $newCheckOut->lte($resCheckOut)) ||
+                
+                // Case 3: New reservation completely contains existing reservation
+                ($newCheckIn->lte($resCheckIn) && $newCheckOut->gte($resCheckOut))
+            );
+        });
+
+        if ($hasOverlap) {
+            // There's an overlap - handle the error
+            return back()->withErrors(['check_in_error' => 'The selected room is already reserved during the requested time period.']);
+        }
+
+        // No overlap - proceed with reservation creation
+
         // If validation fails, return a 422 error with validation errors
         if ($validator->fails()) {
             return to_route('frontdesk.room.form', $request->room_id)->withErrors($validator);
@@ -100,18 +141,7 @@ class FrontdeskController extends Controller
         }
 
         // GENERAL SETTINGS
-        $generalSettings = GeneralSetting::find(1);
-
-        $check_in_time = now();
-        $expected_check_out = now()->addHours((int) $request->input('number_of_hours'));
-        
-        if ((int) $request->input('number_of_hours') >= 24) {
-            // Convert to PH timezone first
-            $expected_check_out = $expected_check_out->timezone('Asia/Manila')->setTime(12, 0, 0);
-        
-            // Convert back to UTC for storage
-            $expected_check_out = $expected_check_out->timezone('UTC');
-        }        
+        $generalSettings = GeneralSetting::find(1);  
 
         $transaction = Transaction::create([
             'transaction_officer' => Auth::user()->fullname,

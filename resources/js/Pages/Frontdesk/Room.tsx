@@ -207,6 +207,11 @@ const Room = ({
                         className="text-xl text-center"
                     />
                 )}
+                {errors.check_in_error && (
+                    <div className="text-center text-error bg-error-content p-4 mb-2">
+                        {errors.check_in_error}
+                    </div>
+                )}
                 {/* Check in button */}
                 {room.room_status === "available" && (
                     <AlertDialog

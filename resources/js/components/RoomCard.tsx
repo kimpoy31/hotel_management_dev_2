@@ -7,6 +7,7 @@ interface Props {
     navigateOnClick: boolean;
     className?: string;
     room: Room;
+    route: string;
 }
 
 export const getBgColor = (room: Room) => {
@@ -37,10 +38,10 @@ export const getTextColor = (room: Room) => {
     return textColor;
 };
 
-const RoomCard = ({ className, room, navigateOnClick }: Props) => {
+const RoomCard = ({ className, room, navigateOnClick, route }: Props) => {
     return (
         <Link
-            href={navigateOnClick ? route("frontdesk.room.form", room.id) : ""}
+            href={navigateOnClick ? route : ""}
             className={`${className} gap-2 flex sm:flex-col flex-row p-2 rounded bg-base-100 w-full md:max-w-72 cursor-pointer hover:brightness-110 shadow hover:shadow-lg`}
         >
             <div

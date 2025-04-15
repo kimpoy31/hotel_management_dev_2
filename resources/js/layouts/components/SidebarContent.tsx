@@ -1,6 +1,12 @@
 import AlertDialog from "@/components/AlertDialog";
 import { Link, router, usePage } from "@inertiajs/react";
-import { LogOut, LucideHome, Monitor, ShieldUser } from "lucide-react";
+import {
+    LogOut,
+    LucideHome,
+    Monitor,
+    ShieldUser,
+    ClipboardList,
+} from "lucide-react";
 
 const SidebarContent = ({
     triggerModalClick,
@@ -47,6 +53,18 @@ const SidebarContent = ({
                         onClick={() => triggerModalClick?.()}
                     >
                         <Monitor size={20} /> Frontdesk
+                    </Link>
+                )}
+                {roles.includes("administrator") && (
+                    <Link
+                        href={route("housekeeping")}
+                        className={`btn rounded-none btn-ghost w-full justify-start hover:bg-secondary  ${
+                            url.includes("housekeeping") &&
+                            "text-secondary-content bg-secondary"
+                        }`}
+                        onClick={() => triggerModalClick?.()}
+                    >
+                        <ClipboardList size={20} /> Housekeeping
                     </Link>
                 )}
 

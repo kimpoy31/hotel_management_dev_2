@@ -40,6 +40,11 @@ Route::middleware('auth')->group(function () {
     })->name('frontdesk');
 
 
+    Route::get('housekeeping', function () {
+        return Inertia::render('Housekeeping');
+    })->name('housekeeping');
+
+
     Route::get('fetch-rooms', function () {
         $rooms = Room::where('status', 'active')->get();
         return $rooms->isEmpty() ? [] : $rooms;

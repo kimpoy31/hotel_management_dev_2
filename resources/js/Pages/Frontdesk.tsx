@@ -26,6 +26,7 @@ const Frontdesk = () => {
                             navigateOnClick={true}
                             room={room}
                             key={index}
+                            route={route("frontdesk.room.form", room.id)}
                         />
                     ))}
                 </div>

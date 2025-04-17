@@ -11,6 +11,6 @@ use Illuminate\Support\Facades\Schedule;
 // })->purpose('Display an inspiring quote');
 
 Schedule::command('check-reservations')
-    ->everyFiveSeconds()
-    ->timezone('Asia/Manila')
-    ->sendOutputTo(storage_path('logs/reservation-check.log')); // Log to file instead
+    ->everyMinute()
+    ->timezone('Asia/Manila');
+    

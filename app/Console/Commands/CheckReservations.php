@@ -34,10 +34,6 @@ class CheckReservations extends Command
      */
         public function handle()
     {
-        Log::info('=== STARTING RESERVATION CHECK ===');
-        $now = Carbon::now('Asia/Manila');
-        Log::info('Current Manila time: '.$now->format('Y-m-d H:i:s'));
-
         $now = Carbon::now('Asia/Manila'); // Keep this as a Carbon instance
         $formattedNow = $now->format('Y-m-d H:i:s'); // Format only for comparison
 
@@ -50,24 +46,17 @@ class CheckReservations extends Command
                                 ->timezone('Asia/Manila')
                                 ->format('Y-m-d H:i:s');
 
-            Log::info('check in time'.$check_in_time);
-            Log::info('current time'.$formattedNow);
-
             $room = Room::find($reservation->reserved_room_id);
             $rate = Rate::find($reservation->rate_availed_id);
             // GENERAL SETTINGS
             $generalSettings = GeneralSetting::find(1);
 
             if ($room->room_status != 'available') {
-                Log::info('Room: skipped'.$room->room_number);
-
                 continue;
             }
 
             // Compare formatted datetimes for minute-precise match
             if ($formattedNow >= $check_in_time) {
-                Log::info('check in time: '.$check_in_time);
-
                 $expected_checkout = $now->copy()->addHours((int) $reservation->number_of_hours);
     
                 $transaction = Transaction::create([

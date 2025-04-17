@@ -15,9 +15,14 @@ class ReservationController extends Controller
     public function reserve_room(Request $request)
     {
         $reservationId = $request->input('reservation_id');
+        $isAdmin = in_array('administrator', Auth::user()->roles);
        
         // If reservationId exists, find the reservation; otherwise, create a new instance
         $reservation = Reservation::find($reservationId) ?? new Reservation();
+
+        if($reservationId && $reservation && $reservation->reservation_status !== 'pending'){
+            return to_route($isAdmin ? 'frontdesk' : 'dashboard');
+        }
 
         // Parse the frontend's PHT datetime and convert to UTC for storage
         $checkInDatetime = Carbon::parse(
@@ -50,8 +55,6 @@ class ReservationController extends Controller
         $reservation->save();
 
         ReservedRoomStatusUpdated::dispatch('status_updated');
-
-        $isAdmin = in_array('administrator', Auth::user()->roles);
 
         return to_route($isAdmin ? 'frontdesk' : 'dashboard');
     }

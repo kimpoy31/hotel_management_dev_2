@@ -11,6 +11,7 @@ use App\Models\Room;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class CheckReservations extends Command
 {
@@ -19,7 +20,7 @@ class CheckReservations extends Command
      *
      * @var string
      */
-    protected $signature = 'app:check-reservations';
+    protected $signature = 'check-reservations';
 
     /**
      * The console command description.
@@ -33,16 +34,24 @@ class CheckReservations extends Command
      */
         public function handle()
     {
+        Log::info('=== STARTING RESERVATION CHECK ===');
+        $now = Carbon::now('Asia/Manila');
+        Log::info('Current Manila time: '.$now->format('Y-m-d H:i:s'));
+
         $now = Carbon::now('Asia/Manila'); // Keep this as a Carbon instance
-        $formattedNow = $now->format('Y-m-d H:i'); // Format only for comparison
+        $formattedNow = $now->format('Y-m-d H:i:s'); // Format only for comparison
 
         $reservations = Reservation::where('reservation_status','pending')->get();
+
 
         foreach ($reservations as $reservation) {
             // Format check-in datetime to minute precision in PHT
             $check_in_time = Carbon::parse($reservation->check_in_datetime)
                                 ->timezone('Asia/Manila')
-                                ->format('Y-m-d H:i');
+                                ->format('Y-m-d H:i:s');
+
+            Log::info('check in time'.$check_in_time);
+            Log::info('current time'.$formattedNow);
 
             $room = Room::find($reservation->reserved_room_id);
             $rate = Rate::find($reservation->rate_availed_id);
@@ -50,14 +59,18 @@ class CheckReservations extends Command
             $generalSettings = GeneralSetting::find(1);
 
             if ($room->room_status != 'available') {
+                Log::info('Room: skipped'.$room->room_number);
+
                 continue;
             }
 
             // Compare formatted datetimes for minute-precise match
-            if ($check_in_time === $formattedNow) {
+            if ($formattedNow >= $check_in_time) {
+                Log::info('check in time: '.$check_in_time);
+
                 $expected_checkout = $now->copy()->addHours((int) $reservation->number_of_hours);
     
-                Transaction::create([
+                $transaction = Transaction::create([
                     'transaction_officer' => $reservation->transaction_officer,
                     'check_in' => $now->timezone('UTC'),
                     'expected_check_out' => $expected_checkout->timezone('UTC'),
@@ -77,6 +90,11 @@ class CheckReservations extends Command
 
                 $reservation->update([
                     'reservation_status' => 'completed',
+                ]);
+
+                $room->update([
+                    'room_status' => 'occupied',
+                    'active_transaction' => $transaction->id,
                 ]);
                 
                 ReservedRoomStatusUpdated::dispatch('status_updated');

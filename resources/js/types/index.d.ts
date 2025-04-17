@@ -60,6 +60,7 @@ export interface Transaction {
     pending_payment: number | null;
     overtime_charge: number;
     transaction_logs: TransactionLog[];
+    notified_checkout_warning_at: string;
 }
 
 export interface TransactionLog {

@@ -25,7 +25,8 @@ class Transaction extends Model
         'damaged_items',
         'settlement_payment',
         'overtime_charge',
-        'latest_rate_availed_id'
+        'latest_rate_availed_id',
+        'notified_checkout_warning_at'
     ];
 
     protected $casts = [

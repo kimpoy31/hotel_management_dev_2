@@ -67,6 +67,7 @@ export interface Notification {
     notif_id: number;
     title: string;
     description: string;
+    room_number: string;
 }
 
 export interface TransactionLog {

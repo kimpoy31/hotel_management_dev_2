@@ -43,11 +43,12 @@ use Illuminate\Support\Facades\Schedule;
                 event(new NotificationEvent(
                     recipients: ['administrator', 'housekeeper'],
                     title: 'Checkout Warning',
-                    description: "Room {$room->room_number} is due for checkout at {$formattedExpectedCheckout}",
+                    description: "due for checkout at {$formattedExpectedCheckout}",
                     notif_id: $transaction->id,
+                    room_number: $transaction->room_number,
                 ));
     
-                // $transaction->update(['notified_checkout_warning_at' => $now]);
+                $transaction->update(['notified_checkout_warning_at' => $now]);
             }
         }
     })

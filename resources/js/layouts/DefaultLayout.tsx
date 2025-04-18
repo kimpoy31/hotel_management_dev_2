@@ -3,6 +3,8 @@ import { LogOut, Menu } from "lucide-react";
 
 import AlertDialog from "@/components/AlertDialog";
 import SidebarContent from "./components/SidebarContent";
+import { useApi } from "@/context/ApiProvider";
+import CutoffTimeToast from "@/components/CutoffTimeToast";
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
     const triggerModalClick = () => {
@@ -13,6 +15,8 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
             modalCheckbox.click();
         }
     };
+
+    const { notifications } = useApi();
 
     const dropdownRef = useRef<HTMLDetailsElement>(null);
 
@@ -66,6 +70,11 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
                         />
                     </ul>
                 </div>
+            </div>
+            <div className="toast toast-top toast-end">
+                {notifications.map((notification, index) => (
+                    <CutoffTimeToast notification={notification} key={index} />
+                ))}
             </div>
         </div>
     );

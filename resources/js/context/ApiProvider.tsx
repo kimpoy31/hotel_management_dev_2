@@ -1,4 +1,4 @@
-import { Reservation, Room } from "@/types";
+import { Notification, Reservation, Room } from "@/types";
 import { router, usePage } from "@inertiajs/react";
 import axios from "axios";
 import React, {
@@ -13,6 +13,7 @@ import React, {
 interface ApiContextProps {
     rooms: Room[];
     reservations: Reservation[];
+    notifications: Notification[];
 }
 
 const ApiContext = createContext<ApiContextProps | undefined>(undefined);
@@ -22,7 +23,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [reservations, setReservations] = useState<Reservation[]>([]);
-    const [notifications, setNotifications] = useState();
+    const [notifications, setNotifications] = useState<Notification[]>([]);
     const userRoles = usePage().props.auth.user.roles;
 
     // Fetch Rooms
@@ -85,12 +86,30 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
 
             notificationChannel.listen(
                 "NotificationEvent",
-                (e: {
-                    title: string;
-                    description: string;
-                    notif_id: number;
-                }) => {
-                    console.log(`New Notification: ${e.title}`, e.description);
+                (e: Notification) => {
+                    // Update notifications state
+                    setNotifications((prevNotifications) => {
+                        // Check if notification with this notif_id already exists
+                        const exists = prevNotifications.some(
+                            (notif) => notif.notif_id === e.notif_id
+                        );
+
+                        // If it doesn't exist, append the new notification
+                        if (!exists) {
+                            return [
+                                ...prevNotifications,
+                                {
+                                    notif_id: e.notif_id,
+                                    title: e.title,
+                                    description: e.description,
+                                    room_number: e.room_number,
+                                },
+                            ];
+                        }
+
+                        // If it exists, return the previous array unchanged
+                        return prevNotifications;
+                    });
                 }
             );
         });
@@ -106,7 +125,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
     }, []);
 
     return (
-        <ApiContext.Provider value={{ rooms, reservations }}>
+        <ApiContext.Provider value={{ rooms, reservations, notifications }}>
             {children}
         </ApiContext.Provider>
     );

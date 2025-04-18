@@ -38,6 +38,17 @@ export interface AdditionItem {
     name: string;
 }
 
+export interface MissingItem {
+    id: number;
+    item_name: string;
+    item_type: ItemType;
+    price: number;
+    status: Status;
+    quantity_to_check: number;
+    quantity_checked: number;
+    missing: number; // Now a required number (not nullable)
+}
+
 export interface Transaction {
     id: number;
     transaction_officer: string;
@@ -72,6 +83,7 @@ export interface Notification {
 
 export interface ItemToCheck extends InventoryItem {
     quantity_to_check: number;
+    quantity_checked: number;
 }
 
 export interface TransactionLog {

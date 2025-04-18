@@ -37,6 +37,7 @@ class HousekeepingController extends Controller
             ->map(function ($item) use ($combinedItems) {
                 $matchedItem = collect($combinedItems)->firstWhere('item_id', $item->id);
                 $item->quantity_to_check = $matchedItem['quantity_to_check'] ?? 0;
+                $item->quantity_checked = 0; // Add default checked quantity
                 return $item;
             })
             ->filter(function ($item) {

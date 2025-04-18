@@ -1,5 +1,6 @@
 import { useApi } from "@/context/ApiProvider";
 import { Notification } from "@/types";
+import axios from "axios";
 import { X } from "lucide-react";
 
 interface Props {
@@ -9,11 +10,19 @@ interface Props {
 const CutoffTimeToast = ({ notification }: Props) => {
     const { closeNotification } = useApi();
 
+    const markAsRead = async () => {
+        await axios
+            .patch(route("notification.flag.read"), {
+                notif_id: notification.notif_id,
+            })
+            .then(() => closeNotification(notification.notif_id));
+    };
+
     return (
         <div className="alert alert-warning ">
             <button
                 className="btn btn-square btn-ghost btn-warning"
-                onClick={() => closeNotification(notification.notif_id)}
+                onClick={() => markAsRead()}
             >
                 <X size={24} />
             </button>
@@ -22,13 +31,10 @@ const CutoffTimeToast = ({ notification }: Props) => {
                 <div className="flex flex-wrap items-center gap-x-2 text-lg">
                     <h1 className="font-bold">{notification.title}</h1>
                 </div>
-                <div className="flex items-center gap-1">
-                    <div className="flex text-center items-center rounded gap-1">
-                        <span className="uppercase text-sm font-bold">
-                            Room
-                        </span>
-                        {notification.room_number}
-                    </div>
+                <div className="gap-1 text-wrap">
+                    <span className="font-bold">
+                        Room {notification.room_number}{" "}
+                    </span>
                     is {notification.description}
                 </div>
             </div>

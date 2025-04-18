@@ -47,8 +47,6 @@ use Illuminate\Support\Facades\Schedule;
                     notif_id: $transaction->id,
                     room_number: $transaction->room_number,
                 ));
-    
-                $transaction->update(['notified_checkout_warning_at' => $now]);
             }
         }
     })

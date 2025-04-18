@@ -7,7 +7,9 @@ use App\Models\OvertimeCharge;
 use App\Models\Rate;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -54,6 +56,16 @@ Route::middleware('auth')->group(function () {
         $reservations = Reservation::where('reservation_status', 'pending')->get();
         return $reservations->isEmpty() ? [] : $reservations;
     })->name('fetch.reservations');
+
+
+    Route::patch('transactions-notified-checkout-warning-at', function (Request $request) {
+        $transaction = Transaction::find($request->input('notif_id'));
+        
+        $transaction->update([
+            'notified_checkout_warning_at' => now()
+        ]);
+
+    })->name('notification.flag.read');
     
 });
 

@@ -1,3 +1,4 @@
+import { useApi } from "@/context/ApiProvider";
 import { Notification } from "@/types";
 import { X } from "lucide-react";
 
@@ -6,9 +7,14 @@ interface Props {
 }
 
 const CutoffTimeToast = ({ notification }: Props) => {
+    const { closeNotification } = useApi();
+
     return (
         <div className="alert alert-warning ">
-            <button className="btn btn-square btn-ghost btn-warning">
+            <button
+                className="btn btn-square btn-ghost btn-warning"
+                onClick={() => closeNotification(notification.notif_id)}
+            >
                 <X size={24} />
             </button>
 

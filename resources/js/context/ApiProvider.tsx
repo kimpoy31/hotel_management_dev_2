@@ -14,6 +14,7 @@ interface ApiContextProps {
     rooms: Room[];
     reservations: Reservation[];
     notifications: Notification[];
+    closeNotification: (id: number) => void;
 }
 
 const ApiContext = createContext<ApiContextProps | undefined>(undefined);
@@ -44,6 +45,12 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
         } catch (error) {
             console.error("Error fetching reservations:", error);
         }
+    };
+
+    const closeNotification = (notif_id: number) => {
+        setNotifications(
+            notifications.filter((notif) => notif.notif_id !== notif_id)
+        );
     };
 
     useEffect(() => {
@@ -125,7 +132,9 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
     }, []);
 
     return (
-        <ApiContext.Provider value={{ rooms, reservations, notifications }}>
+        <ApiContext.Provider
+            value={{ rooms, reservations, notifications, closeNotification }}
+        >
             {children}
         </ApiContext.Provider>
     );

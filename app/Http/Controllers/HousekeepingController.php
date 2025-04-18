@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RoomStatusUpdated;
 use App\Models\InventoryItem;
 use App\Models\Room;
 use App\Models\Transaction;
@@ -63,7 +64,8 @@ class HousekeepingController extends Controller
         
         // Update records
         $transaction->update([
-            'missing_items' => $missingItems
+            'missing_items' => $missingItems,
+            'damage_report' => $request->input('damage_report')
         ]);
         
         $room->update([
@@ -81,7 +83,7 @@ class HousekeepingController extends Controller
             $transactionMessage = 'Missing items: ' . $missingItemsList . '. ';
         }
         
-        $transactionMessage .= 'Room status updated to cleaning.';
+        $transactionMessage .= 'Room status updated from "Pending Inspection" to "Cleaning".';
         
         TransactionLog::create([
             'transaction_id' => $transaction->id,
@@ -89,7 +91,7 @@ class HousekeepingController extends Controller
             'transaction_type' => 'room inspection',
             'transaction_description' => $transactionMessage,
         ]);
-        
 
+        RoomStatusUpdated::dispatch('status_updated');
     }
 }

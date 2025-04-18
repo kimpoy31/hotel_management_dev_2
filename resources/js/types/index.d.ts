@@ -66,7 +66,7 @@ export interface Transaction {
     room_additions?: AdditionItem[]; // Adjust type based on expected structure
     total_payment: number;
     missing_items?: any[]; // Adjust type based on expected structure
-    damaged_items?: string;
+    damage_report?: string;
     settlement_payment?: number;
     pending_payment: number | null;
     overtime_charge: number;

@@ -22,7 +22,7 @@ class Transaction extends Model
         'room_additions',
         'total_payment',
         'missing_items',
-        'damaged_items',
+        'damage_report',
         'settlement_payment',
         'overtime_charge',
         'latest_rate_availed_id',

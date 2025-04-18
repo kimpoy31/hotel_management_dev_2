@@ -17,6 +17,7 @@ const Room = ({ room, items_to_check }: Props) => {
     const [itemsToCheck, setItemsToCheck] = useState<ItemToCheck[]>(
         items_to_check ?? []
     );
+    const [damageReport, setDamageReport] = useState<string>("");
 
     // Separate items into checked and missing
     const missingItems = itemsToCheck.filter(
@@ -51,6 +52,7 @@ const Room = ({ room, items_to_check }: Props) => {
             room_id: room.id,
             transaction_id: room.active_transaction,
             missing_items: JSON.stringify(missingItemsFiltered),
+            damage_report: damageReport ?? null,
         });
     };
 
@@ -124,6 +126,16 @@ const Room = ({ room, items_to_check }: Props) => {
                         </tbody>
                     </table>
                 </div>
+                <div className="divider"></div>
+                <FormHeader className="text-start">Damage report</FormHeader>
+                <div className="bg-base-300 p-4 border-2 border-dashed rounded-lg border-base-100">
+                    <textarea
+                        value={damageReport}
+                        onChange={(e) => setDamageReport(e.target.value)}
+                        className="textarea w-full uppercase"
+                        placeholder="Leave empty if none"
+                    ></textarea>
+                </div>
 
                 <div className="divider"></div>
                 <AlertDialog
@@ -161,6 +173,16 @@ const Room = ({ room, items_to_check }: Props) => {
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                        </>
+                    )}
+                    {damageReport && (
+                        <>
+                            <FormHeader className="text-start">
+                                Damage report
+                            </FormHeader>
+                            <div className="p-4 bg-base-200 rounded text-error uppercase">
+                                {damageReport}
                             </div>
                         </>
                     )}

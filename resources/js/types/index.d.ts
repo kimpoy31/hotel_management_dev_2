@@ -70,6 +70,10 @@ export interface Notification {
     room_number: string;
 }
 
+export interface ItemToCheck extends InventoryItem {
+    quantity_to_check: number;
+}
+
 export interface TransactionLog {
     id: number;
     transaction_id: number;

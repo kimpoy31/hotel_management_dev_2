@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\FrontdeskMiddleware;
+use App\Http\Middleware\HousekeepingMiddleware;
 use App\Models\GeneralSetting;
 use App\Models\InventoryItem;
 use App\Models\OvertimeCharge;
@@ -37,14 +39,18 @@ Route::middleware('auth')->group(function () {
         })->name('admin');
     });
 
-    Route::get('frontdesk', function () {
-        return Inertia::render('Frontdesk');
-    })->name('frontdesk');
 
+    Route::middleware(FrontdeskMiddleware::class)->group(function () {
+        Route::get('frontdesk', function () {
+            return Inertia::render('Frontdesk');
+        })->name('frontdesk');
+    });
 
-    Route::get('housekeeping', function () {
-        return Inertia::render('Housekeeping');
-    })->name('housekeeping');
+    Route::middleware(HousekeepingMiddleware::class)->group(function () {
+        Route::get('housekeeping', function () {
+            return Inertia::render('Housekeeping');
+        })->name('housekeeping');
+    });
 
 
     Route::get('fetch-rooms', function () {
@@ -72,4 +78,5 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';
 require __DIR__ . '/frontdesk.php';
+require __DIR__ . '/housekeeping.php';
 require __DIR__ . '/channels.php';

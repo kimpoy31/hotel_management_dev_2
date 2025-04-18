@@ -11,7 +11,6 @@ use App\Models\Room;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class CheckReservations extends Command
 {

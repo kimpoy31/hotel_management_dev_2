@@ -1,5 +1,5 @@
 import { Reservation, Room } from "@/types";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import axios from "axios";
 import React, {
     createContext,
@@ -22,14 +22,13 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const userRoles = usePage().props.auth.user.roles;
 
     // Fetch Rooms
     const getRooms = async () => {
         try {
             const response = await axios.get(route("fetch.rooms"));
             setRooms(response.data);
-
-            console.log("fetched data");
         } catch (error) {
             console.error("Error fetching rooms:", error);
         }
@@ -77,10 +76,28 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
             }
         );
 
+        // Notification channel
+        userRoles.forEach((role) => {
+            const notificationChannel = (window as any).Echo.private(
+                `notification.${role}`
+            );
+
+            notificationChannel.listen(
+                "NotificationEvent",
+                (e: { recipients: string[] }) => {
+                    console.log(`Notification for role ${role}:`, e);
+                    // Handle the notification
+                }
+            );
+        });
+
         // Cleanup function
         return () => {
             roomChannel.stopListening("RoomStatusUpdated");
             reservationChannel.stopListening("ReservedRoomStatusUpdated");
+            userRoles.forEach((role) => {
+                (window as any).Echo.leave(`notification.${role}`);
+            });
         };
     }, []);
 

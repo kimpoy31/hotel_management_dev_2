@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\NotificationEvent;
 use App\Models\Room;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -28,9 +29,8 @@ Schedule::call(function () {
         // Get current time + 30 minutes in Asia/Manila
         $current_plus_30 = Carbon::now('Asia/Manila')->addMinutes(30)->format('Y-m-d H:i:s');
 
-        if ($current_plus_30 >= $expected_checkout) {
-            // ✅ Execute your logic here if current time + 30 mins is >= expected checkout
-            // Replace this with your actual logic
+        if ($current_plus_30 >= $expected_checkout && $transaction->notified_checkout_warning_at == null) {
+            NotificationEvent::dispatch(['housekeeper', 'administrator']);
         } else {
             continue;
         }

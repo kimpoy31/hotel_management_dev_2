@@ -18,10 +18,10 @@ const Housekeeping = () => {
                 <div className="flex gap-2 justify-center flex-wrap items-center sm:flex-row flex-col bg-base-200 lg:p-4 py-2 px-0">
                     {roomsForInspection.map((room, index) => (
                         <RoomCard
-                            navigateOnClick={false}
+                            navigateOnClick={true}
                             room={room}
                             key={index}
-                            route={route("frontdesk.room.form", room.id)}
+                            route={route("housekeeping.room.form", room.id)}
                         />
                     ))}
                 </div>

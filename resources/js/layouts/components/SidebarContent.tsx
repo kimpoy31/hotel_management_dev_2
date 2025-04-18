@@ -76,7 +76,7 @@ const SidebarContent = ({
                     modalTitle="Confirm logout"
                     modalDescription="Are you sure you want to logout?. This will end current session"
                     confirmAction={async () => {
-                        await router.post("logout");
+                        await router.post(route("logout"));
                         triggerModalClick?.();
                     }}
                     cancelButtonName="Cancel"

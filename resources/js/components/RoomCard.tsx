@@ -19,6 +19,8 @@ export const getBgColor = (room: Room) => {
         bgColor = "bg-secondary";
     } else if (room.room_status === "pending_inspection") {
         bgColor = "bg-neutral";
+    } else if (room.room_status === "cleaning") {
+        bgColor = "bg-gray-800";
     }
 
     return bgColor;
@@ -33,6 +35,8 @@ export const getTextColor = (room: Room) => {
         textColor = "text-secondary-content";
     } else if (room.room_status === "pending_inspection") {
         textColor = "text-neutral-content";
+    } else if (room.room_status === "cleaning") {
+        textColor = "text-gray-100";
     }
 
     return textColor;

@@ -72,9 +72,11 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     return (
         <div
             className={`font-bold bg-base-200 p-2 ${
-                timeLeft.isOvertime ? "text-error" : "text-success"
-            } ${
-                roomStatus !== "occupied" && "text-neutral-content"
+                roomStatus !== "occupied"
+                    ? "text-neutral-content"
+                    : timeLeft.isOvertime
+                    ? "text-error"
+                    : "text-success"
             } ${className}`}
         >
             {roomStatus === "available"
@@ -83,6 +85,8 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
                 ? timeLeft.time
                 : roomStatus === "pending_inspection"
                 ? "Under inspection"
+                : roomStatus === "cleaning"
+                ? "Cleaning"
                 : "-"}
             {timeLeft.isOvertime && roomStatus === "occupied" ? (
                 <div className="text-xs font-semibold">

@@ -47,7 +47,11 @@ const Room = ({ room, items_to_check }: Props) => {
     };
 
     const handleSubmit = async () => {
-        await router.patch(route(""));
+        await router.patch(route("housekeeping.submit.inspection"), {
+            room_id: room.id,
+            transaction_id: room.active_transaction,
+            missing_items: JSON.stringify(missingItemsFiltered),
+        });
     };
 
     return (
@@ -123,6 +127,7 @@ const Room = ({ room, items_to_check }: Props) => {
 
                 <div className="divider"></div>
                 <AlertDialog
+                    confirmAction={() => handleSubmit()}
                     buttonTitle="Submit Room Check"
                     buttonClassname="btn btn-accent"
                     modalTitle="Complete Room Check"

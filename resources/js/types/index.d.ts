@@ -95,7 +95,8 @@ export interface TransactionLog {
         | "checkout"
         | "upgrade"
         | "extend"
-        | "room addition";
+        | "room addition"
+        | "room inspection";
     transaction_description: string;
     status: "active" | "in-active";
     created_at: string;

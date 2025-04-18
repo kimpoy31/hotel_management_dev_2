@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\InventoryItem;
 use App\Models\Room;
 use App\Models\Transaction;
+use App\Models\TransactionLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class HousekeepingController extends Controller
@@ -49,5 +51,45 @@ class HousekeepingController extends Controller
             'room' => $room,
             'items_to_check' => $inventoryItems
         ]);
+    }
+
+
+
+    public function submit_inspection(Request $request) {
+        $room = Room::find($request->input('room_id'));
+        $transaction = Transaction::find($request->input('transaction_id'));
+        
+        $missingItems = json_decode($request->input('missing_items'), true);
+        
+        // Update records
+        $transaction->update([
+            'missing_items' => $missingItems
+        ]);
+        
+        $room->update([
+            'room_status' => 'cleaning',
+        ]);
+        
+        // Create transaction log for missing items
+        $transactionMessage = '';
+        
+        if (!empty($missingItems)) {
+            $missingItemsList = collect($missingItems)
+                ->map(fn($item) => $item['item_name'] . ': ' . ($item['quantity_to_check'] - $item['quantity_checked']) . ' pc(s)')
+                ->implode(', ');
+                
+            $transactionMessage = 'Missing items: ' . $missingItemsList . '. ';
+        }
+        
+        $transactionMessage .= 'Room status updated to cleaning.';
+        
+        TransactionLog::create([
+            'transaction_id' => $transaction->id,
+            'transaction_officer' => Auth::user()->fullname,
+            'transaction_type' => 'room inspection',
+            'transaction_description' => $transactionMessage,
+        ]);
+        
+
     }
 }

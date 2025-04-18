@@ -163,12 +163,7 @@ const CheckInForm = ({
                                             <div className="flex gap-2 text-nowrap">
                                                 Check-in:
                                                 <span className="font-bold text-accent-content text-nowrap">
-                                                    {new Date(
-                                                        checkInTime
-                                                    ).toDateString()}{" "}
-                                                    {new Date(
-                                                        checkInTime
-                                                    ).toLocaleTimeString()}
+                                                    {checkInTime}
                                                 </span>
                                             </div>
                                         </td>
@@ -178,12 +173,7 @@ const CheckInForm = ({
                                             <div className="flex gap-2 text-nowrap">
                                                 Expected checkout:
                                                 <span className="font-bold text-accent-content text-nowrap">
-                                                    {new Date(
-                                                        expectedCheckoutTime
-                                                    ).toDateString()}{" "}
-                                                    {new Date(
-                                                        expectedCheckoutTime
-                                                    ).toLocaleTimeString()}
+                                                    {expectedCheckoutTime}
                                                 </span>
                                             </div>
                                         </td>

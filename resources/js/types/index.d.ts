@@ -63,6 +63,12 @@ export interface Transaction {
     notified_checkout_warning_at: string;
 }
 
+export interface Notification {
+    notif_id: number;
+    title: string;
+    description: string;
+}
+
 export interface TransactionLog {
     id: number;
     transaction_id: number;

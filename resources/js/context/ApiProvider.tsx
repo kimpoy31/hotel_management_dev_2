@@ -22,6 +22,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const [notifications, setNotifications] = useState();
     const userRoles = usePage().props.auth.user.roles;
 
     // Fetch Rooms
@@ -84,9 +85,12 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
 
             notificationChannel.listen(
                 "NotificationEvent",
-                (e: { recipients: string[] }) => {
-                    console.log(`Notification for role ${role}:`, e);
-                    // Handle the notification
+                (e: {
+                    title: string;
+                    description: string;
+                    notif_id: number;
+                }) => {
+                    console.log(`New Notification: ${e.title}`, e.description);
                 }
             );
         });

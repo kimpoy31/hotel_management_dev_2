@@ -15,35 +15,40 @@ class NotificationEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $recipients;
+    public $title;
+    public $description;
+    public $notif_id;
+
     /**
      * Create a new event instance.
      */
-    public function __construct($recipients)
+    public function __construct($recipients, string $title, string $description, int $notif_id)
     {
         $this->recipients = $recipients;
+        $this->title = $title;
+        $this->description = $description;
+        $this->notif_id = $notif_id;
     }
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
      */
     public function broadcastOn(): array
     {
         return collect($this->recipients)
-            ->map(function ($recipient) {
-                return new PrivateChannel("notification.{$recipient}");
-            })
+            ->map(fn ($recipient) => new PrivateChannel("notification.{$recipient}"))
             ->toArray();
     }
 
-      /**
+    /**
      * Get the data to broadcast.
-     *
-     * @return array
      */
-    public function broadcastWith()
+    public function broadcastWith(): array
     {
-        return ['recipients' => $this->recipients];  // Only send the signal
+        return [
+            'title' => $this->title,
+            'description' => $this->description,
+            'notif_id' => $this->notif_id,
+        ];
     }
 }

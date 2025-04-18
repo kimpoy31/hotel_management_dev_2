@@ -9,33 +9,47 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('check-reservations')
+    Schedule::command('check-reservations')
     ->everyMinute()
     ->timezone('Asia/Manila');
     
-Schedule::call(function () {
+    Schedule::call(function () {
+        // Get all active rooms with their transactions in a single query
+        $rooms = Room::where('status', 'active')
+                     ->whereNotNull('active_transaction')
+                     ->get();
     
-    $rooms = Room::where('status','active')->whereNotNull('active_transaction')->get();
+        // Preload transactions in one query (avoid N+1)
+        $transactionIds = $rooms->pluck('active_transaction')->filter()->unique();
+        $transactions = Transaction::whereIn('id', $transactionIds)
+                                  ->get()
+                                  ->keyBy('id'); // For O(1) lookup
 
-    foreach($rooms as $room){
+        $now = Carbon::now('Asia/Manila');
 
-        $transaction = Transaction::find($room->active_transaction);
+        foreach ($rooms as $room) {
+            $transaction = $transactions[$room->active_transaction] ?? null;
+    
+            if (!$transaction) {
+                continue; // Skip if transaction is missing
+            }
 
-        // Parse the expected checkout time to Asia/Manila timezone
-        $expected_checkout = Carbon::parse($transaction->expected_check_out)
-        ->timezone('Asia/Manila')
-        ->format('Y-m-d H:i:s');
-
-        // Get current time + 30 minutes in Asia/Manila
-        $current_plus_30 = Carbon::now('Asia/Manila')->addMinutes(30)->format('Y-m-d H:i:s');
-
-        if ($current_plus_30 >= $expected_checkout && $transaction->notified_checkout_warning_at == null) {
-            NotificationEvent::dispatch(['housekeeper', 'administrator']);
-        } else {
-            continue;
+            $formattedExpectedCheckout = Carbon::parse($transaction->expected_check_out)->timezone('Asia/Manila')->format('F j, Y h:i A');
+            $expectedCheckout = Carbon::parse($transaction->expected_check_out)->timezone('Asia/Manila');
+            $cutoffTime = $now->copy()->addMinutes(30);
+    
+            if ($cutoffTime->greaterThanOrEqualTo($expectedCheckout) && 
+                is_null($transaction->notified_checkout_warning_at)) {
+                event(new NotificationEvent(
+                    recipients: ['administrator', 'housekeeper'],
+                    title: 'Checkout Warning',
+                    description: "Room {$room->room_number} is due for checkout at {$formattedExpectedCheckout}",
+                    notif_id: $transaction->id,
+                ));
+    
+                // $transaction->update(['notified_checkout_warning_at' => $now]);
+            }
         }
-    }
-
-})
+    })
     ->everyMinute()
     ->timezone('Asia/Manila');

@@ -65,7 +65,7 @@ export interface Transaction {
     id_picture_path?: string;
     room_additions?: AdditionItem[]; // Adjust type based on expected structure
     total_payment: number;
-    missing_items?: any[]; // Adjust type based on expected structure
+    missing_items?: MissingItem[]; // Adjust type based on expected structure
     damage_report?: string;
     settlement_payment?: number;
     pending_payment: number | null;

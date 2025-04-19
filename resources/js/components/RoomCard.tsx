@@ -12,11 +12,19 @@ interface Props {
 
 export const getBgColor = (room: Room) => {
     let bgColor = "";
+    const hasMissingItems = room.active_transaction_object?.missing_items;
+    const hasDamageReport = room.active_transaction_object?.damage_report;
+    const urgentAttention =
+        (hasMissingItems?.length ?? 0) > 0 &&
+        hasDamageReport &&
+        room.room_status === "pending_inspection";
 
     if (room.room_status === "available") {
         bgColor = "bg-emerald-800";
     } else if (room.room_status === "occupied") {
         bgColor = "bg-secondary";
+    } else if (urgentAttention) {
+        bgColor = "bg-error";
     } else if (room.room_status === "pending_inspection") {
         bgColor = "bg-neutral";
     } else if (room.room_status === "cleaning") {
@@ -28,11 +36,19 @@ export const getBgColor = (room: Room) => {
 
 export const getTextColor = (room: Room) => {
     let textColor = "";
+    const hasMissingItems = room.active_transaction_object?.missing_items;
+    const hasDamageReport = room.active_transaction_object?.damage_report;
+    const urgentAttention =
+        (hasMissingItems?.length ?? 0) > 0 &&
+        hasDamageReport &&
+        room.room_status === "pending_inspection";
 
     if (room.room_status === "available") {
         textColor = "text-emerald-100";
     } else if (room.room_status === "occupied") {
         textColor = "text-secondary-content";
+    } else if (urgentAttention) {
+        textColor = "text-error-content";
     } else if (room.room_status === "pending_inspection") {
         textColor = "text-neutral-content";
     } else if (room.room_status === "cleaning") {

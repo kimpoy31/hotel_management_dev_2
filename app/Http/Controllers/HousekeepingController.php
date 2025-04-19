@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NotificationEvent;
 use App\Events\RoomStatusUpdated;
 use App\Models\InventoryItem;
 use App\Models\Room;
@@ -61,18 +62,22 @@ class HousekeepingController extends Controller
         $transaction = Transaction::find($request->input('transaction_id'));
         
         $missingItems = json_decode($request->input('missing_items'), true);
+        $damageReport = $request->input('damage_report');
         
         // Update records
         $transaction->update([
             'missing_items' => $missingItems,
-            'damage_report' => $request->input('damage_report')
+            'damage_report' => $damageReport
         ]);
         
-        $room->update([
-            'room_status' => 'cleaning',
-        ]);
+        // Only update room status to 'cleaning' if no missing items and no damage report
+        if (empty($missingItems) && empty($damageReport)) {
+            $room->update([
+                'room_status' => 'cleaning',
+            ]);
+        }
         
-        // Create transaction log for missing items
+        // Build transaction log message
         $transactionMessage = '';
         
         if (!empty($missingItems)) {
@@ -83,7 +88,14 @@ class HousekeepingController extends Controller
             $transactionMessage = 'Missing items: ' . $missingItemsList . '. ';
         }
         
-        $transactionMessage .= 'Room status updated from "Pending Inspection" to "Cleaning".';
+        if (!empty($damageReport)) {
+            $transactionMessage .= 'Damage reported: ' . $damageReport . '. ';
+        }
+        
+        // Only add the default status update message if no issues were found
+        if (empty($missingItems) && empty($damageReport)) {
+            $transactionMessage .= 'Room status updated from "Pending Inspection" to "Cleaning".';
+        }
         
         TransactionLog::create([
             'transaction_id' => $transaction->id,
@@ -91,7 +103,32 @@ class HousekeepingController extends Controller
             'transaction_type' => 'room inspection',
             'transaction_description' => $transactionMessage,
         ]);
-
+    
         RoomStatusUpdated::dispatch('status_updated');
+    
+        // Notification logic (same as before)
+        $hasMissingItems = !empty($missingItems);
+        $hasDamageReport = !empty($damageReport);
+    
+        $title = 'Room Inspection Report';
+        $description = '';
+    
+        if ($hasMissingItems && $hasDamageReport) {
+            $description = "⚠️ **Missing Items & Damage Reported** in Room {$transaction->room_number}. Requires attention.";
+        } elseif ($hasMissingItems) {
+            $description = "⚠️ **Missing Items** in Room {$transaction->room_number}. Please check inventory.";
+        } elseif ($hasDamageReport) {
+            $description = "⚠️ **Damage Reported** in Room {$transaction->room_number}. Maintenance required.";
+        } else {
+            $description = "✅ Room {$transaction->room_number} inspection completed. No issues found.";
+        }
+    
+        event(new NotificationEvent(
+            recipients: ['administrator', 'housekeeper', 'frontdesk'],
+            title: $title,
+            description: $description,
+            notif_id: $transaction->id,
+            room_number: $transaction->room_number,
+        ));
     }
 }

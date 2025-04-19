@@ -42,7 +42,7 @@ use Illuminate\Support\Facades\Schedule;
             if ($cutoffTime->greaterThanOrEqualTo($expectedCheckout) && 
                 is_null($transaction->notified_checkout_warning_at)) {
                 event(new NotificationEvent(
-                    recipients: ['administrator', 'housekeeper'],
+                    recipients: ['administrator', 'housekeeper','frontdesk'],
                     title: 'Checkout Warning',
                     description: "due for checkout at {$formattedExpectedCheckout}",
                     notif_id: $transaction->id,

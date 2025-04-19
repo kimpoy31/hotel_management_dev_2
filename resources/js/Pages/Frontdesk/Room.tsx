@@ -21,6 +21,7 @@ import { router, usePage } from "@inertiajs/react";
 import TransactionLogs from "./TransactionLogs";
 import CountdownTimer from "@/components/CountdownTimer";
 import MissingItemsTable from "./MissingItemsTable";
+import DamageReport from "./DamageReport";
 
 interface Props {
     room: RoomProp;
@@ -145,6 +146,27 @@ const Room = ({
                 <RoomHeader room={room} />
                 <div className="divider m-0"></div>
 
+                {room.active_transaction_object?.missing_items && (
+                    <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
+                        <MissingItemsTable
+                            missingItems={
+                                room.active_transaction_object?.missing_items
+                            }
+                        />
+                    </div>
+                )}
+                {room.active_transaction_object?.damage_report && (
+                    <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
+                        <DamageReport
+                            damage_report={
+                                room.active_transaction_object?.damage_report
+                            }
+                        />
+                    </div>
+                )}
+
+                <div className="divider m-0"></div>
+
                 <DisplayRoomInclusions
                     roomInclusionItems={room.room_inclusion_items ?? []}
                     roomInclusions={room.room_inclusions ?? []}
@@ -188,16 +210,6 @@ const Room = ({
                         room_id={room.id}
                         roomStatus={room.room_status}
                     />
-                )}
-
-                {room.active_transaction_object?.missing_items && (
-                    <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
-                        <MissingItemsTable
-                            missingItems={
-                                room.active_transaction_object?.missing_items
-                            }
-                        />
-                    </div>
                 )}
 
                 {active_transaction && (

@@ -4,6 +4,7 @@ import RoomCard from "@/components/RoomCard";
 import {
     AdditionItem,
     InventoryItem,
+    MissingItem,
     Rate,
     Room as RoomProp,
     Transaction,
@@ -19,6 +20,7 @@ import AlertDialog from "@/components/AlertDialog";
 import { router, usePage } from "@inertiajs/react";
 import TransactionLogs from "./TransactionLogs";
 import CountdownTimer from "@/components/CountdownTimer";
+import MissingItemsTable from "./MissingItemsTable";
 
 interface Props {
     room: RoomProp;
@@ -186,6 +188,16 @@ const Room = ({
                         room_id={room.id}
                         roomStatus={room.room_status}
                     />
+                )}
+
+                {room.active_transaction_object?.missing_items && (
+                    <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
+                        <MissingItemsTable
+                            missingItems={
+                                room.active_transaction_object?.missing_items
+                            }
+                        />
+                    </div>
                 )}
 
                 {active_transaction && (

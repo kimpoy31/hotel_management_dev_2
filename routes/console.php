@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Schedule;
     Schedule::call(function () {
         // Get all active rooms with their transactions in a single query
         $rooms = Room::where('status', 'active')
+                     ->where('room_status', 'occupied')
                      ->whereNotNull('active_transaction')
                      ->get();
     

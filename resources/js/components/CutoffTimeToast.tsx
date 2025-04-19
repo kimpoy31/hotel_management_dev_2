@@ -11,11 +11,13 @@ const CutoffTimeToast = ({ notification }: Props) => {
     const { closeNotification } = useApi();
 
     const markAsRead = async () => {
-        await axios
-            .patch(route("notification.flag.read"), {
+        if (notification.is_db_driven) {
+            await axios.patch(route("notification.flag.read"), {
                 notif_id: notification.notif_id,
-            })
-            .then(() => closeNotification(notification.notif_id));
+            });
+        }
+
+        closeNotification(notification.notif_id);
     };
 
     return (

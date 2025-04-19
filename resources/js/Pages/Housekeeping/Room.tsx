@@ -1,6 +1,6 @@
 import BackButton from "@/components/BackButton";
 import Card from "@/components/Card";
-import { ItemToCheck, MissingItem, Room as RoomType } from "@/types";
+import { ItemToCheck, Room as RoomType } from "@/types";
 import { router, usePage } from "@inertiajs/react";
 import RoomHeader from "../Frontdesk/RoomHeader";
 import FormHeader from "@/components/FormHeader";
@@ -15,7 +15,7 @@ interface Props {
 const Room = ({ room, items_to_check }: Props) => {
     const userRoles = usePage().props.auth.user.roles;
     const [itemsToCheck, setItemsToCheck] = useState<ItemToCheck[]>(
-        items_to_check ?? []
+        room.active_transaction_object?.missing_items ?? items_to_check ?? []
     );
     const [damageReport, setDamageReport] = useState<string>("");
 
@@ -23,16 +23,7 @@ const Room = ({ room, items_to_check }: Props) => {
     const missingItems = itemsToCheck.filter(
         (item) => item.quantity_checked < item.quantity_to_check
     );
-    // Create the filtered variable with calculated missing values
-    const missingItemsFiltered: MissingItem[] = itemsToCheck
-        .filter((item) => item.quantity_checked < item.quantity_to_check)
-        .map((item) => {
-            const { available, in_use, in_process, sold, ...rest } = item;
-            return {
-                ...rest,
-                missing: item.quantity_to_check - item.quantity_checked, // Calculate missing
-            };
-        });
+
     const allItemsPresent = missingItems.length === 0;
 
     const handleQuantityChange = (index: number, change: number) => {
@@ -51,7 +42,7 @@ const Room = ({ room, items_to_check }: Props) => {
         await router.patch(route("housekeeping.submit.inspection"), {
             room_id: room.id,
             transaction_id: room.active_transaction,
-            missing_items: JSON.stringify(missingItemsFiltered),
+            missing_items: JSON.stringify(itemsToCheck),
             damage_report: damageReport ?? null,
         });
     };

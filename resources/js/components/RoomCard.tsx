@@ -15,8 +15,7 @@ export const getBgColor = (room: Room) => {
     const hasMissingItems = room.active_transaction_object?.missing_items;
     const hasDamageReport = room.active_transaction_object?.damage_report;
     const urgentAttention =
-        (hasMissingItems?.length ?? 0) > 0 &&
-        hasDamageReport &&
+        ((hasMissingItems?.length ?? 0) > 0 || hasDamageReport) &&
         room.room_status === "pending_inspection";
 
     if (room.room_status === "available") {
@@ -39,8 +38,7 @@ export const getTextColor = (room: Room) => {
     const hasMissingItems = room.active_transaction_object?.missing_items;
     const hasDamageReport = room.active_transaction_object?.damage_report;
     const urgentAttention =
-        (hasMissingItems?.length ?? 0) > 0 &&
-        hasDamageReport &&
+        ((hasMissingItems?.length ?? 0) > 0 || hasDamageReport) &&
         room.room_status === "pending_inspection";
 
     if (room.room_status === "available") {

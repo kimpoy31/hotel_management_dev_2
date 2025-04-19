@@ -38,17 +38,6 @@ export interface AdditionItem {
     name: string;
 }
 
-export interface MissingItem {
-    id: number;
-    item_name: string;
-    item_type: ItemType;
-    price: number;
-    status: Status;
-    quantity_to_check: number;
-    quantity_checked: number;
-    missing: number; // Now a required number (not nullable)
-}
-
 export interface Transaction {
     id: number;
     transaction_officer: string;
@@ -65,7 +54,7 @@ export interface Transaction {
     id_picture_path?: string;
     room_additions?: AdditionItem[]; // Adjust type based on expected structure
     total_payment: number;
-    missing_items?: MissingItem[]; // Adjust type based on expected structure
+    missing_items?: ItemToCheck[]; // Adjust type based on expected structure
     damage_report?: string;
     settlement_payment?: number;
     pending_payment: number | null;
@@ -79,6 +68,7 @@ export interface Notification {
     title: string;
     description: string;
     room_number: string;
+    is_db_driven: boolean;
 }
 
 export interface ItemToCheck extends InventoryItem {

@@ -1,10 +1,10 @@
 import DisplayEmpty from "@/components/DisplayEmpty";
 import FormHeader from "@/components/FormHeader";
-import { MissingItem } from "@/types";
+import { ItemToCheck } from "@/types";
 import React from "react";
 
 interface Props {
-    missingItems: MissingItem[];
+    missingItems: ItemToCheck[];
 }
 
 const MissingItemsTable = ({ missingItems }: Props) => {
@@ -24,7 +24,8 @@ const MissingItemsTable = ({ missingItems }: Props) => {
                             {missingItems.map((missingItem, index) => (
                                 <tr key={index}>
                                     <td className="font-bold text-error text-lg">
-                                        {missingItem.missing}
+                                        {missingItem.quantity_to_check -
+                                            missingItem.quantity_checked}
                                     </td>
                                     <td>{missingItem.item_name}</td>
                                 </tr>

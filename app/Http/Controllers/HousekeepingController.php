@@ -93,7 +93,7 @@ class HousekeepingController extends Controller
         }
         
         // Only add the default status update message if no issues were found
-        if (empty($missingItems) && empty($damageReport)) {
+        if (count($missingItems) === 0 && empty($damageReport)) {
             $transactionMessage .= 'Room status updated from "Pending Inspection" to "Cleaning".';
         }
         
@@ -114,11 +114,11 @@ class HousekeepingController extends Controller
         $description = '';
     
         if ($hasMissingItems && $hasDamageReport) {
-            $description = "⚠️ **Missing Items & Damage Reported** in Room {$transaction->room_number}. Requires attention.";
+            $description = "⚠️ **Missing Items & Damage Reported**. Requires attention.";
         } elseif ($hasMissingItems) {
-            $description = "⚠️ **Missing Items** in Room {$transaction->room_number}. Please check inventory.";
+            $description = "⚠️ **Missing Items**. Please check inventory.";
         } elseif ($hasDamageReport) {
-            $description = "⚠️ **Damage Reported** in Room {$transaction->room_number}. Maintenance required.";
+            $description = "⚠️ **Damage Reported**. Maintenance required.";
         } else {
             $description = "✅ Room {$transaction->room_number} inspection completed. No issues found.";
         }
@@ -129,6 +129,7 @@ class HousekeepingController extends Controller
             description: $description,
             notif_id: $transaction->id,
             room_number: $transaction->room_number,
+            is_db_driven: false,
         ));
     }
 }

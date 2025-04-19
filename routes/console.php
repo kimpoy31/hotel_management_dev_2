@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Schedule;
                     description: "due for checkout at {$formattedExpectedCheckout}",
                     notif_id: $transaction->id,
                     room_number: $transaction->room_number,
+                    is_db_driven: true,
                 ));
             }
         }

@@ -4,7 +4,7 @@ import RoomCard from "@/components/RoomCard";
 import {
     AdditionItem,
     InventoryItem,
-    MissingItem,
+    ItemToCheck,
     Rate,
     Room as RoomProp,
     Transaction,
@@ -146,12 +146,18 @@ const Room = ({
                 <RoomHeader room={room} />
                 <div className="divider m-0"></div>
 
-                {room.active_transaction_object?.missing_items && (
+                {room.active_transaction_object?.missing_items?.some(
+                    (item: ItemToCheck) =>
+                        item.quantity_to_check - item.quantity_checked > 0
+                ) && (
                     <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
                         <MissingItemsTable
-                            missingItems={
-                                room.active_transaction_object?.missing_items
-                            }
+                            missingItems={room.active_transaction_object.missing_items.filter(
+                                (item: ItemToCheck) =>
+                                    item.quantity_to_check -
+                                        item.quantity_checked >
+                                    0
+                            )}
                         />
                     </div>
                 )}

@@ -26,6 +26,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const userRoles = usePage().props.auth.user.roles;
+    const { url } = usePage();
 
     // Fetch Rooms
     const getRooms = async () => {
@@ -118,6 +119,14 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
                         // If it exists, return the previous array unchanged
                         return prevNotifications;
                     });
+
+                    // Check if current URL matches a route
+                    const isRoomRoute = url.startsWith("/frontdesk/room/");
+
+                    if (isRoomRoute) {
+                        // Do something (e.g., refresh the page)
+                        router.reload();
+                    }
                 }
             );
         });

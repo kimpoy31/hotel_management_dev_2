@@ -5,10 +5,12 @@ import { useApi } from "@/context/ApiProvider";
 import React from "react";
 
 const Housekeeping = () => {
-    const roomsForInspection = useApi().rooms.filter(
+    const { rooms } = useApi();
+
+    const roomsForInspection = rooms.filter(
         (room) => room.room_status === "pending_inspection"
     );
-    const roomsForCleaning = useApi().rooms.filter(
+    const roomsForCleaning = rooms.filter(
         (room) => room.room_status === "cleaning"
     );
 

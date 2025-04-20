@@ -110,6 +110,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
                                     title: e.title,
                                     description: e.description,
                                     room_number: e.room_number,
+                                    is_db_driven: e.is_db_driven,
                                 },
                             ];
                         }

@@ -61,13 +61,19 @@ class HousekeepingController extends Controller
         $room = Room::find($request->input('room_id'));
         $transaction = Transaction::find($request->input('transaction_id'));
         
-        $missingItems = json_decode($request->input('missing_items'), true);
+        $rawMissingItems = json_decode($request->input('missing_items'), true) ?? [];
         $damageReport = $request->input('damage_report');
         
-        // Update records
+        // Filter to only include genuinely missing items
+        $missingItems = array_filter($rawMissingItems, function($item) {
+            return isset($item['quantity_to_check'], $item['quantity_checked']) && 
+                   $item['quantity_to_check'] > $item['quantity_checked'];
+        });
+        
+        // Update transaction with clean values
         $transaction->update([
-            'missing_items' => $missingItems,
-            'damage_report' => $damageReport
+            'missing_items' => empty($missingItems) ? [] : array_values($missingItems), // Always array
+            'damage_report' => empty($damageReport) ? null : $damageReport // Null if empty
         ]);
         
         // Only update room status to 'cleaning' if no missing items and no damage report
@@ -131,5 +137,40 @@ class HousekeepingController extends Controller
             room_number: $transaction->room_number,
             is_db_driven: false,
         ));
+
+        RoomStatusUpdated::dispatch('status_updated');
+    }
+
+
+    public function mark_clean(Request $request) 
+    {
+        $room = Room::find($request->input('room_id'));
+        $transaction = Transaction::find($room->active_transaction); // Get before clearing
+        $isAdmin = in_array('administrator', Auth::user()->roles);
+    
+        $room->update([
+            'room_status' => 'available',
+            'active_transaction' => null,
+        ]);
+    
+        event(new NotificationEvent(
+            recipients: ['administrator', 'housekeeper', 'frontdesk'],
+            title: 'Room Marked as Available',
+            description: "marked clean and is now available for new bookings.",
+            notif_id: $transaction->id,
+            room_number: $room->room_number,
+            is_db_driven: false,
+        ));
+    
+        TransactionLog::create([
+            'transaction_id' => $transaction->id,
+            'transaction_officer' => Auth::user()->fullname,
+            'transaction_type' => 'room_availability_update',
+            'transaction_description' => "Completed cleaning and marked Room {$room->room_number} as available",
+        ]);
+
+        RoomStatusUpdated::dispatch('status_updated');
+
+        return to_route($isAdmin ? 'housekeeping' : 'dashboard');
     }
 }

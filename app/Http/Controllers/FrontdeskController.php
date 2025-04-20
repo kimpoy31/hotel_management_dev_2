@@ -382,5 +382,9 @@ class FrontdeskController extends Controller
         ]);
 
         RoomStatusUpdated::dispatch('status_updated');
+
+
+        $isAdmin = in_array('administrator', Auth::user()->roles);
+        return to_route($isAdmin ? 'frontdesk' : 'dashboard');
     }
 }

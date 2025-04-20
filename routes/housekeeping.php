@@ -11,5 +11,6 @@ Route::middleware(['auth', HousekeepingMiddleware::class])->group(function () {
     Route::patch('housekeeping/room/submit-inspection', [HousekeepingController::class, 'submit_inspection'])
         ->name('housekeeping.submit.inspection');
 
-    
+    Route::patch('housekeeping/room/mark-clean', [HousekeepingController::class, 'mark_clean'])
+        ->name('housekeeping.mark.clean');
 });

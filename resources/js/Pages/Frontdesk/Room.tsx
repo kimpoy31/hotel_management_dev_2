@@ -144,15 +144,16 @@ const Room = ({
                     }
                 />
                 <RoomHeader room={room} />
-                <div className="divider m-0"></div>
-
-                {room.active_transaction_object?.missing_items?.some(
+                {(room.active_transaction_object?.missing_items ?? []).some(
                     (item: ItemToCheck) =>
                         item.quantity_to_check - item.quantity_checked > 0
                 ) && (
                     <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
                         <MissingItemsTable
-                            missingItems={room.active_transaction_object.missing_items.filter(
+                            missingItems={(
+                                room.active_transaction_object?.missing_items ??
+                                []
+                            ).filter(
                                 (item: ItemToCheck) =>
                                     item.quantity_to_check -
                                         item.quantity_checked >
@@ -170,39 +171,41 @@ const Room = ({
                         />
                     </div>
                 )}
-
                 <div className="divider m-0"></div>
-
                 <DisplayRoomInclusions
                     roomInclusionItems={room.room_inclusion_items ?? []}
                     roomInclusions={room.room_inclusions ?? []}
                     withHeader={true}
                 />
-                <CustomerInformationForm
-                    customerName={customerName}
-                    setCustomerName={setCustomerName}
-                    customerAddress={customerAddress}
-                    setCustomerAddress={setCustomerAddress}
-                    customerContactNumber={customerContactNumber}
-                    setCustomerContactNumber={setCustomerContactNumber}
-                    customerIDPicture={customerIDPicture}
-                    setCustomerIDpicture={setCustomerIDpicture}
-                    errors={errors}
-                    room_transaction={active_transaction}
-                />
-                <CheckInForm
-                    roomRateId={roomRateId}
-                    rates={rates}
-                    setRoomRateId={setRoomRateId}
-                    numberOfDays={numberOfDays}
-                    setNumberOfDays={setNumberOfDays}
-                    active_transaction={active_transaction}
-                    setStayExtensionId={setStayExtensionId}
-                    stayExtensionId={stayExtensionId}
-                    roomRateUpgradeId={roomRateUpgradeId}
-                    setRoomRateUpgradeId={setRoomRateUpgradeId}
-                    roomDetails={room}
-                />
+                {room.room_status !== "cleaning" && (
+                    <CustomerInformationForm
+                        customerName={customerName}
+                        setCustomerName={setCustomerName}
+                        customerAddress={customerAddress}
+                        setCustomerAddress={setCustomerAddress}
+                        customerContactNumber={customerContactNumber}
+                        setCustomerContactNumber={setCustomerContactNumber}
+                        customerIDPicture={customerIDPicture}
+                        setCustomerIDpicture={setCustomerIDpicture}
+                        errors={errors}
+                        room_transaction={active_transaction}
+                    />
+                )}
+                {room.room_status !== "cleaning" && (
+                    <CheckInForm
+                        roomRateId={roomRateId}
+                        rates={rates}
+                        setRoomRateId={setRoomRateId}
+                        numberOfDays={numberOfDays}
+                        setNumberOfDays={setNumberOfDays}
+                        active_transaction={active_transaction}
+                        setStayExtensionId={setStayExtensionId}
+                        stayExtensionId={stayExtensionId}
+                        roomRateUpgradeId={roomRateUpgradeId}
+                        setRoomRateUpgradeId={setRoomRateUpgradeId}
+                        roomDetails={room}
+                    />
+                )}
                 {(room.room_status === "occupied" ||
                     room.room_status === "available" ||
                     room.room_status === "pending_inspection") && (
@@ -217,13 +220,11 @@ const Room = ({
                         roomStatus={room.room_status}
                     />
                 )}
-
                 {active_transaction && (
                     <TransactionLogs
                         transaction_logs={active_transaction.transaction_logs}
                     />
                 )}
-
                 <div className="divider"></div>
                 {room.room_status === "occupied" && (
                     <CountdownTimer

@@ -26,7 +26,6 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const userRoles = usePage().props.auth.user.roles;
-    const { url } = usePage();
 
     // Fetch Rooms
     const getRooms = async () => {
@@ -120,11 +119,8 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
                         return prevNotifications;
                     });
 
-                    // Check if current URL matches a route
-                    const isRoomRoute = url.startsWith("/frontdesk/room/");
-
-                    if (isRoomRoute) {
-                        // Do something (e.g., refresh the page)
+                    // Get fresh URL inside the listener
+                    if (route().current("frontdesk.room.form")) {
                         router.reload();
                     }
                 }

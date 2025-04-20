@@ -61,23 +61,26 @@ class HousekeepingController extends Controller
         $room = Room::find($request->input('room_id'));
         $transaction = Transaction::find($request->input('transaction_id'));
         
-        $rawMissingItems = json_decode($request->input('missing_items'), true) ?? [];
+        $missingItems = json_decode($request->input('missing_items'), true) ?? [];
         $damageReport = $request->input('damage_report');
         
-        // Filter to only include genuinely missing items
-        $missingItems = array_filter($rawMissingItems, function($item) {
-            return isset($item['quantity_to_check'], $item['quantity_checked']) && 
-                   $item['quantity_to_check'] > $item['quantity_checked'];
-        });
-        
-        // Update transaction with clean values
+        // Update transaction with raw values
         $transaction->update([
-            'missing_items' => empty($missingItems) ? [] : array_values($missingItems), // Always array
-            'damage_report' => empty($damageReport) ? null : $damageReport // Null if empty
+            'missing_items' => empty($missingItems) ? [] : array_values($missingItems),
+            'damage_report' => empty($damageReport) ? null : $damageReport
         ]);
         
-        // Only update room status to 'cleaning' if no missing items and no damage report
-        if (empty($missingItems) && empty($damageReport)) {
+        // Calculate if any items are actually missing (for status determination only)
+        $hasActualMissingItems = !empty(array_filter($missingItems, function($item) {
+            return isset($item['quantity_to_check'], $item['quantity_checked']) && 
+                   $item['quantity_to_check'] > $item['quantity_checked'];
+        }));
+        
+        // Only update room status if:
+        // 1. Items were actually checked (array not empty)
+        // 2. No items are actually missing
+        // 3. No damage reported
+        if (!empty($missingItems) && !$hasActualMissingItems && empty($damageReport)) {
             $room->update([
                 'room_status' => 'cleaning',
             ]);
@@ -86,8 +89,9 @@ class HousekeepingController extends Controller
         // Build transaction log message
         $transactionMessage = '';
         
-        if (!empty($missingItems)) {
+        if ($hasActualMissingItems) {
             $missingItemsList = collect($missingItems)
+                ->filter(fn($item) => $item['quantity_to_check'] > $item['quantity_checked'])
                 ->map(fn($item) => $item['item_name'] . ': ' . ($item['quantity_to_check'] - $item['quantity_checked']) . ' pc(s)')
                 ->implode(', ');
                 
@@ -98,8 +102,8 @@ class HousekeepingController extends Controller
             $transactionMessage .= 'Damage reported: ' . $damageReport . '. ';
         }
         
-        // Only add the default status update message if no issues were found
-        if (count($missingItems) === 0 && empty($damageReport)) {
+        // Add status update message only when we actually updated the status
+        if (!empty($missingItems) && !$hasActualMissingItems && empty($damageReport)) {
             $transactionMessage .= 'Room status updated from "Pending Inspection" to "Cleaning".';
         }
         
@@ -110,25 +114,22 @@ class HousekeepingController extends Controller
             'transaction_description' => $transactionMessage,
         ]);
     
-        RoomStatusUpdated::dispatch('status_updated');
-    
-        // Notification logic (same as before)
-        $hasMissingItems = !empty($missingItems);
-        $hasDamageReport = !empty($damageReport);
-    
+        // Notification logic
         $title = 'Room Inspection Report';
         $description = '';
-    
-        if ($hasMissingItems && $hasDamageReport) {
+        
+        if ($hasActualMissingItems && !empty($damageReport)) {
             $description = "⚠️ **Missing Items & Damage Reported**. Requires attention.";
-        } elseif ($hasMissingItems) {
+        } elseif ($hasActualMissingItems) {
             $description = "⚠️ **Missing Items**. Please check inventory.";
-        } elseif ($hasDamageReport) {
+        } elseif (!empty($damageReport)) {
             $description = "⚠️ **Damage Reported**. Maintenance required.";
-        } else {
+        } elseif (!empty($missingItems)) {
             $description = "✅ Room {$transaction->room_number} inspection completed. No issues found.";
+        } else {
+            $description = "ℹ️ Room {$transaction->room_number} inspection submitted (no items checked).";
         }
-    
+        
         event(new NotificationEvent(
             recipients: ['administrator', 'housekeeper', 'frontdesk'],
             title: $title,
@@ -137,7 +138,7 @@ class HousekeepingController extends Controller
             room_number: $transaction->room_number,
             is_db_driven: false,
         ));
-
+    
         RoomStatusUpdated::dispatch('status_updated');
     }
 

@@ -387,4 +387,30 @@ class FrontdeskController extends Controller
         $isAdmin = in_array('administrator', Auth::user()->roles);
         return to_route($isAdmin ? 'frontdesk' : 'dashboard');
     }
+
+    public function room_settlement(Request $request) {
+        // settlement_amount
+        $room = Room::find($request->input('room_id'));
+        $transaction = Transaction::find($room->active_transaction);
+
+        $transaction->update([
+            'settlement_payment' => $request->input('settlement_amount'),
+        ]);
+
+        $room->update([
+            'room_status' => 'cleaning'
+        ]);
+
+        $transaction_message = 'Room status changed from "Pending Inspection" to "Cleaning"';
+        $transaction_message .= '. Collected Settlement amount: ₱' . $request->input('settlement_amount') ;
+
+        TransactionLog::create([
+            'transaction_id' => $transaction->id,
+            'transaction_officer' => Auth::user()->fullname,
+            'transaction_type' => 'settlement',
+            'transaction_description' => $transaction_message,
+        ]);
+
+        RoomStatusUpdated::dispatch('status_updated');
+    }
 }

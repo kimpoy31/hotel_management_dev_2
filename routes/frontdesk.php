@@ -27,6 +27,8 @@ Route::middleware(['auth', FrontdeskMiddleware::class])->group(function () {
     Route::get('frontdesk/reserve-room/{id?}', [FrontdeskController::class, 'room_reserve_form'])
         ->name('frontdesk.room.reserve.form');
 
+    Route::patch('frontdesk/room/settlement', [FrontdeskController::class, 'room_settlement'])
+    ->name('frontdesk.settlement');
 
 
     // RESERVATION ROUTES

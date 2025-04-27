@@ -136,6 +136,13 @@ const Room = ({
         });
     };
 
+    const handlePendingSettlement = async () => {
+        await router.patch(route("frontdesk.settlement"), {
+            settlement_amount: settlement,
+            room_id: room.id,
+        });
+    };
+
     return (
         <div className="flex justify-center">
             <Card className="lg:card-md card-xs">
@@ -147,83 +154,91 @@ const Room = ({
                     }
                 />
                 <RoomHeader room={room} />
-                {(room.active_transaction_object?.missing_items ?? []).some(
-                    (item: ItemToCheck) =>
-                        item.quantity_to_check - item.quantity_checked > 0
-                ) && (
-                    <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
-                        <MissingItemsTable
-                            missingItems={(
-                                room.active_transaction_object?.missing_items ??
-                                []
-                            ).filter(
-                                (item: ItemToCheck) =>
-                                    item.quantity_to_check -
-                                        item.quantity_checked >
-                                    0
-                            )}
-                        />
-                    </div>
-                )}
-                {room.active_transaction_object?.damage_report && (
-                    <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
-                        <DamageReport
-                            damage_report={
-                                room.active_transaction_object?.damage_report
-                            }
-                        />
-                    </div>
-                )}
-                {((room.active_transaction_object?.missing_items ?? []).some(
-                    (item: ItemToCheck) =>
-                        item.quantity_to_check - item.quantity_checked > 0
-                ) ||
-                    room.active_transaction_object?.damage_report) && (
-                    <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
-                        <FormHeader>Settlement</FormHeader>
-                        <div className="mt-4 gap-4 flex sm:flex-row flex-col">
-                            <label className="floating-label max-w-xl">
-                                <input
-                                    type="number"
-                                    placeholder="Payment"
-                                    className="input input-xl w-full max-w-xl"
-                                    value={
-                                        settlement === undefined ||
-                                        settlement < 1
-                                            ? ""
-                                            : settlement.toString()
-                                    }
-                                    onChange={(e) => {
-                                        const num = Number(e.target.value);
-                                        setSettlement(
-                                            num < 1 ? undefined : num
-                                        );
-                                    }}
-                                />
-                                <span>Payment</span>
-                            </label>
-
-                            <AlertDialog
-                                modalButtonDisabled={(settlement ?? 0) < 1}
-                                buttonTitle="Confirm payment"
-                                buttonClassname="btn-success btn btn-xl w-full max-w-xl"
-                                modalTitle="Settlement Payment Confirmation"
-                                modalDescription="Are you sure you want to proceed with this payment? Once confirmed, this action cannot be undone."
-                            >
-                                {/* Optional: Add additional custom content inside the dialog */}
-                                <div className="p-2 bg-base-200">
-                                    <p className="font-semibold">
-                                        Settlement Amount: ₱
-                                        {settlement ?? "0.00"}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                        Review all details before confirming.
-                                    </p>
-                                </div>
-                            </AlertDialog>
+                {room.room_status === "pending_inspection" &&
+                    (room.active_transaction_object?.missing_items ?? []).some(
+                        (item: ItemToCheck) =>
+                            item.quantity_to_check - item.quantity_checked > 0
+                    ) && (
+                        <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
+                            <MissingItemsTable
+                                missingItems={(
+                                    room.active_transaction_object
+                                        ?.missing_items ?? []
+                                ).filter(
+                                    (item: ItemToCheck) =>
+                                        item.quantity_to_check -
+                                            item.quantity_checked >
+                                        0
+                                )}
+                            />
                         </div>
-                    </div>
-                )}
+                    )}
+                {room.room_status === "pending_inspection" &&
+                    room.active_transaction_object?.damage_report && (
+                        <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
+                            <DamageReport
+                                damage_report={
+                                    room.active_transaction_object
+                                        ?.damage_report
+                                }
+                            />
+                        </div>
+                    )}
+                {room.room_status === "pending_inspection" &&
+                    ((room.active_transaction_object?.missing_items ?? []).some(
+                        (item: ItemToCheck) =>
+                            item.quantity_to_check - item.quantity_checked > 0
+                    ) ||
+                        room.active_transaction_object?.damage_report) && (
+                        <div className="my-4 p-4 bg-base-300 rounded-xl border-dashed border-4 border-error">
+                            <FormHeader>Settlement</FormHeader>
+                            <div className="mt-4 gap-4 flex sm:flex-row flex-col">
+                                <label className="floating-label max-w-xl">
+                                    <input
+                                        type="number"
+                                        placeholder="Payment"
+                                        className="input input-xl w-full max-w-xl"
+                                        value={
+                                            settlement === undefined ||
+                                            settlement < 1
+                                                ? ""
+                                                : settlement.toString()
+                                        }
+                                        onChange={(e) => {
+                                            const num = Number(e.target.value);
+                                            setSettlement(
+                                                num < 1 ? undefined : num
+                                            );
+                                        }}
+                                    />
+                                    <span>Payment</span>
+                                </label>
+
+                                <AlertDialog
+                                    confirmAction={() =>
+                                        handlePendingSettlement()
+                                    }
+                                    modalButtonDisabled={(settlement ?? 0) < 1}
+                                    buttonTitle="Confirm payment"
+                                    buttonClassname="btn-success btn btn-xl w-full max-w-xl"
+                                    modalTitle="Settlement Payment Confirmation"
+                                    modalDescription="Are you sure you want to proceed with this payment? Once confirmed, this action cannot be undone."
+                                >
+                                    {/* Optional: Add additional custom content inside the dialog */}
+                                    <div className="p-2 bg-base-200">
+                                        <p className="font-semibold">
+                                            Settlement Amount: ₱
+                                            {settlement ?? "0.00"}
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            Review all details before
+                                            confirming.
+                                        </p>
+                                    </div>
+                                </AlertDialog>
+                            </div>
+                        </div>
+                    )}
                 <div className="divider m-0"></div>
                 <DisplayRoomInclusions
                     roomInclusionItems={room.room_inclusion_items ?? []}

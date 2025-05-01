@@ -155,6 +155,7 @@ class FrontdeskController extends Controller
             'customer_address' => $request->input('customer_address'),
             'customer_contact_number' => $request->input('customer_contact_number'),
             'id_picture_path' => $idPicturePath ?? null,
+            'room_inclusions' => $room->room_inclusions ?? null,
             'room_additions' => json_decode($request->input('room_additions'), true),
             'total_payment' => $request->input('total_payment'),
             'overtime_charge' => $generalSettings->overtime_charge,

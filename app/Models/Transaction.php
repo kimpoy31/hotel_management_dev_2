@@ -41,6 +41,7 @@ class Transaction extends Model
         'settlement_payment' => 'decimal:2',
         'overtime_charge' => 'decimal:2',
         'latest_rate_availed_id' => 'integer',
+        'room_inclusions' => 'array',
     ];
 
     protected $appends = ['transaction_logs']; // Append to JSON response

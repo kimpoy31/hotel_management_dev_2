@@ -19,6 +19,7 @@ class Transaction extends Model
         'customer_address',
         'customer_contact_number',
         'id_picture_path',
+        'room_inclusions',
         'room_additions',
         'total_payment',
         'missing_items',

@@ -52,6 +52,7 @@ export interface Transaction {
     customer_address: string;
     customer_contact_number?: string;
     id_picture_path?: string;
+    room_inclusions?: InclusionItem[]; // Adjust type based on expected structure
     room_additions?: AdditionItem[]; // Adjust type based on expected structure
     total_payment: number;
     missing_items?: ItemToCheck[]; // Adjust type based on expected structure

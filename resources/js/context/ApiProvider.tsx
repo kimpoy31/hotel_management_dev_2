@@ -1,4 +1,4 @@
-import { Notification, Reservation, Room } from "@/types";
+import { InventoryItem, Notification, Reservation, Room } from "@/types";
 import { router, usePage } from "@inertiajs/react";
 import axios from "axios";
 import React, {
@@ -13,6 +13,7 @@ import React, {
 interface ApiContextProps {
     rooms: Room[];
     reservations: Reservation[];
+    inventoryItems: InventoryItem[];
     notifications: Notification[];
     closeNotification: (id: number) => void;
 }
@@ -24,6 +25,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [reservations, setReservations] = useState<Reservation[]>([]);
+    const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const userRoles = usePage().props.auth.user.roles;
 
@@ -47,6 +49,16 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
         }
     };
 
+    // Fetch Items
+    const getInventoryItems = async () => {
+        try {
+            const response = await axios.get(route("fetch.items"));
+            setInventoryItems(response.data);
+        } catch (error) {
+            console.error("Error fetching items:", error);
+        }
+    };
+
     const closeNotification = (notif_id: number) => {
         setNotifications(
             notifications.filter((notif) => notif.notif_id !== notif_id)
@@ -56,6 +68,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
     useEffect(() => {
         getRooms();
         getReservations();
+        getInventoryItems();
     }, []);
 
     useEffect(() => {
@@ -142,7 +155,13 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
 
     return (
         <ApiContext.Provider
-            value={{ rooms, reservations, notifications, closeNotification }}
+            value={{
+                rooms,
+                reservations,
+                inventoryItems,
+                notifications,
+                closeNotification,
+            }}
         >
             {children}
         </ApiContext.Provider>

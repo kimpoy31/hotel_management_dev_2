@@ -63,6 +63,10 @@ Route::middleware('auth')->group(function () {
         return $reservations->isEmpty() ? [] : $reservations;
     })->name('fetch.reservations');
 
+    Route::get('fetch-items', function () {
+        $items = InventoryItem::where('status', 'active')->get();
+        return $items->isEmpty() ? [] : $items;
+    })->name('fetch.items');
 
     Route::patch('transactions-notified-checkout-warning-at', function (Request $request) {
         $transaction = Transaction::find($request->input('notif_id'));

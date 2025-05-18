@@ -6,12 +6,12 @@ import EmployeeTable from "./Admin/EmployeeTable";
 import InventoryTable from "./Admin/InventoryTable";
 import RateTable from "./Admin/RateTable";
 import RoomTable from "./Admin/RoomTable";
+import { useApi } from "@/context/ApiProvider";
 
 interface Props {
     employees: User[];
     inventory_items: InventoryItem[];
     rates: Rate[];
-    rooms: Room[];
     overtime_charge: number;
 }
 
@@ -20,10 +20,11 @@ const Admin = ({
     inventory_items,
     rates,
     overtime_charge,
-    rooms,
 }: Props) => {
     const [isEditing, setIsEditing] = useState(false);
     const [overtimeCharge, setOvertimeCharge] = useState(overtime_charge ?? 0);
+
+    const { rooms, inventoryItems } = useApi();
 
     const handleGeneralSettingSubmit = async () => {
         if (isEditing) {
@@ -60,7 +61,7 @@ const Admin = ({
                         Add room
                     </Link>
                 </div>
-                <RoomTable rooms={rooms} />
+                <RoomTable rooms={rooms ?? []} />
             </Card>
             <Card>
                 <div className="flex justify-between">
@@ -72,7 +73,7 @@ const Admin = ({
                         Add Item
                     </Link>
                 </div>
-                <InventoryTable inventoryItems={inventory_items ?? []} />
+                <InventoryTable inventoryItems={inventoryItems ?? []} />
             </Card>
             <Card>
                 <div className="flex justify-between">

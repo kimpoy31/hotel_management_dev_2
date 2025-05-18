@@ -120,7 +120,10 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
                     });
 
                     // Get fresh URL inside the listener
-                    if (route().current("frontdesk.room.form")) {
+                    if (
+                        route().current("frontdesk.room.form") ||
+                        route().current("housekeeping.room.form")
+                    ) {
                         router.reload();
                     }
                 }

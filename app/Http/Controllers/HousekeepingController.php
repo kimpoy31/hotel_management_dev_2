@@ -153,6 +153,62 @@ class HousekeepingController extends Controller
             'room_status' => 'available',
             'active_transaction' => null,
         ]);
+
+        $room_additions = $transaction->room_additions ?? [];
+        $room_inclusions = $transaction->room_inclusions ?? [];
+
+        // Process used items for cleaning
+        $all_items = array_merge($room_additions, $room_inclusions);
+
+        foreach ($all_items as $item) {
+            $inventoryItem = InventoryItem::find($item['item_id']);
+            $quantity_to_update = $item['quantity'];
+
+            if ($inventoryItem->item_type == 'room amenity') {
+                $inventoryItem->update([
+                    'in_use' => $inventoryItem->in_use -= $quantity_to_update,
+                    'in_process' => $inventoryItem->in_process += $quantity_to_update,
+                ]);
+            } 
+        }
+
+        // Subtract missing items
+        $missing_items = $transaction->missing_items ?? []; // Add null coalescing for safety
+
+        foreach ($missing_items as $item) {
+            $inventoryItem = InventoryItem::find($item['id'] ?? null); // Optional: handle missing 'id'
+            
+            // Use array access instead of object access
+            $missing_item_quantity = ($item['quantity_to_check'] ?? 0) - ($item['quantity_checked'] ?? 0);
+        
+            if ($inventoryItem && $inventoryItem->item_type == 'room amenity') { // Check if $inventoryItem exists
+                $inventoryItem->update([
+                    'in_process' => $inventoryItem->in_process - $missing_item_quantity,
+                    'missing' => $inventoryItem->missing + $missing_item_quantity,
+                ]);
+            } 
+        }
+
+        // Subtract clean items placed on the room for next use
+        $room_inclusions = $room->room_inclusions;
+
+        foreach ($room_inclusions as $item) {
+            $inventoryItem = InventoryItem::find($item['item_id']);
+            $quantity_to_update = $item['quantity'];
+
+            if ($inventoryItem->item_type == 'room amenity') {
+                $inventoryItem->update([
+                    'available' => $inventoryItem->available -= $quantity_to_update,
+                    'in_use' => $inventoryItem->in_use += $quantity_to_update,
+                ]);
+            } else if ($inventoryItem->item_type == 'consumable'){
+                $inventoryItem->update([
+                    'available' => $inventoryItem->available -= $quantity_to_update,
+                    'sold' => $inventoryItem->sold += $quantity_to_update,
+                ]);
+            }
+        }
+
     
         event(new NotificationEvent(
             recipients: ['administrator', 'housekeeper', 'frontdesk'],

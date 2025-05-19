@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\InventoryItemStatusUpdated;
 use App\Models\InventoryItem;
 use App\Models\Room;
 use Illuminate\Http\Request;
@@ -33,6 +34,8 @@ class InventoryController extends Controller
         $inventory_item->update([
             'status' => 'in-active'
         ]);
+
+        InventoryItemStatusUpdated::dispatch('status_updated');
 
         return to_route('admin'); 
     }
@@ -85,6 +88,8 @@ class InventoryController extends Controller
                 'price' => $request->input('price'),
             ]);
        }
+
+       InventoryItemStatusUpdated::dispatch('status_updated');
 
        return to_route('admin');
    }

@@ -98,6 +98,19 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
             }
         );
 
+        // Room status channel
+        const inventoryItemChannel = (window as any).Echo.channel(
+            "inventory.items.status"
+        );
+        inventoryItemChannel.listen(
+            "InventoryItemStatusUpdated",
+            (e: { signal: string }) => {
+                if (e.signal === "status_updated") {
+                    getInventoryItems();
+                }
+            }
+        );
+
         // Notification channel
         userRoles.forEach((role) => {
             const notificationChannel = (window as any).Echo.private(
@@ -147,6 +160,7 @@ export const ApiProvider: React.FC<{ children: ReactNode }> = ({
         return () => {
             roomChannel.stopListening("RoomStatusUpdated");
             reservationChannel.stopListening("ReservedRoomStatusUpdated");
+            inventoryItemChannel.stopListening("InventoryItemStatusUpdated");
             userRoles.forEach((role) => {
                 (window as any).Echo.leave(`notification.${role}`);
             });

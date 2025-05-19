@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\InventoryItemStatusUpdated;
 use App\Events\RoomStatusUpdated;
 use App\Models\GeneralSetting;
 use App\Models\InventoryItem;
@@ -188,6 +189,7 @@ class FrontdeskController extends Controller
             'room_status' => 'occupied'
         ]);
 
+        InventoryItemStatusUpdated::dispatch('status_updated');
         RoomStatusUpdated::dispatch('status_updated');
     }
 
@@ -258,6 +260,7 @@ class FrontdeskController extends Controller
             }
         }
 
+        InventoryItemStatusUpdated::dispatch('status_updated');
         RoomStatusUpdated::dispatch('status_updated');
     }
 
@@ -383,7 +386,7 @@ class FrontdeskController extends Controller
         ]);
 
         RoomStatusUpdated::dispatch('status_updated');
-
+        InventoryItemStatusUpdated::dispatch('status_updated');
 
         $isAdmin = in_array('administrator', Auth::user()->roles);
         return to_route($isAdmin ? 'frontdesk' : 'dashboard');

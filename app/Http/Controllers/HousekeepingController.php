@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\InventoryItemStatusUpdated;
 use App\Events\NotificationEvent;
 use App\Events\RoomStatusUpdated;
 use App\Models\InventoryItem;
@@ -226,6 +227,7 @@ class HousekeepingController extends Controller
             'transaction_description' => "Completed cleaning and marked Room {$room->room_number} as available",
         ]);
 
+        InventoryItemStatusUpdated::dispatch('status_updated');
         RoomStatusUpdated::dispatch('status_updated');
 
         return to_route($isAdmin ? 'housekeeping' : 'dashboard');

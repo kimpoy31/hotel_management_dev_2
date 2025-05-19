@@ -10,16 +10,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class InventoryItemStatusUpdated
+class InventoryItemStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $signal;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($signal)
     {
-        //
+        $this->signal = $signal;  // Set the signal to broadcast
     }
 
     /**
@@ -30,7 +32,17 @@ class InventoryItemStatusUpdated
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new Channel('inventory.items.status'),
         ];
+    }
+
+     /**
+     * Get the data to broadcast.
+     *
+     * @return array
+     */
+    public function broadcastWith()
+    {
+        return ['signal' => $this->signal];  // Only send the signal
     }
 }

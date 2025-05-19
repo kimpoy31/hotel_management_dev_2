@@ -10,17 +10,11 @@ import { useApi } from "@/context/ApiProvider";
 
 interface Props {
     employees: User[];
-    inventory_items: InventoryItem[];
     rates: Rate[];
     overtime_charge: number;
 }
 
-const Admin = ({
-    employees,
-    inventory_items,
-    rates,
-    overtime_charge,
-}: Props) => {
+const Admin = ({ employees, rates, overtime_charge }: Props) => {
     const [isEditing, setIsEditing] = useState(false);
     const [overtimeCharge, setOvertimeCharge] = useState(overtime_charge ?? 0);
 

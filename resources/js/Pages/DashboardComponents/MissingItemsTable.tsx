@@ -5,7 +5,7 @@ import React from "react";
 const MissingItemsTable = () => {
     const { inventoryItems } = useApi();
     return (
-        <div>
+        <div className="w-full">
             <FormHeader className="bg-secondary! text-start">
                 Missing
             </FormHeader>

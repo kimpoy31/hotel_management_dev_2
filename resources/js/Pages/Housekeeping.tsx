@@ -3,6 +3,12 @@ import FormHeader from "@/components/FormHeader";
 import RoomCard from "@/components/RoomCard";
 import { useApi } from "@/context/ApiProvider";
 import React from "react";
+import AvailableItemsTable from "./DashboardComponents/AvailableItemsTable";
+import InUseItemsTable from "./DashboardComponents/InUseItemsTable";
+import InProcessItemsTable from "./DashboardComponents/InProcessItemsTable";
+import MissingItemsTable from "./DashboardComponents/MissingItemsTable";
+import TotalStockTable from "./DashboardComponents/TotalStockTable";
+import Card from "@/components/Card";
 
 const Housekeeping = () => {
     const { rooms } = useApi();
@@ -16,7 +22,7 @@ const Housekeeping = () => {
 
     return (
         <div className="flex w-full flex-col items-center">
-            <div className="w-full lg:max-w-10/12">
+            <div className="w-full lg:max-w-7xl">
                 {/* ROOMS FOR CHECK IN | CHECK OUT */}
                 <FormHeader className="text-start lg:my-2 mb-1">
                     For Inspection
@@ -56,6 +62,19 @@ const Housekeeping = () => {
                     )}
                 </div>
             </div>
+
+            <Card className="lg:card-md card-xs mt-8 bg-base-200">
+                <FormHeader className="text-xl bg-base-100!">
+                    Inventory
+                </FormHeader>
+                <AvailableItemsTable />
+                <div className="flex gap-2 md:flex-row flex-col">
+                    <InUseItemsTable />
+                    <InProcessItemsTable />
+                    <MissingItemsTable />
+                </div>
+                <TotalStockTable />
+            </Card>
         </div>
     );
 };

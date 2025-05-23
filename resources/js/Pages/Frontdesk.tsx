@@ -15,7 +15,7 @@ const Frontdesk = () => {
 
     return (
         <div className="flex w-full flex-col items-center">
-            <div className="w-full lg:max-w-10/12">
+            <div className="w-full lg:max-w-7xl">
                 {/* ROOMS FOR CHECK IN | CHECK OUT */}
                 <FormHeader className="text-start lg:my-2 mb-1">
                     Rooms
@@ -32,7 +32,7 @@ const Frontdesk = () => {
                 </div>
             </div>
 
-            <div className="w-full lg:max-w-10/12">
+            <div className="w-full lg:max-w-7xl">
                 {/* ROOM RESERVATIONS */}
                 <FormHeader className="text-start lg:my-2 mb-1 flex gap-4 items-center ">
                     Reservations

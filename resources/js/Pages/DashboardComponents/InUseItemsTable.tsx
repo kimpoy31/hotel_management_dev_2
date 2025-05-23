@@ -5,7 +5,7 @@ import React from "react";
 const InUseItemsTable = () => {
     const { inventoryItems } = useApi();
     return (
-        <div>
+        <div className="w-full">
             <FormHeader className="bg-secondary! text-start">In use</FormHeader>
             <div className="overflow-x-auto overflow-y-auto max-h-64 p-4 bg-base-100 rounded-xl">
                 <table className="table ">
@@ -20,7 +20,7 @@ const InUseItemsTable = () => {
                             <tr key={index}>
                                 <td>{item.item_name}</td>
                                 <td className="text-center">
-                                    {item.in_process ?? 0}
+                                    {item.in_use ?? 0}
                                 </td>
                             </tr>
                         ))}

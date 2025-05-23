@@ -17,13 +17,6 @@ const Welcome = () => {
 
     return (
         <Card className="lg:card-md card-xs">
-            <FormHeader className="text-xl">Inventory</FormHeader>
-            <AvailableItemsTable />
-            <InUseItemsTable />
-            <InProcessItemsTable />
-            <MissingItemsTable />
-            <TotalStockTable />
-
             {userRole.includes("frontdesk") &&
                 !userRole.includes("administrator") && <Frontdesk />}
             {userRole.includes("housekeeper") &&

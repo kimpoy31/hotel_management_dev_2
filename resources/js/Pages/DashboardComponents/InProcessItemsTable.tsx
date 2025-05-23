@@ -5,7 +5,7 @@ import React from "react";
 const InProcessItemsTable = () => {
     const { inventoryItems } = useApi();
     return (
-        <div>
+        <div className="w-full">
             <FormHeader className="bg-secondary! text-start">
                 Processing
             </FormHeader>

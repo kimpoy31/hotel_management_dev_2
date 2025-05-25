@@ -1,9 +1,56 @@
 import FormHeader from "@/components/FormHeader";
 import { useApi } from "@/context/ApiProvider";
-import React from "react";
+import { InventoryItem } from "@/types";
+import React, { useState, useEffect } from "react";
 
 const AvailableItemsTable = () => {
     const { inventoryItems } = useApi();
+    const [restockId, setRestockId] = useState(0);
+    const [items, setItems] = useState<InventoryItem[]>([]);
+
+    // Sync initial state from inventoryItems once it's loaded
+    useEffect(() => {
+        if (inventoryItems) {
+            setItems(inventoryItems);
+        }
+    }, [inventoryItems]);
+
+    const handleIncrement = (itemId: number) => {
+        const newItems = items.map((item) => {
+            if (item.id === itemId) {
+                return {
+                    ...item,
+                    available: item.available + 1,
+                };
+            }
+            return item;
+        });
+
+        setItems(newItems);
+    };
+
+    const handleDecrement = (itemId: number) => {
+        const inventoryItem = inventoryItems.find(
+            (invItem) => invItem.id === itemId
+        );
+
+        if (!inventoryItem) return;
+
+        const newItems = items.map((item) => {
+            if (
+                item.id === itemId &&
+                item.available > inventoryItem.available
+            ) {
+                return {
+                    ...item,
+                    available: item.available - 1,
+                };
+            }
+            return item;
+        });
+
+        setItems(newItems);
+    };
 
     return (
         <div>
@@ -16,19 +63,83 @@ const AvailableItemsTable = () => {
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th className="text-center">Available</th>
+                                <th>Available</th>
                                 <th className="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {inventoryItems.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item.item_name}</td>
-                                    <td className="text-center">
-                                        {item.available}
-                                    </td>
-                                </tr>
-                            ))}
+                            {items.map((item, index) => {
+                                const originalItem = inventoryItems.find(
+                                    (thisItem) => thisItem.id === item.id
+                                );
+                                const itemQuantity =
+                                    originalItem?.available ?? 0;
+
+                                return (
+                                    <tr key={index}>
+                                        <td>{item.item_name}</td>
+                                        <td className="text-center">
+                                            <div className="flex items-center justify-center gap-2">
+                                                <button
+                                                    className="btn btn-xs btn-success font-black"
+                                                    disabled={
+                                                        restockId !== item.id ||
+                                                        item.available <=
+                                                            (originalItem?.available ??
+                                                                0)
+                                                    }
+                                                    onClick={() =>
+                                                        handleDecrement(item.id)
+                                                    }
+                                                >
+                                                    -
+                                                </button>
+
+                                                <div className="w-8 text-center">
+                                                    {item.available}
+                                                </div>
+                                                <button
+                                                    className="btn btn-xs btn-success font-black"
+                                                    disabled={
+                                                        restockId !== item.id
+                                                    }
+                                                    onClick={() =>
+                                                        handleIncrement(item.id)
+                                                    }
+                                                >
+                                                    +
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td className="text-center">
+                                            <button
+                                                className={`btn ${
+                                                    restockId !== item.id
+                                                        ? "btn-accent"
+                                                        : item.available ===
+                                                          itemQuantity
+                                                        ? "btn-error"
+                                                        : "btn-success"
+                                                }`}
+                                                onClick={() =>
+                                                    setRestockId(
+                                                        item.id === restockId
+                                                            ? 0
+                                                            : item.id
+                                                    )
+                                                }
+                                            >
+                                                {restockId !== item.id
+                                                    ? "Re-stock"
+                                                    : item.available ===
+                                                      itemQuantity
+                                                    ? "Cancel"
+                                                    : "Save"}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

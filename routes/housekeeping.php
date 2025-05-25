@@ -13,4 +13,7 @@ Route::middleware(['auth', HousekeepingMiddleware::class])->group(function () {
 
     Route::patch('housekeeping/room/mark-clean', [HousekeepingController::class, 'mark_clean'])
         ->name('housekeeping.mark.clean');
+
+     Route::patch('housekeeping/restock', [HousekeepingController::class, 'restock'])
+        ->name('housekeeping.restock');
 });

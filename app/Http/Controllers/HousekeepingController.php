@@ -232,4 +232,16 @@ class HousekeepingController extends Controller
 
         return to_route($isAdmin ? 'housekeeping' : 'dashboard');
     }
+
+
+    public function restock (Request $request){
+        $item = InventoryItem::find($request->itemId);
+
+        $item->update([
+            'available' => $item->available + $request->quantity,
+            'in_process' =>  $item->in_process - $request->quantity
+        ]);
+
+        InventoryItemStatusUpdated::dispatch('status_updated');
+    }
 }

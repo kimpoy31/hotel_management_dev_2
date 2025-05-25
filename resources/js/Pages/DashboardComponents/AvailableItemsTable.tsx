@@ -1,6 +1,7 @@
 import FormHeader from "@/components/FormHeader";
 import { useApi } from "@/context/ApiProvider";
 import { InventoryItem } from "@/types";
+import { router } from "@inertiajs/react";
 import React, { useState, useEffect } from "react";
 
 const AvailableItemsTable = () => {
@@ -16,12 +17,19 @@ const AvailableItemsTable = () => {
     }, [inventoryItems]);
 
     const handleIncrement = (itemId: number) => {
+        const originalItem = inventoryItems.find((item) => item.id === itemId);
+
+        const maxAllowed =
+            (originalItem?.available ?? 0) + (originalItem?.in_process ?? 0);
+
         const newItems = items.map((item) => {
             if (item.id === itemId) {
-                return {
-                    ...item,
-                    available: item.available + 1,
-                };
+                if (item.available < maxAllowed) {
+                    return {
+                        ...item,
+                        available: item.available + 1,
+                    };
+                }
             }
             return item;
         });
@@ -50,6 +58,20 @@ const AvailableItemsTable = () => {
         });
 
         setItems(newItems);
+    };
+
+    const saveRestockedItems = async (itemId: number, newAvailable: number) => {
+        const originalItem = inventoryItems.find((item) => item.id === itemId);
+        if (!originalItem) return;
+
+        const increment = newAvailable - originalItem.available;
+
+        // Only send positive increment or handle decrement accordingly
+        if (increment !== 0) {
+            await router.patch(
+                route("housekeeping.restock", { itemId, quantity: increment })
+            );
+        }
     };
 
     return (
@@ -101,7 +123,19 @@ const AvailableItemsTable = () => {
                                                 <button
                                                     className="btn btn-xs btn-success font-black"
                                                     disabled={
-                                                        restockId !== item.id
+                                                        restockId !== item.id ||
+                                                        item.available >=
+                                                            (inventoryItems.find(
+                                                                (i) =>
+                                                                    i.id ===
+                                                                    item.id
+                                                            )?.available ?? 0) +
+                                                                (inventoryItems.find(
+                                                                    (i) =>
+                                                                        i.id ===
+                                                                        item.id
+                                                                )?.in_process ??
+                                                                    0)
                                                     }
                                                     onClick={() =>
                                                         handleIncrement(item.id)
@@ -113,7 +147,7 @@ const AvailableItemsTable = () => {
                                         </td>
                                         <td className="text-center">
                                             <button
-                                                className={`btn ${
+                                                className={`btn text-nowrap ${
                                                     restockId !== item.id
                                                         ? "btn-accent"
                                                         : item.available ===
@@ -121,13 +155,24 @@ const AvailableItemsTable = () => {
                                                         ? "btn-error"
                                                         : "btn-success"
                                                 }`}
-                                                onClick={() =>
+                                                onClick={async () => {
+                                                    if (
+                                                        restockId === item.id &&
+                                                        item.available !==
+                                                            itemQuantity
+                                                    ) {
+                                                        await saveRestockedItems(
+                                                            item.id,
+                                                            item.available
+                                                        );
+                                                    }
                                                     setRestockId(
                                                         item.id === restockId
                                                             ? 0
                                                             : item.id
-                                                    )
-                                                }
+                                                    );
+                                                    setItems(inventoryItems);
+                                                }}
                                             >
                                                 {restockId !== item.id
                                                     ? "Re-stock"

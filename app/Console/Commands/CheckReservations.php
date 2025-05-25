@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\InventoryItemStatusUpdated;
 use App\Events\ReservedRoomStatusUpdated;
 use App\Events\RoomStatusUpdated;
 use App\Models\GeneralSetting;
@@ -87,6 +88,7 @@ class CheckReservations extends Command
                 
                 ReservedRoomStatusUpdated::dispatch('status_updated');
                 RoomStatusUpdated::dispatch('status_updated');
+                InventoryItemStatusUpdated::dispatch('status_updated');
             }
         }
 
